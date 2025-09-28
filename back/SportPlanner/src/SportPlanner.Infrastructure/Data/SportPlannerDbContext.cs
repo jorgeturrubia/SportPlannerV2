@@ -16,10 +16,20 @@ public class SportPlannerDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<SubscriptionUser> SubscriptionUsers { get; set; }
+    public DbSet<TeamCategory> TeamCategories { get; set; }
+    public DbSet<Gender> Genders { get; set; }
+    public DbSet<AgeGroup> AgeGroups { get; set; }
+    public DbSet<Team> Teams { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Apply all configurations from assembly
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SportPlannerDbContext).Assembly);
+
+        // Seed master data
+        MasterDataSeeder.SeedMasterData(modelBuilder);
 
         // Configure User entity
         modelBuilder.Entity<User>(entity =>

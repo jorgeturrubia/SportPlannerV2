@@ -2,6 +2,7 @@ using Moq;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Application.UseCases;
 using SportPlanner.Domain.Entities;
+using SportPlanner.Domain.Enum;
 using Xunit;
 
 namespace SportPlanner.Application.UnitTests.UseCases;
@@ -34,7 +35,7 @@ public class RemoveUserFromSubscriptionCommandTests
         var userToRemoveId = Guid.NewGuid();
 
         var subscription = new Subscription(ownerId, SubscriptionType.Team, Sport.Football);
-        var subscriptionUser = new SubscriptionUser(subscriptionId, userToRemoveId, UserRole.Athlete, Guid.NewGuid());
+        var subscriptionUser = new SubscriptionUser(subscriptionId, userToRemoveId, UserRole.Athlete, "user@example.com");
 
         _currentUserServiceMock.Setup(x => x.GetUserId()).Returns(ownerId);
         _currentUserServiceMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -133,7 +134,7 @@ public class RemoveUserFromSubscriptionCommandTests
         var userToRemoveId = Guid.NewGuid();
 
         var subscription = new Subscription(ownerId, SubscriptionType.Team, Sport.Football);
-        var subscriptionUser = new SubscriptionUser(subscriptionId, userToRemoveId, UserRole.Athlete, Guid.NewGuid());
+        var subscriptionUser = new SubscriptionUser(subscriptionId, userToRemoveId, UserRole.Athlete, "user@example.com");
         subscriptionUser.Remove("another@example.com"); // Already removed
 
         _currentUserServiceMock.Setup(x => x.GetUserId()).Returns(ownerId);

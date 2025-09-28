@@ -9,7 +9,7 @@ public class SubscriptionUserTests
 {
     private readonly Guid _subscriptionId = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
-    private readonly Guid _grantedBy = Guid.NewGuid();
+    private readonly string _grantedBy = "user@example.com";
 
     [Fact]
     public void CreateSubscriptionUser_WithValidParameters_ShouldSucceed()
@@ -69,7 +69,7 @@ public class SubscriptionUserTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new SubscriptionUser(_subscriptionId, _userId, UserRole.Athlete, Guid.Empty));
+            new SubscriptionUser(_subscriptionId, _userId, UserRole.Athlete, string.Empty));
 
         Assert.Contains("GrantedBy cannot be empty", exception.Message);
     }
@@ -103,7 +103,7 @@ public class SubscriptionUserTests
             UserRole.Athlete,
             _grantedBy);
 
-        var removedBy = Guid.NewGuid();
+        var removedBy = "remover@example.com";
 
         // Act
         subscriptionUser.Remove(removedBy);

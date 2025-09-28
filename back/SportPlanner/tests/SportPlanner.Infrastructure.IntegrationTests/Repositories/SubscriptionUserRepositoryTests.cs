@@ -27,10 +27,10 @@ public class SubscriptionUserRepositoryTests : IDisposable
     {
         // Arrange
         var subscriptionId = Guid.NewGuid();
-        var subscriptionUser1 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, Guid.NewGuid());
-        var subscriptionUser2 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Coach, Guid.NewGuid());
-        var subscriptionUser3 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, Guid.NewGuid());
-        subscriptionUser3.Remove(Guid.NewGuid()); // Soft delete - should not count
+        var subscriptionUser1 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, "user1@example.com");
+        var subscriptionUser2 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Coach, "user2@example.com");
+        var subscriptionUser3 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, "user3@example.com");
+        subscriptionUser3.Remove("remover@example.com"); // Soft delete - should not count
 
         await _context.SubscriptionUsers.AddRangeAsync(subscriptionUser1, subscriptionUser2, subscriptionUser3);
         await _context.SaveChangesAsync();
@@ -48,7 +48,7 @@ public class SubscriptionUserRepositoryTests : IDisposable
         // Arrange
         var subscriptionId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var subscriptionUser = new SubscriptionUser(subscriptionId, userId, UserRole.Athlete, Guid.NewGuid());
+        var subscriptionUser = new SubscriptionUser(subscriptionId, userId, UserRole.Athlete, "user@example.com");
 
         await _context.SubscriptionUsers.AddAsync(subscriptionUser);
         await _context.SaveChangesAsync();
@@ -66,8 +66,8 @@ public class SubscriptionUserRepositoryTests : IDisposable
         // Arrange
         var subscriptionId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var subscriptionUser = new SubscriptionUser(subscriptionId, userId, UserRole.Athlete, Guid.NewGuid());
-        subscriptionUser.Remove(Guid.NewGuid()); // Soft delete
+        var subscriptionUser = new SubscriptionUser(subscriptionId, userId, UserRole.Athlete, "user@example.com");
+        subscriptionUser.Remove("remover@example.com"); // Soft delete
 
         await _context.SubscriptionUsers.AddAsync(subscriptionUser);
         await _context.SaveChangesAsync();
@@ -85,7 +85,7 @@ public class SubscriptionUserRepositoryTests : IDisposable
         // Arrange
         var subscriptionId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var subscriptionUser = new SubscriptionUser(subscriptionId, userId, UserRole.Athlete, Guid.NewGuid());
+        var subscriptionUser = new SubscriptionUser(subscriptionId, userId, UserRole.Athlete, "user@example.com");
 
         // Act
         await _repository.AddAsync(subscriptionUser);
@@ -104,10 +104,10 @@ public class SubscriptionUserRepositoryTests : IDisposable
     {
         // Arrange
         var subscriptionId = Guid.NewGuid();
-        var subscriptionUser1 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, Guid.NewGuid());
-        var subscriptionUser2 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Coach, Guid.NewGuid());
-        var subscriptionUser3 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, Guid.NewGuid());
-        subscriptionUser3.Remove(Guid.NewGuid()); // Soft delete
+        var subscriptionUser1 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, "user1@example.com");
+        var subscriptionUser2 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Coach, "user2@example.com");
+        var subscriptionUser3 = new SubscriptionUser(subscriptionId, Guid.NewGuid(), UserRole.Athlete, "user3@example.com");
+        subscriptionUser3.Remove("remover@example.com"); // Soft delete
 
         await _context.SubscriptionUsers.AddRangeAsync(subscriptionUser1, subscriptionUser2, subscriptionUser3);
         await _context.SaveChangesAsync();
@@ -126,7 +126,7 @@ public class SubscriptionUserRepositoryTests : IDisposable
     public async Task UpdateAsync_ShouldUpdateSubscriptionUser()
     {
         // Arrange
-        var subscriptionUser = new SubscriptionUser(Guid.NewGuid(), Guid.NewGuid(), UserRole.Athlete, Guid.NewGuid());
+        var subscriptionUser = new SubscriptionUser(Guid.NewGuid(), Guid.NewGuid(), UserRole.Athlete, "user@example.com");
         await _context.SubscriptionUsers.AddAsync(subscriptionUser);
         await _context.SaveChangesAsync();
 

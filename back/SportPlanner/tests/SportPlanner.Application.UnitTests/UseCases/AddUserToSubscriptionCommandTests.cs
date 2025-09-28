@@ -59,7 +59,7 @@ public class AddUserToSubscriptionCommandTests
             su => su.SubscriptionId == subscriptionId &&
                   su.UserId == userIdToAdd &&
                   su.RoleInSubscription == UserRole.Athlete &&
-                  su.GrantedBy == ownerId), It.IsAny<CancellationToken>()), Times.Once);
+                  su.GrantedBy == "test@example.com"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

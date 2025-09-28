@@ -24,6 +24,7 @@ public class AddUserToSubscriptionCommandHandler : IRequestHandler<AddUserToSubs
     public async Task<Unit> Handle(AddUserToSubscriptionCommand request, CancellationToken cancellationToken)
     {
         var currentUserId = _currentUserService.GetUserId();
+        var currentUserEmail = _currentUserService.GetUserEmail();
 
         // Get subscription
         var subscription = await _subscriptionRepository.GetByIdAsync(request.SubscriptionId, cancellationToken);
@@ -61,7 +62,7 @@ public class AddUserToSubscriptionCommandHandler : IRequestHandler<AddUserToSubs
             request.SubscriptionId,
             request.Request.UserId,
             request.Request.RoleInSubscription,
-            currentUserId);
+            currentUserEmail);
 
         await _subscriptionUserRepository.AddAsync(subscriptionUser, cancellationToken);
 

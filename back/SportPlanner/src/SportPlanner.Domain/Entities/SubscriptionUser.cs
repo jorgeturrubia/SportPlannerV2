@@ -9,9 +9,9 @@ public class SubscriptionUser : Entity, IAuditable
     public Guid SubscriptionId { get; private set; }
     public Guid UserId { get; private set; }
     public UserRole RoleInSubscription { get; private set; }
-    public Guid GrantedBy { get; private set; }
+    public string GrantedBy { get; private set; }
     public DateTime GrantedAt { get; private set; }
-    public Guid? RemovedBy { get; private set; }
+    public string? RemovedBy { get; private set; }
     public DateTime? RemovedAt { get; private set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; }
@@ -25,7 +25,7 @@ public class SubscriptionUser : Entity, IAuditable
         Guid subscriptionId,
         Guid userId,
         UserRole roleInSubscription,
-        Guid grantedBy)
+        string grantedBy)
     {
         if (subscriptionId == Guid.Empty)
             throw new ArgumentException("SubscriptionId cannot be empty", nameof(subscriptionId));
@@ -33,7 +33,7 @@ public class SubscriptionUser : Entity, IAuditable
         if (userId == Guid.Empty)
             throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
-        if (grantedBy == Guid.Empty)
+        if (string.IsNullOrWhiteSpace(grantedBy))
             throw new ArgumentException("GrantedBy cannot be empty", nameof(grantedBy));
 
         SubscriptionId = subscriptionId;
@@ -51,12 +51,12 @@ public class SubscriptionUser : Entity, IAuditable
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void Remove(Guid removedBy)
+    public void Remove(string removedByEmail)
     {
-        if (removedBy == Guid.Empty)
-            throw new ArgumentException("RemovedBy cannot be empty", nameof(removedBy));
+        if (string.IsNullOrWhiteSpace(removedByEmail))
+            throw new ArgumentException("RemovedBy cannot be empty", nameof(removedByEmail));
 
-        RemovedBy = removedBy;
+        RemovedBy = removedByEmail;
         RemovedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
