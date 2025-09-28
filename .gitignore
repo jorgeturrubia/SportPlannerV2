@@ -1,0 +1,35 @@
+# Created by Gemini
+
+### .NET ###
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Rider
+.idea/
+
+# User-specific files
+*.csproj.user
+
+### Node / Angular ###
+# Dependencies
+/node_modules/
+
+# Build results
+/dist/
+/.angular/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# VS Code
+.vscode/
