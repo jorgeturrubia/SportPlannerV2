@@ -8,6 +8,9 @@
 *.userosscache
 *.sln.docstates
 
+# Special device files (Windows)
+nul
+
 # Build results
 [Bb]in/
 [Oo]bj/
