@@ -2,11 +2,10 @@ using MediatR;
 using SportPlanner.Application.DTOs;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Domain.Entities;
-using SportPlanner.Domain.ValueObjects;
 
 namespace SportPlanner.Application.UseCases;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, AuthResponse>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, AuthResponse?>
 {
     private readonly IUserRepository _userRepository;
     private readonly IAuthService _authService;
@@ -17,32 +16,34 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         _authService = authService;
     }
 
-    public async Task<AuthResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse?> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        // Check if email already exists
-        if (await _userRepository.EmailExistsAsync(request.Email, cancellationToken))
+        // Create user in Supabase Auth
+        var session = await _authService.SignUpAsync(request.Email, request.Password);
+
+        if (session?.User is null)
         {
-            throw new InvalidOperationException("User with this email already exists");
+            return null;
         }
 
-        // Create user
-        var email = Email.Create(request.Email);
-        var passwordHash = _authService.HashPassword(request.Password);
-        var user = new User(request.FirstName, request.LastName, email, passwordHash, UserRole.Admin);
+        // Create local user record for data tracking
+        var email = SportPlanner.Domain.ValueObjects.Email.Create(request.Email);
 
-        // Save user
+        // Store user data with Supabase user metadata
+        var user = new User(request.FirstName, request.LastName, email, "", UserRole.Admin);
+
+        // Save user to local database
         await _userRepository.AddAsync(user, cancellationToken);
 
-        // Generate JWT token
-        var token = _authService.GenerateJwtToken(user);
-
+        // Note: With Supabase email confirmation flow, the session might not have an access token yet
+        // The user needs to confirm email before they can sign in
         return new AuthResponse(
             user.Id,
             user.FirstName,
             user.LastName,
             user.Email.Value,
             user.Role.ToString(),
-            token
+            session.AccessToken // Will be null if email confirmation is required
         );
     }
 }

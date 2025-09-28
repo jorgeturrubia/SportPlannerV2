@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Quality Gate Validation - 00-development-gate.md
+node .clinerules/validate-quality-gate.js

@@ -3,8 +3,10 @@ using Moq;
 using SportPlanner.Application.DTOs;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Application.UseCases;
-using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.ValueObjects;
+using Supabase.Gotrue;
+using SBUser = Supabase.Gotrue.User;
+using DomainUser = SportPlanner.Domain.Entities.User;
 using Xunit;
 
 namespace SportPlanner.Application.UnitTests.UseCases;
@@ -19,24 +21,16 @@ public class RegisterUserCommandTests
         var mockUserRepository = new Mock<IUserRepository>();
         var mockAuthService = new Mock<IAuthService>();
 
-        mockUserRepository.Setup(x => x.EmailExistsAsync(command.Email, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-        mockUserRepository.Setup(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+        // Create a Supabase session object
+        var session = new Session();
+        session.User = new SBUser { Email = command.Email };
+        session.AccessToken = "supabase-access-token";
+
+        mockUserRepository.Setup(x => x.AddAsync(It.IsAny<DomainUser>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var expectedUser = new User("John", "Doe", Email.Create("john.doe@example.com"), "hashedpassword", UserRole.Admin);
-        var expectedToken = "jwt-token";
-        var expectedResponse = new AuthResponse(
-            expectedUser.Id,
-            expectedUser.FirstName,
-            expectedUser.LastName,
-            expectedUser.Email.Value,
-            expectedUser.Role.ToString(),
-            expectedToken
-        );
-
-        mockAuthService.Setup(x => x.HashPassword(command.Password)).Returns("hashedpassword");
-        mockAuthService.Setup(x => x.GenerateJwtToken(It.IsAny<User>())).Returns(expectedToken);
+        mockAuthService.Setup(x => x.SignUpAsync(command.Email, command.Password))
+            .ReturnsAsync(session);
 
         var handler = new RegisterUserCommandHandler(mockUserRepository.Object, mockAuthService.Object);
 
@@ -49,38 +43,34 @@ public class RegisterUserCommandTests
         result.FirstName.Should().Be(command.FirstName);
         result.LastName.Should().Be(command.LastName);
         result.Email.Should().Be(command.Email);
-        result.Role.Should().Be(UserRole.Admin.ToString());
-        result.Token.Should().Be(expectedToken);
+        result.Role.Should().Be(SportPlanner.Domain.Entities.UserRole.Admin.ToString());
+        result.AccessToken.Should().Be(session.AccessToken);
 
-        mockUserRepository.Verify(x => x.EmailExistsAsync(command.Email, It.IsAny<CancellationToken>()), Times.Once);
-        mockUserRepository.Verify(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        mockAuthService.Verify(x => x.HashPassword(command.Password), Times.Once);
-        mockAuthService.Verify(x => x.GenerateJwtToken(It.IsAny<User>()), Times.Once);
+        mockUserRepository.Verify(x => x.AddAsync(It.IsAny<DomainUser>(), It.IsAny<CancellationToken>()), Times.Once);
+        mockAuthService.Verify(x => x.SignUpAsync(command.Email, command.Password), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_EmailAlreadyExists_ShouldThrowInvalidOperationException()
+    public async Task Handle_SupabaseSignUpFails_ShouldReturnNull()
     {
         // Arrange
-        var command = new RegisterUserCommand("John", "Doe", "existing@example.com", "Password123");
+        var command = new RegisterUserCommand("John", "Doe", "john.doe@example.com", "Password123");
         var mockUserRepository = new Mock<IUserRepository>();
         var mockAuthService = new Mock<IAuthService>();
 
-        mockUserRepository.Setup(x => x.EmailExistsAsync(command.Email, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        // Sign-up fails (existing user or invalid data)
+        mockAuthService.Setup(x => x.SignUpAsync(command.Email, command.Password))
+            .ReturnsAsync((Session)null);
 
         var handler = new RegisterUserCommandHandler(mockUserRepository.Object, mockAuthService.Object);
 
         // Act
-        var action = () => handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await action.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("User with this email already exists");
+        result.Should().BeNull();
 
-        mockUserRepository.Verify(x => x.EmailExistsAsync(command.Email, It.IsAny<CancellationToken>()), Times.Once);
-        mockUserRepository.Verify(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
-        mockAuthService.Verify(x => x.HashPassword(It.IsAny<string>()), Times.Never);
-        mockAuthService.Verify(x => x.GenerateJwtToken(It.IsAny<User>()), Times.Never);
+        mockAuthService.Verify(x => x.SignUpAsync(command.Email, command.Password), Times.Once);
+        mockUserRepository.Verify(x => x.AddAsync(It.IsAny<DomainUser>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

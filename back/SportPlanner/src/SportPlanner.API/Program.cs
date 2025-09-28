@@ -13,20 +13,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// JWT Authentication
-builder.Services.AddAuthentication("Bearer")
+// Supabase JWT Authentication (Authority + Audience approach)
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.Authority = $"{builder.Configuration["Supabase:Url"]}/auth/v1";
+        options.Audience = "authenticated";
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
+            ClockSkew = TimeSpan.FromMinutes(1)
         };
     });
 

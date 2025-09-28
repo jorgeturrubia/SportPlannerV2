@@ -6,5 +6,5 @@ public record AuthResponse(
     string LastName,
     string Email,
     string Role,
-    string Token
+    string AccessToken
 );

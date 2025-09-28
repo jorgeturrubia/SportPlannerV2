@@ -2,16 +2,17 @@
 
 ## JWT Configuration
 - **Issuer (iss)**: Verificar que corresponda a tu proyecto Supabase
-- **Audience (aud)**: Validar audiencia correcta configurada
+- **Audience (aud)**: Validar audiencia correcta configurada (**siempre "authenticated" por defecto**)
 - **Claims**: Usar claims personalizados para roles y permisos
 - **Expiration**: Configurar tiempo de vida apropiado (15-60 min para access tokens)
+- **Algoritmos**: Supabase usa **RS256 (RSA signatures)**, NO symmetric keys
 
 ```typescript
-// Configuración JWT
+// Configuración JWT - PRINCIPALMENTE PARA FRONTENDS
 const jwtConfig = {
   issuer: 'https://your-project.supabase.co/auth/v1',
   audience: 'authenticated',
-  algorithms: ['HS256'],
+  algorithms: ['RS256'], // Corregido: Supabase usa RSA, no HMAC
   clockTolerance: 10
 };
 ```
@@ -114,6 +115,86 @@ export class AuthGuard implements CanActivate {
   }
 }
 ```
+
+## .NET Backend Integration
+
+**IMPORTANTE**: Para backends .NET/.NET Core, NO implementar JWKS validation manual. El framework IdentityModel maneja automáticamente la validación contra JWKS usando la configuración Authority.
+
+### Configuración Automática (✅ RECOMENDADO)
+```csharp
+// Program.cs o Startup.cs - SportPlanner Backend
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = $"{supabaseUrl}/auth/v1"; // Automáticamente descarga JWKS
+        options.Audience = "authenticated";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true, // Usa keys descargadas automáticamente
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+    });
+```
+
+### ¿Qué hace automáticamente?
+- ✅ Descarga JWKS desde `/.well-known/jwks.json`
+- ✅ Cachea keys con duración apropiada
+- ✅ Maneja rotación automática de keys
+- ✅ No requiere código custom para JWT validation
+- ✅ Industry standard OAuth2/OIDC compliance
+
+### Configuración Manual (❌ SOLO SI NECESARIA)
+Solo usar si tienes restricciones donde Authority no funciona:
+
+```csharp
+// IJwtValidationService MANUAL (última opción)
+public interface IJwtValidationService
+{
+    Task<bool> ValidateToken(string token);
+}
+
+public class SupabaseJwtValidationService : IJwtValidationService
+{
+    public async Task<bool> ValidateToken(string token)
+    {
+        // Implementación manual usando ConfigurationManager de IdentityModel
+        // Rara vez necesaria en .NET moderno
+    }
+}
+```
+
+### Supabase Auth en Diferentes Contextos
+
+#### Edge Functions (Vercel/Netlify/etc)
+- ✅ Manual JWT validation necesario
+- ✅ Usar supabase/auth-helpers o custom fetch
+- ✅ Configurar verify_jwt = true en function config
+
+#### Backends .NET/Node/Python
+- ✅ Preferir Authority + Audience (automático)
+- ✅ Manual solo para casos edge donde Authority falla
+- ✅ Service Role Key para server operations
+
+#### Frontend SPA
+- ✅ Siempre usar SDK de Supabase
+- ✅ Nunca tokens en localStorage
+- ✅ HttpOnly cookies o memory storage
+
+## Claims Structure
+Supabase JWT siempre incluye:
+- `sub`: User ID (UUID)
+- `email`: User email
+- `aud`: Audience ("authenticated")
+- `iss`: Issuer ("https://project.supabase.co/auth/v1")
+- `exp`, `iat`: Expiration y issued timestamps
+
+Para roles y datos custom usar:
+- **PostgreSQL Access Token Hooks** (backend)
+- **Realtime JWT outside RLS** (client)
+- **Metadata fields** (auth.users table)
 
 ## Supabase Integration
 ```typescript

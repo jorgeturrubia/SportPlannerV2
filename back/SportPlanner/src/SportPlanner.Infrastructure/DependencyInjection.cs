@@ -20,7 +20,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
 
         // External Services
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthService, SupabaseAuthService>();
 
         return services;
     }

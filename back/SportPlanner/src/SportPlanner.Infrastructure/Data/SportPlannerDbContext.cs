@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Domain.Entities;
+using SportPlanner.Domain.Interfaces;
 using SportPlanner.Domain.ValueObjects;
 
 namespace SportPlanner.Infrastructure.Data;
@@ -26,7 +27,7 @@ public class SportPlannerDbContext : DbContext
             entity.Property(u => u.PasswordHash).IsRequired();
             entity.Property(u => u.Role).IsRequired();
             entity.Property(u => u.CreatedAt).IsRequired();
-            entity.Property(u => u.CreatedBy).HasMaxLength(255);
+            entity.Property(u => u.CreatedBy).HasMaxLength(255).IsRequired();
             entity.Property(u => u.UpdatedBy).HasMaxLength(255);
 
             // Configure Email value object
@@ -40,5 +41,27 @@ public class SportPlannerDbContext : DbContext
             // Create unique index on email
             entity.HasIndex(u => u.Email).IsUnique();
         });
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries<IAuditable>();
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.CreatedBy = "System"; // Placeholder
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedBy = "System"; // Placeholder
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
