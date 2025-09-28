@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Domain.Entities;
+using SportPlanner.Domain.Enum;
 using SportPlanner.Domain.Interfaces;
 using SportPlanner.Domain.ValueObjects;
 
@@ -13,6 +14,8 @@ public class SportPlannerDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<SubscriptionUser> SubscriptionUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +43,51 @@ public class SportPlannerDbContext : DbContext
 
             // Create unique index on email
             entity.HasIndex(u => u.Email).IsUnique();
+        });
+
+        // Configure Subscription entity
+        modelBuilder.Entity<Subscription>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.OwnerId).IsRequired();
+            entity.Property(s => s.Type).IsRequired();
+            entity.Property(s => s.Sport).IsRequired();
+            entity.Property(s => s.MaxUsers).IsRequired();
+            entity.Property(s => s.MaxTeams).IsRequired();
+            entity.Property(s => s.IsActive).IsRequired();
+            entity.Property(s => s.CreatedAt).IsRequired();
+            entity.Property(s => s.CreatedBy).HasMaxLength(255).IsRequired();
+            entity.Property(s => s.UpdatedBy).HasMaxLength(255);
+
+            // Unique constraint: one subscription per owner
+            entity.HasIndex(s => s.OwnerId).IsUnique();
+        });
+
+        // Configure SubscriptionUser entity
+        modelBuilder.Entity<SubscriptionUser>(entity =>
+        {
+            entity.HasKey(su => su.Id);
+            entity.Property(su => su.SubscriptionId).IsRequired();
+            entity.Property(su => su.UserId).IsRequired();
+            entity.Property(su => su.RoleInSubscription).IsRequired();
+            entity.Property(su => su.GrantedBy).IsRequired();
+            entity.Property(su => su.GrantedAt).IsRequired();
+            entity.Property(su => su.CreatedAt).IsRequired();
+            entity.Property(su => su.CreatedBy).HasMaxLength(255).IsRequired();
+            entity.Property(su => su.UpdatedBy).HasMaxLength(255);
+
+            // Foreign keys
+            entity.HasOne<Subscription>()
+                .WithMany() // No navigation property for now
+                .HasForeignKey(su => su.SubscriptionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Unique constraint: one subscription user record per user per subscription
+            entity.HasIndex(su => new { su.SubscriptionId, su.UserId }).IsUnique();
+
+            // Index for active users
+            entity.HasIndex(su => new { su.SubscriptionId, su.RemovedAt })
+                .HasFilter("removed_at IS NULL");
         });
     }
 

@@ -5,6 +5,7 @@ using SportPlanner.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHttpContextAccessor(); // For CurrentUserService
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 

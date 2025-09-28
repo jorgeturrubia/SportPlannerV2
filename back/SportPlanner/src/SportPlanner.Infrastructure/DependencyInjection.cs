@@ -14,13 +14,17 @@ public static class DependencyInjection
     {
         // Database
         services.AddDbContext<SportPlannerDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("SportPlanner.Infrastructure")));
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ISubscriptionUserRepository, SubscriptionUserRepository>();
 
         // External Services
         services.AddScoped<IAuthService, SupabaseAuthService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }
