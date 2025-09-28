@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
         var query = new LoginUserQuery(request.Email, request.Password);
         var result = await _mediator.Send(query);
 
-        if (result == null)
+        if (result is null)
         {
             return Unauthorized("Invalid email or password");
         }
