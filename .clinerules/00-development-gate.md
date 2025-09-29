@@ -14,6 +14,7 @@ Esta regla es el "policeman" que garantiza que revisas todas las otras reglas an
 - [ ] **Leí `.clinerules\01-clean-code.md`** - Principios SOLID, DRY, responsabilidades claras
 - [ ] **Leí `.clinerules\14-dotnet-backend.md`** - Clean Architecture, Vertical Slice, Entity Framework
 - [ ] **Leí `.clinerules\10-angular-structure.md`** - Standalone components, feature-based structure
+- [ ] **Leí `.clinerules\16-design-patterns-csharp.md`** - Guía práctica de patrones de diseño C#
 - [ ] **Leí `.clinerules\03-adr.md`** - Cuando crear ADRs y template
 
 ### **2. Security & Authentication Review**
