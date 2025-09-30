@@ -26,6 +26,8 @@ public class SportPlannerDbContext : DbContext
     public DbSet<Objective> Objectives { get; set; }
     public DbSet<ObjectiveCategory> ObjectiveCategories { get; set; }
     public DbSet<ObjectiveSubcategory> ObjectiveSubcategories { get; set; }
+    public DbSet<TrainingPlan> TrainingPlans { get; set; }
+    public DbSet<PlanObjective> PlanObjectives { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IObjectiveRepository, ObjectiveRepository>();
         services.AddScoped<IObjectiveCategoryRepository, ObjectiveCategoryRepository>();
         services.AddScoped<IObjectiveSubcategoryRepository, ObjectiveSubcategoryRepository>();
+        services.AddScoped<ITrainingPlanRepository, TrainingPlanRepository>();
 
         // External Services
         services.AddScoped<IAuthService, SupabaseAuthService>();
