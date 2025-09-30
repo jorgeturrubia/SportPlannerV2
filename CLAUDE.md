@@ -40,23 +40,31 @@ src/
 
 ## Common Development Commands
 
+**Note**: All paths are relative to `src/` directory. Commands assume Windows environment.
+
 ### Frontend (Angular)
 
 ```bash
 # Navigate to frontend
 cd front/SportPlanner
 
-# Start development server
+# Start development server (runs on http://localhost:4200)
 npm start
 
 # Build for production
 npm run build
 
-# Run tests
+# Run all tests
 npm test
+
+# Run tests with coverage
+npm test -- --no-watch --code-coverage
 
 # Watch mode build
 npm run watch
+
+# Generate component (from front/SportPlanner directory)
+ng generate component features/training/components/component-name
 ```
 
 ### Backend (.NET)
@@ -68,8 +76,11 @@ cd back/SportPlanner
 # Build solution
 dotnet build
 
-# Run API
+# Run API (starts on configured port, typically https://localhost:5001)
 dotnet run --project src/SportPlanner.API
+
+# Watch mode for API (auto-reload on file changes)
+dotnet watch run --project src/SportPlanner.API
 
 # Run all tests
 dotnet test
@@ -77,11 +88,20 @@ dotnet test
 # Run specific test project
 dotnet test tests/SportPlanner.Domain.UnitTests
 
+# Run single test class
+dotnet test --filter "FullyQualifiedName~ClassName"
+
+# Run tests with coverage
+dotnet test --collect:"XPlat Code Coverage"
+
 # Add migration
 dotnet ef migrations add MigrationName --project src/SportPlanner.Infrastructure --startup-project src/SportPlanner.API
 
 # Update database
 dotnet ef database update --project src/SportPlanner.Infrastructure --startup-project src/SportPlanner.API
+
+# Remove last migration
+dotnet ef migrations remove --project src/SportPlanner.Infrastructure --startup-project src/SportPlanner.API
 ```
 
 ## Architecture Patterns
@@ -115,18 +135,21 @@ dotnet ef database update --project src/SportPlanner.Infrastructure --startup-pr
 
 ### Supabase JWT Integration
 
-- **Frontend**: Use Supabase client SDK for authentication
-- **Backend**: Configure JWT Bearer authentication with Authority pointing to Supabase
-- **JWKS**: Automatic key validation against Supabase JWKS endpoint
-- **Claims**: Role-based authorization using JWT claims
+- **Frontend**: Use Supabase client SDK (`@supabase/supabase-js`) for authentication
+- **Backend**: JWT Bearer authentication configured with Authority pointing to Supabase project URL
+- **JWKS**: Automatic key validation against `https://<project-id>.supabase.co/.well-known/jwks.json`
+- **Claims**: Role-based authorization using JWT claims (issuer, audience must match Supabase)
+- **Configuration**: Supabase URL and anon key required in environment variables
 
 ### Security Standards
 
 - Never store tokens in localStorage/sessionStorage
 - Use HttpOnly cookies or memory storage for tokens
-- All API endpoints require JWT validation
+- All API endpoints require JWT validation (except health/status endpoints)
 - Implement rate limiting and CORS properly
 - Follow OWASP Top 10 guidelines
+- Validate input at API boundary
+- Use parameterized queries (Entity Framework handles this)
 
 ## Testing Strategy
 
@@ -186,20 +209,17 @@ dotnet ef database update --project src/SportPlanner.Infrastructure --startup-pr
 
 ## Development Workflow
 
-1. **Quality Gate**: Complete `.clinerules/00-development-gate.md` checklist
-2. **ADR Creation**: Document architectural decisions in `docs/adr/`
-3. **TDD Approach**: Write tests before implementation
-4. **Code Review**: Ensure compliance with all .clinerules
-5. **Testing**: Run full test suite before commits
-6. **Migration**: Update database schema if needed
+1. **Quality Gate**: Complete `.clinerules/00-development-gate.md` checklist before any code changes
+2. **Context Review**: Read all relevant `.clinerules/` files (see checklist in 00-development-gate.md)
+3. **ADR Creation**: Document architectural decisions in `docs/adr/` for significant changes
+4. **TDD Approach**: Write tests before implementation
+5. **Implementation**: Follow patterns and conventions from .clinerules
+6. **Testing**: Run full test suite before commits
+7. **Migration**: Update database schema if needed (add migration + update database)
+8. **Code Review**: Ensure compliance with all .clinerules
 
-## Tools & Background Processes
+## Important Environment Notes
 
-For long-running processes (dev servers, watchers), always use background execution with `&` suffix to avoid blocking the development workflow.
-
-Examples:
-```bash
-npm start &           # Correct
-dotnet watch run &    # Correct
-npm start            # Incorrect - blocks terminal
-```
+- **Working Directory**: Commands assume you start from `src/` directory
+- **Platform**: Windows environment (paths use backslashes, use `ls` not `dir`)
+- **Long-Running Processes**: See `.clinerules/06-tool-usage.md` for guidance on dev servers and watchers

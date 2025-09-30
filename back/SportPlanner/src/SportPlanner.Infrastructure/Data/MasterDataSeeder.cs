@@ -1,16 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Domain.Entities;
+using SportPlanner.Domain.Entities.Planning;
 using SportPlanner.Domain.Enum;
 
 namespace SportPlanner.Infrastructure.Data;
 
 public static class MasterDataSeeder
 {
+    private static readonly DateTime SeedDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
     public static void SeedMasterData(ModelBuilder modelBuilder)
     {
         SeedGenders(modelBuilder);
         SeedTeamCategories(modelBuilder);
         SeedAgeGroups(modelBuilder);
+        SeedObjectiveCategories(modelBuilder);
+        SeedObjectiveSubcategories(modelBuilder);
     }
 
     private static void SeedGenders(ModelBuilder modelBuilder)
@@ -24,7 +29,7 @@ public static class MasterDataSeeder
                 Code = "M",
                 Description = "Equipos masculinos",
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -34,7 +39,7 @@ public static class MasterDataSeeder
                 Code = "F",
                 Description = "Equipos femeninos",
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -44,7 +49,7 @@ public static class MasterDataSeeder
                 Code = "X",
                 Description = "Equipos de género mixto",
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         };
@@ -68,7 +73,7 @@ public static class MasterDataSeeder
                 SortOrder = 1,
                 Sport = Sport.Football,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -80,7 +85,7 @@ public static class MasterDataSeeder
                 SortOrder = 2,
                 Sport = Sport.Football,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -92,7 +97,7 @@ public static class MasterDataSeeder
                 SortOrder = 3,
                 Sport = Sport.Football,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -104,7 +109,7 @@ public static class MasterDataSeeder
                 SortOrder = 4,
                 Sport = Sport.Football,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         });
@@ -121,7 +126,7 @@ public static class MasterDataSeeder
                 SortOrder = 1,
                 Sport = Sport.Basketball,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -133,7 +138,7 @@ public static class MasterDataSeeder
                 SortOrder = 2,
                 Sport = Sport.Basketball,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -145,7 +150,7 @@ public static class MasterDataSeeder
                 SortOrder = 3,
                 Sport = Sport.Basketball,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         });
@@ -162,7 +167,7 @@ public static class MasterDataSeeder
                 SortOrder = 1,
                 Sport = Sport.Handball,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -174,7 +179,7 @@ public static class MasterDataSeeder
                 SortOrder = 2,
                 Sport = Sport.Handball,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -186,7 +191,7 @@ public static class MasterDataSeeder
                 SortOrder = 3,
                 Sport = Sport.Handball,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         });
@@ -211,7 +216,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 1,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -224,7 +229,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 2,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -237,7 +242,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 3,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -250,7 +255,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 4,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -263,7 +268,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 5,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -276,7 +281,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 6,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -289,7 +294,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 7,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -302,7 +307,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Football,
                 SortOrder = 8,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         });
@@ -320,7 +325,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Basketball,
                 SortOrder = 1,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -333,7 +338,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Basketball,
                 SortOrder = 2,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -346,7 +351,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Basketball,
                 SortOrder = 3,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -359,7 +364,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Basketball,
                 SortOrder = 4,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -372,7 +377,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Basketball,
                 SortOrder = 5,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         });
@@ -390,7 +395,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Handball,
                 SortOrder = 1,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -403,7 +408,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Handball,
                 SortOrder = 2,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -416,7 +421,7 @@ public static class MasterDataSeeder
                 Sport = Sport.Handball,
                 SortOrder = 3,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             },
             new
@@ -429,11 +434,328 @@ public static class MasterDataSeeder
                 Sport = Sport.Handball,
                 SortOrder = 4,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = SeedDate,
                 CreatedBy = "System"
             }
         });
 
         modelBuilder.Entity<AgeGroup>().HasData(ageGroups);
+    }
+
+    private static void SeedObjectiveCategories(ModelBuilder modelBuilder)
+    {
+        var categories = new List<object>();
+
+        // Football Categories
+        categories.AddRange(new[]
+        {
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444444401"),
+                Name = "Técnica Individual",
+                Sport = Sport.Football,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444444402"),
+                Name = "Técnica Colectiva",
+                Sport = Sport.Football,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444444403"),
+                Name = "Táctica",
+                Sport = Sport.Football,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444444404"),
+                Name = "Física",
+                Sport = Sport.Football,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            }
+        });
+
+        // Basketball Categories
+        categories.AddRange(new[]
+        {
+            new
+            {
+                Id = Guid.Parse("55555501-5555-5555-5555-555555555555"),
+                Name = "Técnica Individual",
+                Sport = Sport.Basketball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55555502-5555-5555-5555-555555555555"),
+                Name = "Técnica Colectiva",
+                Sport = Sport.Basketball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55555503-5555-5555-5555-555555555555"),
+                Name = "Táctica",
+                Sport = Sport.Basketball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55555504-5555-5555-5555-555555555555"),
+                Name = "Física",
+                Sport = Sport.Basketball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            }
+        });
+
+        // Handball Categories
+        categories.AddRange(new[]
+        {
+            new
+            {
+                Id = Guid.Parse("66666601-6666-6666-6666-666666666666"),
+                Name = "Técnica Individual",
+                Sport = Sport.Handball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66666602-6666-6666-6666-666666666666"),
+                Name = "Técnica Colectiva",
+                Sport = Sport.Handball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66666603-6666-6666-6666-666666666666"),
+                Name = "Táctica",
+                Sport = Sport.Handball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66666604-6666-6666-6666-666666666666"),
+                Name = "Física",
+                Sport = Sport.Handball,
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            }
+        });
+
+        modelBuilder.Entity<ObjectiveCategory>().HasData(categories);
+    }
+
+    private static void SeedObjectiveSubcategories(ModelBuilder modelBuilder)
+    {
+        var subcategories = new List<object>();
+
+        // Football Subcategories - For Técnica Individual, Técnica Colectiva, Táctica
+        subcategories.AddRange(new[]
+        {
+            // Técnica Individual
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440101"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444401"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440102"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444401"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            // Técnica Colectiva
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440201"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444402"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440202"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444402"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            // Táctica
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440301"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444403"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440302"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444403"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("44444444-4444-4444-4444-444444440303"),
+                ObjectiveCategoryId = Guid.Parse("44444444-4444-4444-4444-444444444403"),
+                Name = "Transición",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            }
+        });
+
+        // Basketball Subcategories
+        subcategories.AddRange(new[]
+        {
+            // Técnica Individual
+            new
+            {
+                Id = Guid.Parse("55550101-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555501-5555-5555-5555-555555555555"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55550102-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555501-5555-5555-5555-555555555555"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            // Técnica Colectiva
+            new
+            {
+                Id = Guid.Parse("55550201-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555502-5555-5555-5555-555555555555"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55550202-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555502-5555-5555-5555-555555555555"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            // Táctica
+            new
+            {
+                Id = Guid.Parse("55550301-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555503-5555-5555-5555-555555555555"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55550302-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555503-5555-5555-5555-555555555555"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("55550303-5555-5555-5555-555555555555"),
+                ObjectiveCategoryId = Guid.Parse("55555503-5555-5555-5555-555555555555"),
+                Name = "Transición",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            }
+        });
+
+        // Handball Subcategories
+        subcategories.AddRange(new[]
+        {
+            // Técnica Individual
+            new
+            {
+                Id = Guid.Parse("66660101-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666601-6666-6666-6666-666666666666"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66660102-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666601-6666-6666-6666-666666666666"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            // Técnica Colectiva
+            new
+            {
+                Id = Guid.Parse("66660201-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666602-6666-6666-6666-666666666666"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66660202-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666602-6666-6666-6666-666666666666"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            // Táctica
+            new
+            {
+                Id = Guid.Parse("66660301-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666603-6666-6666-6666-666666666666"),
+                Name = "Ataque",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66660302-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666603-6666-6666-6666-666666666666"),
+                Name = "Defensa",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            },
+            new
+            {
+                Id = Guid.Parse("66660303-6666-6666-6666-666666666666"),
+                ObjectiveCategoryId = Guid.Parse("66666603-6666-6666-6666-666666666666"),
+                Name = "Transición",
+                CreatedAt = SeedDate,
+                CreatedBy = "System"
+            }
+        });
+
+        modelBuilder.Entity<ObjectiveSubcategory>().HasData(subcategories);
     }
 }

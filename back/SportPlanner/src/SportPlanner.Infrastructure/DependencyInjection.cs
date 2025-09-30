@@ -5,6 +5,7 @@ using SportPlanner.Application.Interfaces;
 using SportPlanner.Infrastructure.Data;
 using SportPlanner.Infrastructure.ExternalServices;
 using SportPlanner.Infrastructure.Repositories;
+using SportPlanner.Infrastructure.Repositories.Planning;
 
 namespace SportPlanner.Infrastructure;
 
@@ -25,6 +26,11 @@ public static class DependencyInjection
         services.AddScoped<IGenderRepository, GenderRepository>();
         services.AddScoped<IAgeGroupRepository, AgeGroupRepository>();
         services.AddScoped<ITeamRepository, TeamRepository>();
+
+        // Planning Repositories
+        services.AddScoped<IObjectiveRepository, ObjectiveRepository>();
+        services.AddScoped<IObjectiveCategoryRepository, ObjectiveCategoryRepository>();
+        services.AddScoped<IObjectiveSubcategoryRepository, ObjectiveSubcategoryRepository>();
 
         // External Services
         services.AddScoped<IAuthService, SupabaseAuthService>();

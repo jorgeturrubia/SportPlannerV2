@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Domain.Entities;
+using SportPlanner.Domain.Entities.Planning;
 using SportPlanner.Domain.Enum;
 using SportPlanner.Domain.Interfaces;
 using SportPlanner.Domain.ValueObjects;
@@ -20,6 +21,11 @@ public class SportPlannerDbContext : DbContext
     public DbSet<Gender> Genders { get; set; }
     public DbSet<AgeGroup> AgeGroups { get; set; }
     public DbSet<Team> Teams { get; set; }
+
+    // Planning entities
+    public DbSet<Objective> Objectives { get; set; }
+    public DbSet<ObjectiveCategory> ObjectiveCategories { get; set; }
+    public DbSet<ObjectiveSubcategory> ObjectiveSubcategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

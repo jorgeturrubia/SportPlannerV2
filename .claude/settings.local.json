@@ -5,7 +5,9 @@
       "Bash(dotnet clean:*)",
       "Bash(dotnet test:*)",
       "Bash(dotnet ef migrations:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(dir:*)",
+      "Bash(if not exist \"back\\SportPlanner\\src\\SportPlanner.Domain\\Entities\\Planning\" mkdir \"back\\SportPlanner\\src\\SportPlanner.Domain\\Entities\\Planning\")"
     ],
     "deny": [],
     "ask": []
