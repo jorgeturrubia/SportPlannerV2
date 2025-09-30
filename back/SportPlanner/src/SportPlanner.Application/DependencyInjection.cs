@@ -1,6 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using SportPlanner.Domain.Services;
 using System.Reflection;
 
 namespace SportPlanner.Application;
@@ -14,6 +15,9 @@ public static class DependencyInjection
 
         // FluentValidation
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Domain Services
+        services.AddScoped<WorkoutAutoGeneratorService>();
 
         return services;
     }

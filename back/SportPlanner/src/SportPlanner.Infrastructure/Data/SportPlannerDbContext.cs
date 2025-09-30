@@ -22,12 +22,29 @@ public class SportPlannerDbContext : DbContext
     public DbSet<AgeGroup> AgeGroups { get; set; }
     public DbSet<Team> Teams { get; set; }
 
-    // Planning entities
+    // Planning entities - Objectives
     public DbSet<Objective> Objectives { get; set; }
     public DbSet<ObjectiveCategory> ObjectiveCategories { get; set; }
     public DbSet<ObjectiveSubcategory> ObjectiveSubcategories { get; set; }
+
+    // Planning entities - Training Plans
     public DbSet<TrainingPlan> TrainingPlans { get; set; }
     public DbSet<PlanObjective> PlanObjectives { get; set; }
+
+    // Planning entities - Exercises
+    public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<ExerciseCategory> ExerciseCategories { get; set; }
+    public DbSet<ExerciseType> ExerciseTypes { get; set; }
+    public DbSet<ExerciseObjective> ExerciseObjectives { get; set; }
+
+    // Planning entities - Workouts
+    public DbSet<Workout> Workouts { get; set; }
+    public DbSet<WorkoutExercise> WorkoutExercises { get; set; }
+    public DbSet<WorkoutObjective> WorkoutObjectives { get; set; }
+
+    // Planning entities - Marketplace
+    public DbSet<MarketplaceItem> MarketplaceItems { get; set; }
+    public DbSet<MarketplaceRating> MarketplaceRatings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

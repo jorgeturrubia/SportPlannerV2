@@ -27,11 +27,24 @@ public static class DependencyInjection
         services.AddScoped<IAgeGroupRepository, AgeGroupRepository>();
         services.AddScoped<ITeamRepository, TeamRepository>();
 
-        // Planning Repositories
+        // Planning Repositories - Objectives
         services.AddScoped<IObjectiveRepository, ObjectiveRepository>();
         services.AddScoped<IObjectiveCategoryRepository, ObjectiveCategoryRepository>();
         services.AddScoped<IObjectiveSubcategoryRepository, ObjectiveSubcategoryRepository>();
+
+        // Planning Repositories - Plans
         services.AddScoped<ITrainingPlanRepository, TrainingPlanRepository>();
+
+        // Planning Repositories - Exercises
+        services.AddScoped<IExerciseRepository, ExerciseRepository>();
+        services.AddScoped<IExerciseCategoryRepository, ExerciseCategoryRepository>();
+        services.AddScoped<IExerciseTypeRepository, ExerciseTypeRepository>();
+
+        // Planning Repositories - Workouts
+        services.AddScoped<IWorkoutRepository, WorkoutRepository>();
+
+        // Planning Repositories - Marketplace
+        services.AddScoped<IMarketplaceItemRepository, MarketplaceItemRepository>();
 
         // External Services
         services.AddScoped<IAuthService, SupabaseAuthService>();
