@@ -16,7 +16,8 @@
       "Bash(if exist bin rmdir /s /q bin)",
       "Bash(dotnet build-server:*)",
       "Bash(find:*)",
-      "Bash(dotnet restore:*)"
+      "Bash(dotnet restore:*)",
+      "Bash(npx ng generate component:*)"
     ],
     "deny": [],
     "ask": []
