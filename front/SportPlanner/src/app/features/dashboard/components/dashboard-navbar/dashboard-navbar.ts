@@ -1,4 +1,5 @@
-import { Component, signal, computed, output } from '@angular/core';
+import { Component, signal, computed, output, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-navbar',
@@ -6,6 +7,9 @@ import { Component, signal, computed, output } from '@angular/core';
   templateUrl: './dashboard-navbar.html'
 })
 export class DashboardNavbar {
+  // Services
+  private router = inject(Router);
+
   // Outputs
   toggleSidebar = output<void>();
 
@@ -27,6 +31,10 @@ export class DashboardNavbar {
   });
 
   // Methods
+  goToHome() {
+    this.router.navigate(['/dashboard']);
+  }
+
   toggleTheme() {
     this.isDarkMode.update(val => !val);
     // TODO: Implement theme switching logic
