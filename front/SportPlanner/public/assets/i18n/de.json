@@ -1,0 +1,76 @@
+{
+  "common": {
+    "welcome": "Willkommen",
+    "search": "Suchen...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "close": "Schließen",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "nav": {
+    "home": "Startseite",
+    "teams": "Teams",
+    "calendar": "Kalender",
+    "messages": "Nachrichten",
+    "settings": "Einstellungen",
+    "help": "Hilfe",
+    "logout": "Abmelden",
+    "profile": "Mein Profil",
+    "configuration": "Konfiguration"
+  },
+  "dashboard": {
+    "welcome": "Willkommen zurück, {{name}}! 👋",
+    "welcomeMessage": "Hier ist eine Zusammenfassung Ihrer letzten Aktivitäten",
+    "stats": {
+      "activeAthletes": "Aktive Athleten",
+      "activePlans": "Aktive Pläne",
+      "completedSessions": "Abgeschlossene Sitzungen",
+      "completionRate": "Abschlussrate"
+    },
+    "recentActivity": {
+      "title": "Letzte Aktivität",
+      "viewAll": "Alle anzeigen",
+      "completedTraining": "{{name}} hat \"{{training}}\" abgeschlossen",
+      "newAthlete": "Neuer Athlet: {{name}} ist Ihrem Team beigetreten",
+      "createdPlan": "Sie haben einen neuen Plan erstellt: \"{{plan}}\"",
+      "sentMessage": "{{name}} hat Ihnen eine Nachricht gesendet",
+      "hoursAgo": "Vor {{hours}} Stunden",
+      "daysAgo": "Vor {{days}} Tagen"
+    },
+    "upcomingSessions": {
+      "title": "Kommende Sitzungen",
+      "today": "HEUTE",
+      "tomorrow": "MORGEN",
+      "viewFullCalendar": "Vollständigen Kalender anzeigen"
+    }
+  },
+  "themes": {
+    "light": "Heller Modus",
+    "dark": "Dunkler Modus",
+    "system": "System"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "user": {
+    "myProfile": "Mein Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "role": {
+      "coach": "Trainer",
+      "athlete": "Athlet",
+      "admin": "Administrator"
+    }
+  }
+}

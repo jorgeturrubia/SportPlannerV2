@@ -1,0 +1,76 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "search": "Buscar...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "nav": {
+    "home": "Inicio",
+    "teams": "Equipos",
+    "calendar": "Calendario",
+    "messages": "Mensajes",
+    "settings": "Ajustes",
+    "help": "Ayuda",
+    "logout": "Cerrar Sesión",
+    "profile": "Mi Perfil",
+    "configuration": "Configuración"
+  },
+  "dashboard": {
+    "welcome": "¡Bienvenido de nuevo, {{name}}! 👋",
+    "welcomeMessage": "Aquí tienes un resumen de tu actividad reciente",
+    "stats": {
+      "activeAthletes": "Atletas Activos",
+      "activePlans": "Planes Activos",
+      "completedSessions": "Sesiones Completadas",
+      "completionRate": "Tasa de Cumplimiento"
+    },
+    "recentActivity": {
+      "title": "Actividad Reciente",
+      "viewAll": "Ver todo",
+      "completedTraining": "{{name}} completó \"{{training}}\"",
+      "newAthlete": "Nuevo atleta: {{name}} se unió a tu equipo",
+      "createdPlan": "Creaste un nuevo plan: \"{{plan}}\"",
+      "sentMessage": "{{name}} te envió un mensaje",
+      "hoursAgo": "Hace {{hours}} horas",
+      "daysAgo": "Hace {{days}} días"
+    },
+    "upcomingSessions": {
+      "title": "Próximas Sesiones",
+      "today": "HOY",
+      "tomorrow": "MAÑANA",
+      "viewFullCalendar": "Ver calendario completo"
+    }
+  },
+  "themes": {
+    "light": "Modo Claro",
+    "dark": "Modo Oscuro",
+    "system": "Sistema"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "user": {
+    "myProfile": "Mi Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión",
+    "role": {
+      "coach": "Entrenador",
+      "athlete": "Atleta",
+      "admin": "Administrador"
+    }
+  }
+}

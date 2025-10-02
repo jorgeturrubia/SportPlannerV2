@@ -1,0 +1,76 @@
+{
+  "common": {
+    "welcome": "Bienvenue",
+    "search": "Rechercher...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "nav": {
+    "home": "Accueil",
+    "teams": "Équipes",
+    "calendar": "Calendrier",
+    "messages": "Messages",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "logout": "Se Déconnecter",
+    "profile": "Mon Profil",
+    "configuration": "Configuration"
+  },
+  "dashboard": {
+    "welcome": "Bon retour, {{name}}! 👋",
+    "welcomeMessage": "Voici un résumé de votre activité récente",
+    "stats": {
+      "activeAthletes": "Athlètes Actifs",
+      "activePlans": "Plans Actifs",
+      "completedSessions": "Séances Terminées",
+      "completionRate": "Taux de Réussite"
+    },
+    "recentActivity": {
+      "title": "Activité Récente",
+      "viewAll": "Voir tout",
+      "completedTraining": "{{name}} a terminé \"{{training}}\"",
+      "newAthlete": "Nouvel athlète: {{name}} a rejoint votre équipe",
+      "createdPlan": "Vous avez créé un nouveau plan: \"{{plan}}\"",
+      "sentMessage": "{{name}} vous a envoyé un message",
+      "hoursAgo": "Il y a {{hours}} heures",
+      "daysAgo": "Il y a {{days}} jours"
+    },
+    "upcomingSessions": {
+      "title": "Prochaines Séances",
+      "today": "AUJOURD'HUI",
+      "tomorrow": "DEMAIN",
+      "viewFullCalendar": "Voir le calendrier complet"
+    }
+  },
+  "themes": {
+    "light": "Mode Clair",
+    "dark": "Mode Sombre",
+    "system": "Système"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "user": {
+    "myProfile": "Mon Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "role": {
+      "coach": "Entraîneur",
+      "athlete": "Athlète",
+      "admin": "Administrateur"
+    }
+  }
+}

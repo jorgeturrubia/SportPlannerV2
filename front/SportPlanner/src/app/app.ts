@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Navbar } from './features/shared/components/navbar/navbar';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
+import { LanguageService } from './services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,9 @@ import { filter } from 'rxjs';
 export class App {
   protected readonly title = signal('SportPlanner');
   showNavbar = signal(true);
+  
+  // Inyectar LanguageService para inicializarlo
+  private languageService = inject(LanguageService);
 
   constructor(private router: Router) {
     this.router.events

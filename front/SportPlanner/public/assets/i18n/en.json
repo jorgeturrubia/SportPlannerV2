@@ -1,0 +1,76 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "search": "Search...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "home": "Home",
+    "teams": "Teams",
+    "calendar": "Calendar",
+    "messages": "Messages",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Sign Out",
+    "profile": "My Profile",
+    "configuration": "Configuration"
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}! 👋",
+    "welcomeMessage": "Here's a summary of your recent activity",
+    "stats": {
+      "activeAthletes": "Active Athletes",
+      "activePlans": "Active Plans",
+      "completedSessions": "Completed Sessions",
+      "completionRate": "Completion Rate"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "viewAll": "View all",
+      "completedTraining": "{{name}} completed \"{{training}}\"",
+      "newAthlete": "New athlete: {{name}} joined your team",
+      "createdPlan": "You created a new plan: \"{{plan}}\"",
+      "sentMessage": "{{name}} sent you a message",
+      "hoursAgo": "{{hours}} hours ago",
+      "daysAgo": "{{days}} days ago"
+    },
+    "upcomingSessions": {
+      "title": "Upcoming Sessions",
+      "today": "TODAY",
+      "tomorrow": "TOMORROW",
+      "viewFullCalendar": "View full calendar"
+    }
+  },
+  "themes": {
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "system": "System"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "user": {
+    "myProfile": "My Profile",
+    "settings": "Settings",
+    "logout": "Log Out",
+    "role": {
+      "coach": "Coach",
+      "athlete": "Athlete",
+      "admin": "Administrator"
+    }
+  }
+}

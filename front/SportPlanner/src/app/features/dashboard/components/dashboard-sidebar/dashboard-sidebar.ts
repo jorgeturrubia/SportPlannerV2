@@ -1,9 +1,10 @@
 import { Component, input, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dashboard-sidebar',
-  imports: [],
+  imports: [TranslateModule],
   templateUrl: './dashboard-sidebar.html'
 })
 export class DashboardSidebar {
