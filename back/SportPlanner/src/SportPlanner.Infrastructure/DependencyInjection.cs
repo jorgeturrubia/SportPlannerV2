@@ -16,7 +16,8 @@ public static class DependencyInjection
         // Database
         services.AddDbContext<SportPlannerDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("SportPlanner.Infrastructure")));
+                b => b.MigrationsAssembly("SportPlanner.Infrastructure"))
+            .UseSnakeCaseNamingConvention());
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();

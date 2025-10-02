@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace SportPlanner.Infrastructure.Data;
 
@@ -10,15 +12,23 @@ public class SportPlannerDbContextFactory : IDesignTimeDbContextFactory<SportPla
 {
     public SportPlannerDbContext CreateDbContext(string[] args)
     {
-        // Use a dummy connection string for design-time (migrations)
-        // The actual connection string will be used at runtime from appsettings
-        var connectionString = Environment.GetEnvironmentVariable("DefaultConnection")
+        // Build configuration to read from appsettings.json
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../SportPlanner.API"))
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
+            .Build();
+
+        // Get connection string from configuration or environment variable
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("DefaultConnection")
             ?? "Host=localhost;Database=sportplanner;Username=postgres;Password=postgres";
 
         // Build DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<SportPlannerDbContext>();
         optionsBuilder.UseNpgsql(connectionString,
-            b => b.MigrationsAssembly("SportPlanner.Infrastructure"));
+            b => b.MigrationsAssembly("SportPlanner.Infrastructure"))
+            .UseSnakeCaseNamingConvention();
 
         return new SportPlannerDbContext(optionsBuilder.Options);
     }

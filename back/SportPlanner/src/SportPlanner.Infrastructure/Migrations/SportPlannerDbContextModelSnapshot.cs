@@ -26,59 +26,76 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("code");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<int>("MaxAge")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("max_age");
 
                     b.Property<int>("MinAge")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("min_age");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_age_groups");
 
                     b.HasIndex("Code")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_age_groups_code");
 
-                    b.HasIndex("IsActive");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_age_groups_is_active");
 
-                    b.HasIndex("Sport", "SortOrder");
+                    b.HasIndex("Sport", "SortOrder")
+                        .HasDatabaseName("ix_age_groups_sport_sort_order");
 
-                    b.HasIndex("Sport", "MinAge", "MaxAge");
+                    b.HasIndex("Sport", "MinAge", "MaxAge")
+                        .HasDatabaseName("ix_age_groups_sport_min_age_max_age");
 
                     b.ToTable("age_groups", (string)null);
 
@@ -310,46 +327,58 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("code");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_genders");
 
                     b.HasIndex("Code")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_genders_code");
 
-                    b.HasIndex("IsActive");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_genders_is_active");
 
                     b.ToTable("genders", (string)null);
 
@@ -390,78 +419,99 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<int?>("DefaultDurationSeconds")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("default_duration_seconds");
 
                     b.Property<string>("DefaultIntensity")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("default_intensity");
 
                     b.Property<int?>("DefaultReps")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("default_reps");
 
                     b.Property<int?>("DefaultSets")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("default_sets");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("image_url");
 
                     b.Property<string>("Instructions")
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("instructions");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<Guid?>("MarketplaceUserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("marketplace_user_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Ownership")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ownership");
 
                     b.Property<Guid?>("SubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("subscription_id");
 
                     b.Property<Guid>("TypeId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("type_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
                     b.Property<string>("VideoUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("video_url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_exercises");
 
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("IX_Exercises_CategoryId");
@@ -483,41 +533,51 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_exercise_categories");
 
                     b.HasIndex("Sport", "IsActive")
                         .HasDatabaseName("IX_ExerciseCategories_Sport_IsActive");
@@ -528,12 +588,15 @@ namespace SportPlanner.Infrastructure.Migrations
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.ExerciseObjective", b =>
                 {
                     b.Property<Guid>("ExerciseId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("exercise_id");
 
                     b.Property<Guid>("ObjectiveId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_id");
 
-                    b.HasKey("ExerciseId", "ObjectiveId");
+                    b.HasKey("ExerciseId", "ObjectiveId")
+                        .HasName("pk_exercise_objectives");
 
                     b.HasIndex("ObjectiveId")
                         .HasDatabaseName("IX_ExerciseObjectives_ObjectiveId");
@@ -545,46 +608,58 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<bool>("RequiresDuration")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_duration");
 
                     b.Property<bool>("RequiresReps")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_reps");
 
                     b.Property<bool>("RequiresSets")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_sets");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_exercise_types");
 
                     b.HasIndex("IsActive")
                         .HasDatabaseName("IX_ExerciseTypes_IsActive");
@@ -596,71 +671,90 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<decimal>("AverageRating")
                         .HasPrecision(3, 2)
-                        .HasColumnType("numeric(3,2)");
+                        .HasColumnType("numeric(3,2)")
+                        .HasColumnName("average_rating");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsSystemOfficial")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_system_official");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
                     b.Property<DateTime>("PublishedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
 
                     b.Property<Guid?>("PublishedBySubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("published_by_subscription_id");
 
                     b.Property<Guid?>("SourceEntityId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("source_entity_id");
 
                     b.Property<string>("SourceOwnership")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("source_ownership");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<int>("TotalDownloads")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("total_downloads");
 
                     b.Property<int>("TotalRatings")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("total_ratings");
 
                     b.Property<int>("TotalViews")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("total_views");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("type");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_marketplace_items");
 
                     b.HasIndex("PublishedBySubscriptionId")
                         .HasDatabaseName("IX_MarketplaceItems_PublishedBySubscriptionId");
@@ -687,34 +781,43 @@ namespace SportPlanner.Infrastructure.Migrations
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.MarketplaceRating", b =>
                 {
                     b.Property<Guid>("MarketplaceItemId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("marketplace_item_id");
 
                     b.Property<Guid>("RatedBySubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("rated_by_subscription_id");
 
                     b.Property<string>("Comment")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("comment");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<int>("Stars")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("stars");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("MarketplaceItemId", "RatedBySubscriptionId");
+                    b.HasKey("MarketplaceItemId", "RatedBySubscriptionId")
+                        .HasName("pk_marketplace_ratings");
 
                     b.HasIndex("RatedBySubscriptionId")
                         .HasDatabaseName("IX_MarketplaceRatings_RatedBySubscriptionId");
@@ -726,57 +829,72 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
                     b.Property<Guid>("ObjectiveCategoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_category_id");
 
                     b.Property<Guid?>("ObjectiveSubcategoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_subcategory_id");
 
                     b.Property<string>("Ownership")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ownership");
 
                     b.Property<Guid?>("SourceMarketplaceItemId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("source_marketplace_item_id");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<Guid?>("SubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("subscription_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_objectives");
 
                     b.HasIndex("ObjectiveCategoryId")
                         .HasDatabaseName("IX_Objectives_ObjectiveCategoryId");
@@ -801,33 +919,41 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_objective_categories");
 
                     b.HasIndex("Sport")
                         .HasDatabaseName("IX_ObjectiveCategories_Sport");
@@ -941,32 +1067,40 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<Guid>("ObjectiveCategoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_category_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_objective_subcategories");
 
                     b.HasIndex("ObjectiveCategoryId")
                         .HasDatabaseName("IX_ObjectiveSubcategories_ObjectiveCategoryId");
@@ -1151,18 +1285,23 @@ namespace SportPlanner.Infrastructure.Migrations
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.PlanObjective", b =>
                 {
                     b.Property<Guid>("TrainingPlanId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("training_plan_id");
 
                     b.Property<Guid>("ObjectiveId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_id");
 
                     b.Property<int>("Priority")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("priority");
 
                     b.Property<int>("TargetSessions")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("target_sessions");
 
-                    b.HasKey("TrainingPlanId", "ObjectiveId");
+                    b.HasKey("TrainingPlanId", "ObjectiveId")
+                        .HasName("pk_plan_objectives");
 
                     b.HasIndex("ObjectiveId")
                         .HasDatabaseName("IX_PlanObjectives_ObjectiveId");
@@ -1180,44 +1319,56 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_date");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<Guid?>("MarketplaceItemId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("marketplace_item_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_date");
 
                     b.Property<Guid>("SubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("subscription_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_training_plans");
 
                     b.HasIndex("MarketplaceItemId")
                         .HasDatabaseName("IX_TrainingPlans_MarketplaceItemId");
@@ -1235,61 +1386,77 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
 
                     b.Property<string>("Difficulty")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("difficulty");
 
                     b.Property<int?>("EstimatedDurationMinutes")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("estimated_duration_minutes");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<Guid?>("MarketplaceUserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("marketplace_user_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("notes");
 
                     b.Property<Guid?>("ObjectiveId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_id");
 
                     b.Property<string>("Ownership")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ownership");
 
                     b.Property<Guid?>("SubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("subscription_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_workouts");
 
                     b.HasIndex("ObjectiveId")
                         .HasDatabaseName("IX_Workouts_ObjectiveId");
@@ -1307,35 +1474,45 @@ namespace SportPlanner.Infrastructure.Migrations
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.WorkoutExercise", b =>
                 {
                     b.Property<Guid>("WorkoutId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("workout_id");
 
                     b.Property<Guid>("ExerciseId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("exercise_id");
 
                     b.Property<int?>("DurationSeconds")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("duration_seconds");
 
                     b.Property<string>("Intensity")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("intensity");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("notes");
 
                     b.Property<int>("Order")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("order");
 
                     b.Property<int?>("Reps")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("reps");
 
                     b.Property<int?>("RestSeconds")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("rest_seconds");
 
                     b.Property<int?>("Sets")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sets");
 
-                    b.HasKey("WorkoutId", "ExerciseId");
+                    b.HasKey("WorkoutId", "ExerciseId")
+                        .HasName("pk_workout_exercises");
 
                     b.HasIndex("ExerciseId")
                         .HasDatabaseName("IX_WorkoutExercises_ExerciseId");
@@ -1349,12 +1526,15 @@ namespace SportPlanner.Infrastructure.Migrations
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.WorkoutObjective", b =>
                 {
                     b.Property<Guid>("WorkoutId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("workout_id");
 
                     b.Property<Guid>("ObjectiveId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_id");
 
-                    b.HasKey("WorkoutId", "ObjectiveId");
+                    b.HasKey("WorkoutId", "ObjectiveId")
+                        .HasName("pk_workout_objectives");
 
                     b.HasIndex("ObjectiveId")
                         .HasDatabaseName("IX_WorkoutObjectives_ObjectiveId");
@@ -1366,188 +1546,240 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<int>("MaxTeams")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("max_teams");
 
                     b.Property<int>("MaxUsers")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("max_users");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
 
                     b.Property<int>("Sport")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sport");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_subscriptions");
 
                     b.HasIndex("OwnerId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_subscriptions_owner_id");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.SubscriptionUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<DateTime>("GrantedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("granted_at");
 
                     b.Property<string>("GrantedBy")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("granted_by");
 
                     b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("removed_at");
 
                     b.Property<string>("RemovedBy")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("removed_by");
 
                     b.Property<int>("RoleInSubscription")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("role_in_subscription");
 
                     b.Property<Guid>("SubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("subscription_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_subscription_users");
 
                     b.HasIndex("SubscriptionId", "RemovedAt")
+                        .HasDatabaseName("ix_subscription_users_subscription_id_removed_at")
                         .HasFilter("removed_at IS NULL");
 
                     b.HasIndex("SubscriptionId", "UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_subscription_users_subscription_id_user_id");
 
-                    b.ToTable("SubscriptionUsers");
+                    b.ToTable("subscription_users", (string)null);
                 });
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.Team", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("AgeGroupId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("age_group_id");
 
                     b.Property<bool>("AllowMixedGender")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("allow_mixed_gender");
 
                     b.Property<string>("CoachName")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("coach_name");
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("color");
 
                     b.Property<string>("ContactEmail")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("contact_email");
 
                     b.Property<string>("ContactPhone")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("contact_phone");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<int>("CurrentPlayersCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("current_players_count");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
 
                     b.Property<Guid>("GenderId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("gender_id");
 
                     b.Property<string>("HomeVenue")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("home_venue");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<DateTime?>("LastMatchDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_match_date");
 
                     b.Property<int>("MaxPlayers")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("max_players");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<DateTime?>("Season")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("season");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<Guid>("SubscriptionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("subscription_id");
 
                     b.Property<Guid>("TeamCategoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("team_category_id");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_teams");
 
                     b.HasIndex("AgeGroupId")
                         .HasDatabaseName("IX_Teams_AgeGroupId");
@@ -1578,55 +1810,70 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("code");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
                     b.Property<string>("Sport")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sport");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_team_categories");
 
                     b.HasIndex("Code")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_team_categories_code");
 
-                    b.HasIndex("IsActive");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_team_categories_is_active");
 
-                    b.HasIndex("Sport", "SortOrder");
+                    b.HasIndex("Sport", "SortOrder")
+                        .HasDatabaseName("ix_team_categories_sport_sort_order");
 
                     b.ToTable("team_categories", (string)null);
 
@@ -1757,51 +2004,63 @@ namespace SportPlanner.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("last_name");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
 
                     b.Property<int>("Role")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("role");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.Exercise", b =>
@@ -1810,18 +2069,21 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_exercises_exercise_categories_category_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_exercises_subscriptions_subscription_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Planning.ExerciseType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_exercises_exercise_types_type_id");
 
                     b.Navigation("Category");
 
@@ -1834,13 +2096,15 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_exercise_objectives_exercises_exercise_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Planning.Objective", "Objective")
                         .WithMany()
                         .HasForeignKey("ObjectiveId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_exercise_objectives_objectives_objective_id");
 
                     b.Navigation("Exercise");
 
@@ -1852,7 +2116,8 @@ namespace SportPlanner.Infrastructure.Migrations
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("PublishedBySubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_marketplace_items_subscriptions_published_by_subscription_id");
                 });
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.MarketplaceRating", b =>
@@ -1861,13 +2126,15 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany("Ratings")
                         .HasForeignKey("MarketplaceItemId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_marketplace_ratings_marketplace_items_marketplace_item_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("RatedBySubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_marketplace_ratings_subscriptions_rated_by_subscription_id");
 
                     b.Navigation("MarketplaceItem");
                 });
@@ -1878,43 +2145,52 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ObjectiveCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_objectives_objective_categories_objective_category_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Planning.ObjectiveSubcategory", "Subcategory")
                         .WithMany()
                         .HasForeignKey("ObjectiveSubcategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_objectives_objective_subcategories_objective_subcategory_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_objectives_subscriptions_subscription_id");
 
                     b.OwnsMany("SportPlanner.Domain.Entities.Planning.ObjectiveTechnique", "Techniques", b1 =>
                         {
                             b1.Property<Guid>("ObjectiveId")
-                                .HasColumnType("uuid");
+                                .HasColumnType("uuid")
+                                .HasColumnName("objective_id");
 
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
 
                             NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
 
                             b1.Property<string>("Description")
                                 .IsRequired()
                                 .HasMaxLength(500)
-                                .HasColumnType("character varying(500)");
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("description");
 
                             b1.Property<int>("Order")
-                                .HasColumnType("integer");
+                                .HasColumnType("integer")
+                                .HasColumnName("order");
 
-                            b1.HasKey("ObjectiveId", "Id");
+                            b1.HasKey("ObjectiveId", "Id")
+                                .HasName("pk_objective_techniques");
 
                             b1.ToTable("objective_techniques", (string)null);
 
                             b1.WithOwner()
-                                .HasForeignKey("ObjectiveId");
+                                .HasForeignKey("ObjectiveId")
+                                .HasConstraintName("fk_objective_techniques_objectives_objective_id");
                         });
 
                     b.Navigation("Category");
@@ -1930,7 +2206,8 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ObjectiveCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_objective_subcategories_objective_categories_objective_cate");
 
                     b.Navigation("Category");
                 });
@@ -1941,13 +2218,15 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ObjectiveId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_plan_objectives_objectives_objective_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Planning.TrainingPlan", "TrainingPlan")
                         .WithMany("Objectives")
                         .HasForeignKey("TrainingPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_plan_objectives_training_plans_training_plan_id");
 
                     b.Navigation("Objective");
 
@@ -1960,12 +2239,14 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_training_plans_subscriptions_subscription_id");
 
                     b.OwnsOne("SportPlanner.Domain.ValueObjects.TrainingSchedule", "Schedule", b1 =>
                         {
                             b1.Property<Guid>("TrainingPlanId")
-                                .HasColumnType("uuid");
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
 
                             b1.Property<string>("HoursPerDay")
                                 .IsRequired()
@@ -1986,7 +2267,8 @@ namespace SportPlanner.Infrastructure.Migrations
                             b1.ToTable("training_plans");
 
                             b1.WithOwner()
-                                .HasForeignKey("TrainingPlanId");
+                                .HasForeignKey("TrainingPlanId")
+                                .HasConstraintName("fk_training_plans_training_plans_id");
                         });
 
                     b.Navigation("Schedule")
@@ -1998,12 +2280,14 @@ namespace SportPlanner.Infrastructure.Migrations
                     b.HasOne("SportPlanner.Domain.Entities.Planning.Objective", "Objective")
                         .WithMany()
                         .HasForeignKey("ObjectiveId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_workouts_objectives_objective_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_workouts_subscriptions_subscription_id");
 
                     b.Navigation("Objective");
                 });
@@ -2014,13 +2298,15 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_exercises_exercises_exercise_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Planning.Workout", "Workout")
                         .WithMany("Exercises")
                         .HasForeignKey("WorkoutId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_exercises_workouts_workout_id");
 
                     b.Navigation("Exercise");
 
@@ -2033,13 +2319,15 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ObjectiveId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_objectives_objectives_objective_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Planning.Workout", "Workout")
                         .WithMany()
                         .HasForeignKey("WorkoutId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_workout_objectives_workouts_workout_id");
 
                     b.Navigation("Objective");
 
@@ -2052,7 +2340,8 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_subscription_users_subscriptions_subscription_id");
                 });
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.Team", b =>
@@ -2061,25 +2350,29 @@ namespace SportPlanner.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("AgeGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_teams_age_groups_age_group_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Gender", "Gender")
                         .WithMany()
                         .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_teams_genders_gender_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_teams_subscriptions_subscription_id");
 
                     b.HasOne("SportPlanner.Domain.Entities.TeamCategory", "Category")
                         .WithMany()
                         .HasForeignKey("TeamCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_teams_team_categories_team_category_id");
 
                     b.Navigation("AgeGroup");
 
