@@ -17,6 +17,11 @@ export const routes: Routes = [
         path: '',
         loadComponent: () => import('./features/dashboard/pages/dashboard-home/dashboard-home').then(m => m.DashboardHome)
       }
+      ,
+      {
+        path: 'teams',
+        loadComponent: () => import('./features/dashboard/pages/teams-page/teams-page').then(m => m.TeamsPage)
+      }
     ]
   }
 ];
