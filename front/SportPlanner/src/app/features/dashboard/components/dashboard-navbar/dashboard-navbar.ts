@@ -1,5 +1,6 @@
 import { Component, signal, computed, output, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-dashboard-navbar',
@@ -9,12 +10,12 @@ import { Router } from '@angular/router';
 export class DashboardNavbar {
   // Services
   private router = inject(Router);
+  protected themeService = inject(ThemeService);
 
   // Outputs
   toggleSidebar = output<void>();
 
   // Signals
-  isDarkMode = signal(false);
   userMenuOpen = signal(false);
   userName = signal('Coach Pro');
   userRole = signal('Entrenador');
@@ -36,8 +37,7 @@ export class DashboardNavbar {
   }
 
   toggleTheme() {
-    this.isDarkMode.update(val => !val);
-    // TODO: Implement theme switching logic
+    this.themeService.toggleTheme();
   }
 
   toggleUserMenu() {
