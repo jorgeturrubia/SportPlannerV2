@@ -12,4 +12,7 @@ public interface IAuthService
     Task<Supabase.Gotrue.Session> SignUpAsync(string email, string password);
     Task<Supabase.Gotrue.Session> SignInAsync(string email, string password);
     Task SignOutAsync();
+    
+    // Exchange a refresh token for a new session (access + refresh)
+    Task<SportPlanner.Application.DTOs.Auth.RefreshResult?> RefreshSessionAsync(string refreshToken);
 }

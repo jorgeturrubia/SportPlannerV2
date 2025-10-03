@@ -18,32 +18,85 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
 
     public async Task<AuthResponse?> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        // Create user in Supabase Auth
-        var session = await _authService.SignUpAsync(request.Email, request.Password);
-
-        if (session?.User is null)
+        Supabase.Gotrue.Session? session = null;
+        
+        try
         {
-            return null;
+            // Step 1: Create user in Supabase Auth first (this validates email, password strength, etc.)
+            session = await _authService.SignUpAsync(request.Email, request.Password);
+
+            if (session?.User is null)
+            {
+                throw new InvalidOperationException("Failed to create user in Supabase Auth");
+            }
+
+            // Step 2: Extract Supabase user info
+            var supabaseUserId = session.User.Id ?? throw new InvalidOperationException("Supabase user ID is null");
+            var email = SportPlanner.Domain.ValueObjects.Email.Create(request.Email);
+
+            // Step 3: Check if user already exists in local database (by email)
+            var existingUser = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+            
+            if (existingUser is not null)
+            {
+                // User already exists locally, just sync Supabase ID and return
+                if (string.IsNullOrEmpty(existingUser.SupabaseUserId))
+                {
+                    existingUser.SyncSupabaseUserId(supabaseUserId);
+                    await _userRepository.UpdateAsync(existingUser, cancellationToken);
+                }
+
+                return new AuthResponse(
+                    existingUser.Id,
+                    existingUser.FirstName,
+                    existingUser.LastName,
+                    existingUser.Email.Value,
+                    existingUser.Role.ToString(),
+                    session.AccessToken ?? string.Empty,
+                    session.RefreshToken
+                );
+            }
+
+            // Step 4: Create new user in local database with Supabase sync
+            var user = new User(
+                request.FirstName,
+                request.LastName,
+                email,
+                UserRole.Admin, // Default role for new users
+                supabaseUserId  // Link to Supabase Auth user
+            );
+
+            // Step 5: Persist user to local database
+            await _userRepository.AddAsync(user, cancellationToken);
+
+            // Step 6: Return successful auth response
+            // Note: AccessToken might be null if email confirmation is required in Supabase
+            return new AuthResponse(
+                user.Id,
+                user.FirstName,
+                user.LastName,
+                user.Email.Value,
+                user.Role.ToString(),
+                session.AccessToken ?? string.Empty, // Empty string if confirmation required
+                session.RefreshToken
+            );
         }
+        catch (Exception ex)
+        {
+            // If local database save fails but Supabase user was created, log for manual cleanup
+            if (session?.User is not null)
+            {
+                // TODO: Implement cleanup job or admin notification
+                // For now, the user exists in Supabase but not in local DB
+                // They can login later and we'll sync in LoginUserQueryHandler
+                throw new InvalidOperationException(
+                    $"Registration failed: User created in Supabase but local database sync failed. {ex.Message}",
+                    ex
+                );
+            }
 
-        // Create local user record for data tracking
-        var email = SportPlanner.Domain.ValueObjects.Email.Create(request.Email);
-
-        // Store user data with Supabase user metadata
-        var user = new User(request.FirstName, request.LastName, email, "", UserRole.Admin);
-
-        // Save user to local database
-        await _userRepository.AddAsync(user, cancellationToken);
-
-        // Note: With Supabase email confirmation flow, the session might not have an access token yet
-        // The user needs to confirm email before they can sign in
-        return new AuthResponse(
-            user.Id,
-            user.FirstName,
-            user.LastName,
-            user.Email.Value,
-            user.Role.ToString(),
-            session.AccessToken // Will be null if email confirmation is required
-        );
+            // Propagate Supabase registration error with details
+            throw new InvalidOperationException($"Registration failed: {ex.Message}", ex);
+        }
     }
 }

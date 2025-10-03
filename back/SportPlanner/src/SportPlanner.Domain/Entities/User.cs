@@ -8,7 +8,7 @@ public class User : Entity, IAuditable
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public Email Email { get; private set; }
-    public string PasswordHash { get; private set; }
+    public string? SupabaseUserId { get; private set; } // ID del usuario en Supabase Auth
     public UserRole Role { get; private set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; }
@@ -17,7 +17,8 @@ public class User : Entity, IAuditable
 
     private User() { } // EF Constructor
 
-    public User(string firstName, string lastName, Email email, string passwordHash, UserRole role)
+    // Constructor para usuarios autenticados con Supabase (el password lo gestiona Supabase)
+    public User(string firstName, string lastName, Email email, UserRole role, string? supabaseUserId = null)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new ArgumentException("First name cannot be empty", nameof(firstName));
@@ -28,13 +29,10 @@ public class User : Entity, IAuditable
         if (email is null)
             throw new ArgumentException("Email cannot be null", nameof(email));
 
-        if (string.IsNullOrWhiteSpace(passwordHash))
-            throw new ArgumentException("Password hash cannot be empty", nameof(passwordHash));
-
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        PasswordHash = passwordHash;
+        SupabaseUserId = supabaseUserId;
         Role = role;
         CreatedAt = DateTime.UtcNow;
     }
@@ -52,12 +50,18 @@ public class User : Entity, IAuditable
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void ChangePassword(string newPasswordHash)
+    public void UpdateRole(UserRole newRole)
     {
-        if (string.IsNullOrWhiteSpace(newPasswordHash))
-            throw new ArgumentException("Password hash cannot be empty", nameof(newPasswordHash));
+        Role = newRole;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
-        PasswordHash = newPasswordHash;
+    public void SyncSupabaseUserId(string supabaseUserId)
+    {
+        if (string.IsNullOrWhiteSpace(supabaseUserId))
+            throw new ArgumentException("Supabase User ID cannot be empty", nameof(supabaseUserId));
+
+        SupabaseUserId = supabaseUserId;
         UpdatedAt = DateTime.UtcNow;
     }
 }

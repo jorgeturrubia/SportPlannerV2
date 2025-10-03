@@ -18,4 +18,24 @@ export class DashboardSidebar {
   goToHome() {
     this.router.navigate(['/dashboard']);
   }
+
+  goToTeams() {
+    this.router.navigate(['/dashboard/teams']);
+  }
+
+  goToCalendar() {
+    this.router.navigate(['/dashboard/calendar']);
+  }
+
+  goToMessages() {
+    this.router.navigate(['/dashboard/messages']);
+  }
+
+  goToSettings() {
+    this.router.navigate(['/dashboard/settings']);
+  }
+
+  goToHelp() {
+    this.router.navigate(['/dashboard/help']);
+  }
 }

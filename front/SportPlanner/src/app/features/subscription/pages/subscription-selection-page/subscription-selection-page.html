@@ -1,0 +1,140 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        Elige tu Plan de Suscripción
+      </h1>
+      <p class="text-xl text-gray-600 dark:text-gray-400">
+        Selecciona el plan que mejor se adapte a tus necesidades
+      </p>
+    </div>
+
+    <!-- Sport Selector -->
+    <div class="max-w-md mx-auto mb-12">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Selecciona tu deporte
+      </label>
+      <select
+        [(ngModel)]="selectedSport"
+        [disabled]="isCreating()"
+        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+               bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+               focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
+               disabled:opacity-50 disabled:cursor-not-allowed">
+        @for (sport of sports; track sport) {
+          <option [value]="sport">{{ getSportLabel(sport) }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Error Message -->
+    @if (error()) {
+      <div class="max-w-4xl mx-auto mb-8 p-4 bg-red-50 dark:bg-red-900/20 
+                  border border-red-200 dark:border-red-800 rounded-lg">
+        <p class="text-red-700 dark:text-red-400 text-center">
+          {{ error() }}
+        </p>
+      </div>
+    }
+
+    <!-- Plans Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (plan of plans; track plan.type) {
+        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg 
+                    hover:shadow-2xl transition-all duration-300 
+                    border-2"
+             [class.border-blue-500]="plan.recommended"
+             [class.border-gray-200]="!plan.recommended"
+             [class.dark:border-blue-400]="plan.recommended"
+             [class.dark:border-gray-700]="!plan.recommended">
+          
+          <!-- Recommended Badge -->
+          @if (plan.recommended) {
+            <div class="absolute top-0 right-0 -mt-4 -mr-4">
+              <span class="inline-flex items-center px-4 py-1 rounded-full text-sm font-semibold
+                           bg-blue-500 text-white shadow-lg">
+                Recomendado
+              </span>
+            </div>
+          }
+
+          <div class="p-6">
+            <!-- Plan Name -->
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              {{ plan.name }}
+            </h3>
+
+            <!-- Limits -->
+            <div class="mb-6 space-y-2">
+              <div class="flex items-center text-gray-600 dark:text-gray-400">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span>{{ plan.maxUsers }} usuario(s)</span>
+              </div>
+              <div class="flex items-center text-gray-600 dark:text-gray-400">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>{{ plan.maxTeams }} equipo(s)</span>
+              </div>
+            </div>
+
+            <!-- Features -->
+            <ul class="mb-8 space-y-3">
+              @for (feature of plan.features; track feature) {
+                <li class="flex items-start">
+                  <svg class="w-5 h-5 mr-2 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" 
+                       fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" 
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" 
+                          clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-600 dark:text-gray-400">{{ feature }}</span>
+                </li>
+              }
+            </ul>
+
+            <!-- Select Button -->
+            <button
+              (click)="selectPlan(plan)"
+              [disabled]="isCreating()"
+              class="w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+              [class.bg-blue-600]="plan.recommended"
+              [class.hover:bg-blue-700]="plan.recommended && !isCreating()"
+              [class.text-white]="plan.recommended"
+              [class.bg-gray-200]="!plan.recommended"
+              [class.hover:bg-gray-300]="!plan.recommended && !isCreating()"
+              [class.dark:bg-gray-700]="!plan.recommended"
+              [class.dark:hover:bg-gray-600]="!plan.recommended && !isCreating()"
+              [class.text-gray-900]="!plan.recommended"
+              [class.dark:text-white]="!plan.recommended">
+              @if (isCreating()) {
+                <span class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creando...
+                </span>
+              } @else {
+                Seleccionar Plan
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Footer Note -->
+    <div class="mt-12 text-center">
+      <p class="text-gray-500 dark:text-gray-400">
+        🎉 Durante el desarrollo, todos los planes son gratuitos
+      </p>
+    </div>
+  </div>
+</div>

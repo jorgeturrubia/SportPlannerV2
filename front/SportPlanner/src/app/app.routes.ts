@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/auth/guards/auth.guard';
+import { subscriptionGuard } from './core/subscription/guards/subscription.guard';
 
 export const routes: Routes = [
   {
@@ -7,21 +9,30 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    loadComponent: () => import('./features/auth/pages/auth-page/auth-page').then(m => m.AuthPage)
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)
+  },
+  {
+    path: 'subscription/select',
+    loadComponent: () => import('./features/subscription/pages/subscription-selection-page/subscription-selection-page').then(m => m.SubscriptionSelectionPage),
+    canActivate: [authGuard] // Requires auth but NOT subscription
   },
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/layouts/dashboard-layout/dashboard-layout').then(m => m.DashboardLayout),
+    canActivate: [authGuard, subscriptionGuard], // Requires auth AND subscription
     children: [
       {
         path: '',
         loadComponent: () => import('./features/dashboard/pages/dashboard-home/dashboard-home').then(m => m.DashboardHome)
-      }
-      ,
+      },
       {
         path: 'teams',
         loadComponent: () => import('./features/dashboard/pages/teams-page/teams-page').then(m => m.TeamsPage)
       }
     ]
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

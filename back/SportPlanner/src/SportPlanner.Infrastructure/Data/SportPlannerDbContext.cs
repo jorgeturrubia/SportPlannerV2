@@ -62,7 +62,7 @@ public class SportPlannerDbContext : DbContext
             entity.HasKey(u => u.Id);
             entity.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
             entity.Property(u => u.LastName).HasMaxLength(50).IsRequired();
-            entity.Property(u => u.PasswordHash).IsRequired();
+            entity.Property(u => u.SupabaseUserId).HasMaxLength(255); // Optional - synced from Supabase Auth
             entity.Property(u => u.Role).IsRequired();
             entity.Property(u => u.CreatedAt).IsRequired();
             entity.Property(u => u.CreatedBy).HasMaxLength(255).IsRequired();

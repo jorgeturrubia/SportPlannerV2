@@ -1,59 +1,62 @@
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
 export class TeamsService {
-  private base = '/api/subscriptions';
+  private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
+  private apiBaseUrl = environment.apiBaseUrl;
 
   // Helper to detect browser vs SSR
   private isBrowser() {
-    return typeof window !== 'undefined' && !!window?.fetch;
+    return isPlatformBrowser(this.platformId);
   }
 
   async getTeams(subscriptionId: string) {
     if (!this.isBrowser()) {
-      // During SSR return empty list to avoid server fetch of relative URLs
+      // During SSR return empty list to avoid server fetch
       return [] as any[];
     }
-    const res = await fetch(`${this.base}/${subscriptionId}/teams`, {
-      headers: { 'Accept': 'application/json' }
-    });
-    if (!res.ok) throw new Error(`Failed to fetch teams: ${res.status}`);
-    return await res.json();
+    return firstValueFrom(
+      this.http.get<any[]>(`${this.apiBaseUrl}/api/subscriptions/${subscriptionId}/teams`)
+    );
   }
 
   async getTeam(subscriptionId: string, teamId: string) {
     if (!this.isBrowser()) return null;
-    const res = await fetch(`${this.base}/${subscriptionId}/teams/${teamId}`, {
-      headers: { 'Accept': 'application/json' }
-    });
-    if (!res.ok) throw new Error(`Failed to fetch team: ${res.status}`);
-    return await res.json();
+    return firstValueFrom(
+      this.http.get<any>(`${this.apiBaseUrl}/api/subscriptions/${subscriptionId}/teams/${teamId}`)
+    );
   }
 
   async createTeam(subscriptionId: string, payload: any) {
     if (!this.isBrowser()) return null;
-    const res = await fetch(`${this.base}/${subscriptionId}/teams`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error(`Failed to create team: ${res.status}`);
-    return await res.json();
+    return firstValueFrom(
+      this.http.post<any>(`${this.apiBaseUrl}/api/subscriptions/${subscriptionId}/teams`, payload)
+    );
   }
 
   async updateTeam(subscriptionId: string, teamId: string, payload: any) {
     if (!this.isBrowser()) return null;
-    const res = await fetch(`${this.base}/${subscriptionId}/teams/${teamId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error(`Failed to update team: ${res.status}`);
-    return await res.json();
+    return firstValueFrom(
+      this.http.put<any>(`${this.apiBaseUrl}/api/subscriptions/${subscriptionId}/teams/${teamId}`, payload)
+    );
   }
 
   async deleteTeam(subscriptionId: string, teamId: string) {
     if (!this.isBrowser()) return false;
-    const res = await fetch(`${this.base}/${subscriptionId}/teams/${teamId}`, {
-      method: 'DELETE'
-    });
-    return res.ok;
+    try {
+      await firstValueFrom(
+        this.http.delete(`${this.apiBaseUrl}/api/subscriptions/${subscriptionId}/teams/${teamId}`)
+      );
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

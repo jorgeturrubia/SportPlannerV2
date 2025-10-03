@@ -14,11 +14,11 @@ public class UserTests
         var firstName = "John";
         var lastName = "Doe";
         var email = Email.Create("john.doe@example.com");
-        var passwordHash = "hashedpassword";
         var role = UserRole.Admin;
+        var supabaseUserId = "95b401f6-be14-43a5-bc1d-6a503cfbdfe3";
 
         // Act
-        var user = new User(firstName, lastName, email, passwordHash, role);
+        var user = new User(firstName, lastName, email, role, supabaseUserId);
 
         // Assert
         user.Should().NotBeNull();
@@ -26,7 +26,7 @@ public class UserTests
         user.FirstName.Should().Be(firstName);
         user.LastName.Should().Be(lastName);
         user.Email.Should().Be(email);
-        user.PasswordHash.Should().Be(passwordHash);
+        user.SupabaseUserId.Should().Be(supabaseUserId);
         user.Role.Should().Be(role);
         user.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         user.UpdatedAt.Should().BeNull();
@@ -41,11 +41,10 @@ public class UserTests
         // Arrange
         var lastName = "Doe";
         var email = Email.Create("john.doe@example.com");
-        var passwordHash = "hashedpassword";
         var role = UserRole.Admin;
 
         // Act
-        var action = () => new User(firstName, lastName, email, passwordHash, role);
+        var action = () => new User(firstName, lastName, email, role);
 
         // Assert
         action.Should().Throw<ArgumentException>()
@@ -61,11 +60,10 @@ public class UserTests
         // Arrange
         var firstName = "John";
         var email = Email.Create("john.doe@example.com");
-        var passwordHash = "hashedpassword";
         var role = UserRole.Admin;
 
         // Act
-        var action = () => new User(firstName, lastName, email, passwordHash, role);
+        var action = () => new User(firstName, lastName, email, role);
 
         // Assert
         action.Should().Throw<ArgumentException>()
@@ -79,42 +77,21 @@ public class UserTests
         var firstName = "John";
         var lastName = "Doe";
         Email email = null!;
-        var passwordHash = "hashedpassword";
         var role = UserRole.Admin;
 
         // Act
-        var action = () => new User(firstName, lastName, email, passwordHash, role);
+        var action = () => new User(firstName, lastName, email, role);
 
         // Assert
         action.Should().Throw<ArgumentException>()
               .WithMessage("*email*");
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData(null)]
-    public void Create_EmptyPasswordHash_ShouldThrowArgumentException(string passwordHash)
-    {
-        // Arrange
-        var firstName = "John";
-        var lastName = "Doe";
-        var email = Email.Create("john.doe@example.com");
-        var role = UserRole.Admin;
-
-        // Act
-        var action = () => new User(firstName, lastName, email, passwordHash, role);
-
-        // Assert
-        action.Should().Throw<ArgumentException>()
-              .WithMessage("*passwordHash*");
-    }
-
     [Fact]
     public void UpdateProfile_ValidParameters_ShouldUpdateUser()
     {
         // Arrange
-        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), "hash", UserRole.Admin);
+        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), UserRole.Admin);
         var newFirstName = "Jane";
         var newLastName = "Smith";
 
@@ -129,34 +106,50 @@ public class UserTests
     }
 
     [Fact]
-    public void ChangePassword_ValidPassword_ShouldUpdatePasswordHash()
+    public void SyncSupabaseUserId_ValidUserId_ShouldUpdateSupabaseId()
     {
         // Arrange
-        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), "oldhash", UserRole.Admin);
-        var newPasswordHash = "newhash";
+        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), UserRole.Admin);
+        var supabaseUserId = "95b401f6-be14-43a5-bc1d-6a503cfbdfe3";
 
         // Act
-        user.ChangePassword(newPasswordHash);
+        user.SyncSupabaseUserId(supabaseUserId);
 
         // Assert
-        user.PasswordHash.Should().Be(newPasswordHash);
+        user.SupabaseUserId.Should().Be(supabaseUserId);
         user.UpdatedAt.Should().NotBeNull();
+        user.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public void ChangePassword_EmptyPassword_ShouldThrowArgumentException(string newPasswordHash)
+    public void SyncSupabaseUserId_EmptyUserId_ShouldThrowArgumentException(string supabaseUserId)
     {
         // Arrange
-        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), "oldhash", UserRole.Admin);
+        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), UserRole.Admin);
 
         // Act
-        var action = () => user.ChangePassword(newPasswordHash);
+        var action = () => user.SyncSupabaseUserId(supabaseUserId);
 
         // Assert
         action.Should().Throw<ArgumentException>()
-              .WithMessage("*password*");
+              .WithMessage("*supabaseUserId*");
+    }
+
+    [Fact]
+    public void UpdateRole_ValidRole_ShouldUpdateUserRole()
+    {
+        // Arrange
+        var user = new User("John", "Doe", Email.Create("john.doe@example.com"), UserRole.Admin);
+
+        // Act
+        user.UpdateRole(UserRole.Admin);
+
+        // Assert
+        user.Role.Should().Be(UserRole.Admin);
+        user.UpdatedAt.Should().NotBeNull();
+        user.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 }
