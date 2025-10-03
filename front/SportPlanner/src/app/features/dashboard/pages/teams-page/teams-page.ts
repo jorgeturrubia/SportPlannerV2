@@ -9,15 +9,17 @@ import { SubscriptionContextService } from '../../../../core/subscription/servic
   selector: 'app-teams-page',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './teams-page.html',
-  styleUrls: ['./teams-page.css']
+  templateUrl: './teams-page.visual.html',
+  styleUrls: ['./teams-page.visual.css']
 })
 export class TeamsPage {
   teams = signal<any[]>([]);
   loading = signal(false);
   showForm = signal(false);
+  viewMode = signal<'grid' | 'board' | 'carousel' | 'timeline' | 'hexagon' | 'datatable' | 'galaxy'>('grid');
   editing: any = null;
   error = signal<string | null>(null);
+  Math = Math;
 
   private teamsService = inject(TeamsService);
   private subscriptionContext = inject(SubscriptionContextService);
@@ -47,7 +49,14 @@ export class TeamsPage {
     try {
       const subscriptionId = await this.subscriptionContext.ensureSubscriptionId();
       const data = await this.teamsService.getTeams(subscriptionId);
-      this.teams.set(Array.isArray(data) ? data : []);
+      const arr = Array.isArray(data) ? data : [];
+      // If backend returns empty (dev), fallback to fake teams for demo
+      if (arr.length === 0) {
+        const { FAKE_TEAMS } = await import('./fake-teams');
+        this.teams.set(FAKE_TEAMS);
+      } else {
+        this.teams.set(arr);
+      }
     } catch (err) {
       console.error('Failed to load teams:', err);
       this.error.set('No se pudieron cargar los equipos');
@@ -60,6 +69,112 @@ export class TeamsPage {
   openCreate() {
     this.editing = null;
     this.showForm.set(true);
+  }
+
+  toggleView(mode: 'grid' | 'board' | 'carousel' | 'timeline' | 'hexagon' | 'datatable' | 'galaxy') {
+    this.viewMode.set(mode);
+  }
+
+  // Para la vista de tabla avanzada
+  expandedRows = signal<Set<string>>(new Set());
+  sortColumn = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+  searchTerm = signal<string>('');
+
+  toggleRow(teamId: string) {
+    const expanded = new Set(this.expandedRows());
+    if (expanded.has(teamId)) {
+      expanded.delete(teamId);
+    } else {
+      expanded.add(teamId);
+    }
+    this.expandedRows.set(expanded);
+  }
+
+  isRowExpanded(teamId: string): boolean {
+    return this.expandedRows().has(teamId);
+  }
+
+  sortBy(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+  }
+
+  get filteredAndSortedTeams() {
+    let filtered = this.teams();
+
+    // Filtrar por búsqueda
+    const search = this.searchTerm().toLowerCase();
+    if (search) {
+      filtered = filtered.filter(t =>
+        t.name.toLowerCase().includes(search) ||
+        t.description?.toLowerCase().includes(search)
+      );
+    }
+
+    // Ordenar
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+
+    return filtered.sort((a, b) => {
+      let aVal = a[col];
+      let bVal = b[col];
+
+      if (col === 'members') {
+        aVal = a.members.length;
+        bVal = b.members.length;
+      } else if (col === 'createdAt') {
+        aVal = new Date(a.createdAt).getTime();
+        bVal = new Date(b.createdAt).getTime();
+      }
+
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  getCapacityStatus(team: any): 'low' | 'medium' | 'high' | 'full' {
+    const percentage = (team.members.length / 15) * 100;
+    if (percentage >= 100) return 'full';
+    if (percentage >= 75) return 'high';
+    if (percentage >= 40) return 'medium';
+    return 'low';
+  }
+
+  // Para la vista Galaxy
+  selectedPlanet = signal<any | null>(null);
+  galaxyAnimationFrame: number | null = null;
+
+  selectPlanet(team: any) {
+    this.selectedPlanet.set(team);
+  }
+
+  closePlanetDetail() {
+    this.selectedPlanet.set(null);
+  }
+
+  getPlanetSize(team: any): number {
+    // Tamaño base 60px + hasta 80px según capacidad
+    const percentage = team.members.length / 15;
+    return 60 + (percentage * 80);
+  }
+
+  getOrbitRadius(index: number, total: number): number {
+    // Distribución en órbitas concéntricas
+    const baseRadius = 180;
+    const orbitSpacing = 100;
+    const orbitLevel = Math.floor(index / 3);
+    return baseRadius + (orbitLevel * orbitSpacing);
+  }
+
+  getOrbitSpeed(index: number): number {
+    // Velocidades diferentes para cada órbita (más lento cuanto más lejos)
+    return 20 + (index * 3);
   }
 
   openEdit(team: any) {
@@ -105,5 +220,11 @@ export class TeamsPage {
       console.error(err);
       alert('Error al eliminar');
     }
+  }
+
+  // Helper used from the template to build avatar URLs safely
+  avatarUrl(name: unknown) {
+    const s = typeof name === 'string' ? name : String(name ?? '');
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(s)}&background=ffffff&color=000`;
   }
 }

@@ -1,0 +1,790 @@
+<div class="p-6 bg-slate-50 dark:bg-slate-900 min-h-[60vh] rounded-xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-3xl font-extrabold tracking-tight">Tus Equipos</h2>
+      <p class="text-sm text-slate-400 mt-1 dark:text-slate-300">Vista rápida y visual de tus equipos — capacidad y estado de cada equipo.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="inline-flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg p-1 border border-slate-100 dark:border-gray-700">
+        <button (click)="toggleView('grid')" [class.bg-blue-100]="viewMode() === 'grid'" [class.dark:bg-blue-900]="viewMode() === 'grid'" [class.font-semibold]="viewMode() === 'grid'" class="px-3 py-1 text-xs rounded transition-all">Grid</button>
+        <button (click)="toggleView('board')" [class.bg-blue-100]="viewMode() === 'board'" [class.dark:bg-blue-900]="viewMode() === 'board'" [class.font-semibold]="viewMode() === 'board'" class="px-3 py-1 text-xs rounded transition-all">Board</button>
+        <button (click)="toggleView('datatable')" [class.bg-blue-100]="viewMode() === 'datatable'" [class.dark:bg-blue-900]="viewMode() === 'datatable'" [class.font-semibold]="viewMode() === 'datatable'" class="px-3 py-1 text-xs rounded transition-all">Table</button>
+        <button (click)="toggleView('carousel')" [class.bg-blue-100]="viewMode() === 'carousel'" [class.dark:bg-blue-900]="viewMode() === 'carousel'" [class.font-semibold]="viewMode() === 'carousel'" class="px-3 py-1 text-xs rounded transition-all">3D</button>
+        <button (click)="toggleView('timeline')" [class.bg-blue-100]="viewMode() === 'timeline'" [class.dark:bg-blue-900]="viewMode() === 'timeline'" [class.font-semibold]="viewMode() === 'timeline'" class="px-3 py-1 text-xs rounded transition-all">Timeline</button>
+        <button (click)="toggleView('hexagon')" [class.bg-blue-100]="viewMode() === 'hexagon'" [class.dark:bg-blue-900]="viewMode() === 'hexagon'" [class.font-semibold]="viewMode() === 'hexagon'" class="px-3 py-1 text-xs rounded transition-all">Hex</button>
+        <button (click)="toggleView('galaxy')" [class.bg-purple-100]="viewMode() === 'galaxy'" [class.dark:bg-purple-900]="viewMode() === 'galaxy'" [class.font-semibold]="viewMode() === 'galaxy'" class="px-3 py-1 text-xs rounded transition-all flex items-center gap-1">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"/></svg>
+          Galaxy
+        </button>
+      </div>
+      <button (click)="openCreate()" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-md hover:scale-[1.02] transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Crear equipo
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="text-center py-12 text-slate-500">Cargando equipos...</div>
+
+  <ng-container *ngIf="!loading()">
+    <div *ngIf="viewMode() === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let t of teams()" class="team-card bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg dark:shadow-none border border-slate-100 dark:border-gray-700">
+      <div class="flex items-start gap-4">
+        <div class="color-avatar w-16 h-16 rounded-lg flex items-center justify-center ring-1 ring-slate-100 dark:ring-0" [ngStyle]="{'background': t.color}">
+          <span class="text-white font-semibold text-lg">{{ t.name[0] }}</span>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-lg font-bold text-slate-900 dark:text-white">{{ t.name }}</div>
+              <div class="text-sm text-slate-500 mt-1 dark:text-slate-300">{{ t.description }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-slate-400">Jugadores</div>
+              <div class="text-xl font-semibold text-slate-900 dark:text-white">{{ t.members.length }} / 15</div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-lg h-3 overflow-hidden">
+              <div class="h-3 rounded-lg" [ngStyle]="{'width': (t.members.length / 15 * 100) + '%', 'background': t.color, 'box-shadow': 'inset 0 1px 2px rgba(0,0,0,0.1)'}"></div>
+            </div>
+            <div class="flex items-center justify-between mt-2 text-xs text-slate-500">
+              <div class="dark:text-slate-300">Creado: {{ t.createdAt | date:'shortDate' }}</div>
+              <div class="flex items-center gap-2">
+                <button (click)="openEdit(t)" class="px-2 py-1 text-sm border rounded">Editar</button>
+                <button (click)="remove(t)" class="px-2 py-1 text-sm bg-red-600 text-white rounded">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div *ngIf="viewMode() === 'board'">
+      <div class="mt-2 p-4">
+        <div class="flex gap-4 overflow-x-auto pb-4">
+          <!-- Each column represents a team in board style (compact horizontal cards) -->
+          <div *ngFor="let t of teams()" class="min-w-[260px] bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md border border-slate-100 dark:border-gray-700">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-md flex items-center justify-center color-avatar" [ngStyle]="{'background': t.color}">
+                <span class="text-white font-bold">{{ t.name[0] }}</span>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ t.name }}</div>
+                <div class="text-xs text-slate-500 dark:text-slate-300">{{ t.description }}</div>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
+                <div>{{ t.members.length }} / 15 jugadores</div>
+                <div>Creado {{ t.createdAt | date:'shortDate' }}</div>
+              </div>
+              <div class="mt-2 h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div class="h-2 rounded-full" [ngStyle]="{'width': (t.members.length / 15 * 100) + '%', 'background': t.color}"></div>
+              </div>
+            </div>
+
+            <div class="mt-3 flex items-center gap-2">
+              <div class="flex -space-x-2">
+                <img *ngFor="let m of t.members | slice:0:4" [attr.alt]="$any(m).name" class="w-6 h-6 rounded-full ring-1 ring-white" [src]="avatarUrl($any(m).name)" />
+              </div>
+              <div class="ml-auto flex items-center gap-2">
+                <button (click)="openEdit(t)" class="px-2 py-1 text-xs border rounded">Editar</button>
+                <button (click)="remove(t)" class="px-2 py-1 text-xs bg-red-600 text-white rounded">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🌌 GALAXY VIEW (Sistema solar interactivo nunca antes visto) -->
+    <div *ngIf="viewMode() === 'galaxy'" class="galaxy-container relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 dark:from-black dark:via-slate-950 dark:to-indigo-950" style="min-height: 700px;">
+      <!-- Estrellas de fondo animadas -->
+      <div class="stars-layer absolute inset-0 overflow-hidden">
+        <div class="star" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
+        <div class="star" style="top: 25%; left: 65%; animation-delay: 0.5s;"></div>
+        <div class="star" style="top: 45%; left: 25%; animation-delay: 1s;"></div>
+        <div class="star" style="top: 60%; left: 85%; animation-delay: 1.5s;"></div>
+        <div class="star" style="top: 80%; left: 40%; animation-delay: 2s;"></div>
+        <div class="star" style="top: 15%; left: 90%; animation-delay: 2.5s;"></div>
+        <div class="star" style="top: 70%; left: 10%; animation-delay: 3s;"></div>
+        <div class="star medium" style="top: 35%; left: 50%; animation-delay: 0.3s;"></div>
+        <div class="star medium" style="top: 55%; left: 75%; animation-delay: 1.3s;"></div>
+        <div class="star small" style="top: 20%; left: 30%; animation-delay: 0.8s;"></div>
+        <div class="star small" style="top: 85%; left: 60%; animation-delay: 1.8s;"></div>
+      </div>
+
+      <!-- Leyenda y controles superiores -->
+      <div class="absolute top-4 left-4 z-20 bg-black/40 backdrop-blur-md rounded-xl p-4 border border-white/10">
+        <h3 class="text-white font-semibold text-sm mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"/></svg>
+          Sistema Solar de Equipos
+        </h3>
+        <div class="space-y-2 text-xs text-white/80">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500"></div>
+            <span>Centro = Tu organización</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"></div>
+            <span>Planetas = Equipos orbitando</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"></path></svg>
+            <span>Tamaño = Capacidad del equipo</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-white/20">
+            <div class="text-white font-semibold">{{ teams().length }} planetas activos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sistema solar central -->
+      <div class="solar-system absolute inset-0 flex items-center justify-center">
+
+        <!-- Sol central (organización) -->
+        <div class="sun-container absolute" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+          <div class="sun w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 via-orange-400 to-red-500 shadow-2xl relative overflow-hidden">
+            <!-- Efectos de superficie solar -->
+            <div class="sun-surface absolute inset-0">
+              <div class="solar-flare"></div>
+              <div class="solar-flare" style="animation-delay: 2s;"></div>
+            </div>
+            <!-- Corona solar -->
+            <div class="sun-corona absolute inset-0 rounded-full"></div>
+
+            <!-- Icono central -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <svg class="w-16 h-16 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Órbitas y planetas (equipos) -->
+        <div *ngFor="let t of teams(); let i = index" class="orbit-container absolute"
+             [style.left.px]="0"
+             [style.top.px]="0"
+             [style.width.px]="getOrbitRadius(i, teams().length) * 2"
+             [style.height.px]="getOrbitRadius(i, teams().length) * 2">
+
+          <!-- Línea de órbita -->
+          <div class="orbit-ring absolute inset-0 rounded-full border border-white/10"></div>
+
+          <!-- Planeta (equipo) -->
+          <div class="planet-wrapper absolute"
+               [style.width.px]="getPlanetSize(t)"
+               [style.height.px]="getPlanetSize(t)"
+               [style.animation-duration.s]="getOrbitSpeed(i)">
+
+            <div class="planet relative w-full h-full cursor-pointer group"
+                 (click)="selectPlanet(t)"
+                 [style.filter]="selectedPlanet() && selectedPlanet().id === t.id ? 'brightness(1.3) drop-shadow(0 0 20px ' + t.color + ')' : 'brightness(1)'">
+
+              <!-- Superficie del planeta con gradiente basado en color del equipo -->
+              <div class="planet-surface w-full h-full rounded-full relative overflow-hidden transition-all duration-300 group-hover:scale-110"
+                   [style.background]="'linear-gradient(135deg, ' + t.color + ', ' + t.color + '99, ' + t.color + 'dd)'">
+
+                <!-- Textura de superficie -->
+                <div class="planet-texture absolute inset-0 opacity-30"></div>
+
+                <!-- Brillo atmosférico -->
+                <div class="planet-atmosphere absolute inset-0 rounded-full"
+                     [style.box-shadow]="'inset 0 0 30px rgba(255,255,255,0.2), 0 0 40px ' + t.color + '80'"></div>
+
+                <!-- Anillos para planetas grandes (equipos con alta capacidad) -->
+                <div *ngIf="t.members.length >= 10" class="planet-ring absolute" [style.border-color]="t.color + '40'"></div>
+              </div>
+
+              <!-- Etiqueta flotante del planeta -->
+              <div class="planet-label absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                <div class="bg-black/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/20">
+                  <div class="text-white font-semibold text-xs">{{ t.name }}</div>
+                  <div class="text-white/70 text-xs">{{ t.members.length }} / 15 miembros</div>
+                </div>
+              </div>
+
+              <!-- Indicador de selección -->
+              <div *ngIf="selectedPlanet() && selectedPlanet().id === t.id"
+                   class="selection-ring absolute -inset-2 rounded-full border-2 animate-pulse"
+                   [style.border-color]="t.color"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Satélites (mini lunas para mostrar algunos miembros) -->
+        <div *ngFor="let t of teams(); let i = index" class="satellites-container absolute pointer-events-none">
+          <div *ngFor="let m of t.members | slice:0:2; let mi = index"
+               class="satellite absolute w-3 h-3 rounded-full bg-white/60 shadow-lg"
+               [style.animation]="'orbit-satellite ' + (getOrbitSpeed(i) / 2) + 's linear infinite'"
+               [style.animation-delay.s]="mi * 0.5">
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel lateral de detalles del planeta seleccionado -->
+      <div *ngIf="selectedPlanet()"
+           class="planet-details-panel absolute right-0 top-0 bottom-0 w-96 bg-black/60 backdrop-blur-xl border-l border-white/10 z-30 animate-slideInRight overflow-y-auto">
+
+        <div class="p-6 space-y-6">
+          <!-- Cabecera del panel -->
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full relative overflow-hidden"
+                   [style.background]="'linear-gradient(135deg, ' + selectedPlanet().color + ', ' + selectedPlanet().color + 'dd)'">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-white font-bold text-2xl">{{ selectedPlanet().name[0] }}</span>
+                </div>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-white">{{ selectedPlanet().name }}</h3>
+                <p class="text-sm text-white/70 mt-1">{{ selectedPlanet().description }}</p>
+              </div>
+            </div>
+            <button (click)="closePlanetDetail()"
+                    class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Estadísticas del planeta -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div class="text-white/60 text-xs mb-1">Tripulación</div>
+              <div class="text-white text-2xl font-bold">{{ selectedPlanet().members.length }}</div>
+              <div class="text-white/40 text-xs">de 15 plazas</div>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div class="text-white/60 text-xs mb-1">Capacidad</div>
+              <div class="text-white text-2xl font-bold">{{ (selectedPlanet().members.length / 15 * 100).toFixed(0) }}%</div>
+              <div class="text-white/40 text-xs">ocupación</div>
+            </div>
+          </div>
+
+          <!-- Barra de capacidad -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-sm text-white/80">
+              <span>Nivel de energía</span>
+              <span class="font-semibold">{{ selectedPlanet().members.length }} / 15</span>
+            </div>
+            <div class="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-500 relative overflow-hidden"
+                   [style.width]="(selectedPlanet().members.length / 15 * 100) + '%'"
+                   [style.background]="'linear-gradient(90deg, ' + selectedPlanet().color + ', ' + selectedPlanet().color + 'aa, #fff)'">
+                <div class="energy-pulse absolute inset-0"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de tripulación (miembros) -->
+          <div class="space-y-3">
+            <h4 class="text-white font-semibold flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Tripulación del planeta ({{ selectedPlanet().members.length }})
+            </h4>
+            <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+              <div *ngFor="let m of selectedPlanet().members; let mi = index"
+                   class="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors animate-fadeInStagger"
+                   [style.animation-delay.ms]="mi * 50">
+                <img [src]="avatarUrl($any(m).name)" [alt]="$any(m).name" class="w-10 h-10 rounded-full ring-2 ring-white/20">
+                <div class="flex-1">
+                  <div class="text-white font-medium text-sm">{{ $any(m).name }}</div>
+                  <div class="text-white/50 text-xs">Miembro #{{ mi + 1 }}</div>
+                </div>
+                <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del planeta -->
+          <div class="space-y-3 pt-4 border-t border-white/10">
+            <h4 class="text-white font-semibold">Datos del planeta</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-white/60">Color primario</span>
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded" [style.background]="selectedPlanet().color"></div>
+                  <span class="text-white/80 font-mono text-xs">{{ selectedPlanet().color }}</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-white/60">Fecha de formación</span>
+                <span class="text-white/80">{{ selectedPlanet().createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-white/60">Espacios disponibles</span>
+                <span class="text-white/80 font-semibold">{{ 15 - selectedPlanet().members.length }} plazas</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-white/60">Estado orbital</span>
+                <span class="px-2 py-1 rounded-full text-xs font-semibold"
+                      [class.bg-green-500/20]="getCapacityStatus(selectedPlanet()) === 'high' || getCapacityStatus(selectedPlanet()) === 'full'"
+                      [class.text-green-400]="getCapacityStatus(selectedPlanet()) === 'high' || getCapacityStatus(selectedPlanet()) === 'full'"
+                      [class.bg-yellow-500/20]="getCapacityStatus(selectedPlanet()) === 'medium'"
+                      [class.text-yellow-400]="getCapacityStatus(selectedPlanet()) === 'medium'"
+                      [class.bg-red-500/20]="getCapacityStatus(selectedPlanet()) === 'low'"
+                      [class.text-red-400]="getCapacityStatus(selectedPlanet()) === 'low'">
+                  {{ getCapacityStatus(selectedPlanet()) === 'full' ? 'Órbita estable' :
+                     getCapacityStatus(selectedPlanet()) === 'high' ? 'Alta actividad' :
+                     getCapacityStatus(selectedPlanet()) === 'medium' ? 'Actividad moderada' : 'Baja actividad' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="flex items-center gap-3 pt-4 border-t border-white/10">
+            <button (click)="openEdit(selectedPlanet()); $event.stopPropagation()"
+                    class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              Editar
+            </button>
+            <button (click)="remove(selectedPlanet()); closePlanetDetail(); $event.stopPropagation()"
+                    class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje si no hay equipos -->
+      <div *ngIf="teams().length === 0" class="absolute inset-0 flex items-center justify-center z-20">
+        <div class="text-center">
+          <svg class="w-24 h-24 mx-auto mb-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+          </svg>
+          <p class="text-white/80 text-xl mb-2">El universo está vacío</p>
+          <p class="text-white/50">Crea tu primer equipo para poblar esta galaxia</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📊 ADVANCED DATA TABLE VIEW (Tabla innovadora con expansión y estadísticas) -->
+    <div *ngIf="viewMode() === 'datatable'" class="datatable-container">
+      <!-- Barra de búsqueda y filtros -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4 border border-slate-200 dark:border-gray-700">
+        <div class="flex items-center gap-4">
+          <div class="flex-1 relative">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input
+              type="text"
+              [value]="searchTerm()"
+              (input)="searchTerm.set($any($event.target).value)"
+              placeholder="Buscar equipos por nombre o descripción..."
+              class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div class="text-sm text-slate-600 dark:text-slate-300">
+            <span class="font-semibold">{{ filteredAndSortedTeams.length }}</span> de <span class="font-semibold">{{ teams().length }}</span> equipos
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla principal -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 overflow-hidden shadow-lg">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 border-b-2 border-slate-200 dark:border-gray-700">
+              <tr>
+                <th class="w-12 px-4 py-4 text-left"></th>
+                <th class="px-4 py-4 text-left">
+                  <button (click)="sortBy('name')" class="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group">
+                    <span>Equipo</span>
+                    <svg class="w-4 h-4 transition-transform" [class.rotate-180]="sortColumn() === 'name' && sortDirection() === 'desc'" [class.opacity-100]="sortColumn() === 'name'" [class.opacity-30]="sortColumn() !== 'name'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                </th>
+                <th class="px-4 py-4 text-left">
+                  <button (click)="sortBy('members')" class="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <span>Jugadores</span>
+                    <svg class="w-4 h-4 transition-transform" [class.rotate-180]="sortColumn() === 'members' && sortDirection() === 'desc'" [class.opacity-100]="sortColumn() === 'members'" [class.opacity-30]="sortColumn() !== 'members'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                </th>
+                <th class="px-4 py-4 text-left">
+                  <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">Capacidad</span>
+                </th>
+                <th class="px-4 py-4 text-left">
+                  <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">Miembros</span>
+                </th>
+                <th class="px-4 py-4 text-left">
+                  <button (click)="sortBy('createdAt')" class="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <span>Creado</span>
+                    <svg class="w-4 h-4 transition-transform" [class.rotate-180]="sortColumn() === 'createdAt' && sortDirection() === 'desc'" [class.opacity-100]="sortColumn() === 'createdAt'" [class.opacity-30]="sortColumn() !== 'createdAt'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                </th>
+                <th class="px-4 py-4 text-right">
+                  <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let t of filteredAndSortedTeams; let i = index">
+                <!-- Fila principal -->
+                <tr class="border-b border-slate-100 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group" [class.bg-blue-50]="isRowExpanded(t.id)" [class.dark:bg-blue-950/30]="isRowExpanded(t.id)">
+                  <td class="px-4 py-4">
+                    <button (click)="toggleRow(t.id)" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-gray-600 transition-colors">
+                      <svg class="w-5 h-5 text-slate-500 dark:text-slate-400 transition-transform" [class.rotate-90]="isRowExpanded(t.id)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                    </button>
+                  </td>
+                  <td class="px-4 py-4" (click)="toggleRow(t.id)">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg flex items-center justify-center" [ngStyle]="{'background': t.color}">
+                        <span class="text-white font-bold">{{ t.name[0] }}</span>
+                      </div>
+                      <div>
+                        <div class="font-semibold text-slate-900 dark:text-white">{{ t.name }}</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ t.description }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4" (click)="toggleRow(t.id)">
+                    <div class="flex items-center gap-2">
+                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                      </svg>
+                      <span class="font-semibold text-slate-900 dark:text-white">{{ t.members.length }}</span>
+                      <span class="text-slate-400">/</span>
+                      <span class="text-slate-500 dark:text-slate-400">15</span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4" (click)="toggleRow(t.id)">
+                    <div class="flex items-center gap-3">
+                      <!-- Mini barra de progreso con gradiente -->
+                      <div class="flex-1 max-w-[120px]">
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                          <div class="h-2 rounded-full transition-all duration-300"
+                               [ngStyle]="{'width': (t.members.length / 15 * 100) + '%', 'background': t.color}"></div>
+                        </div>
+                      </div>
+                      <!-- Badge de estado -->
+                      <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
+                            [class.bg-red-100]="getCapacityStatus(t) === 'low'"
+                            [class.text-red-700]="getCapacityStatus(t) === 'low'"
+                            [class.dark:bg-red-900]="getCapacityStatus(t) === 'low'"
+                            [class.dark:text-red-200]="getCapacityStatus(t) === 'low'"
+                            [class.bg-yellow-100]="getCapacityStatus(t) === 'medium'"
+                            [class.text-yellow-700]="getCapacityStatus(t) === 'medium'"
+                            [class.dark:bg-yellow-900]="getCapacityStatus(t) === 'medium'"
+                            [class.dark:text-yellow-200]="getCapacityStatus(t) === 'medium'"
+                            [class.bg-green-100]="getCapacityStatus(t) === 'high'"
+                            [class.text-green-700]="getCapacityStatus(t) === 'high'"
+                            [class.dark:bg-green-900]="getCapacityStatus(t) === 'high'"
+                            [class.dark:text-green-200]="getCapacityStatus(t) === 'high'"
+                            [class.bg-blue-100]="getCapacityStatus(t) === 'full'"
+                            [class.text-blue-700]="getCapacityStatus(t) === 'full'"
+                            [class.dark:bg-blue-900]="getCapacityStatus(t) === 'full'"
+                            [class.dark:text-blue-200]="getCapacityStatus(t) === 'full'">
+                        {{ (t.members.length / 15 * 100).toFixed(0) }}%
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4" (click)="toggleRow(t.id)">
+                    <div class="flex -space-x-2">
+                      <img *ngFor="let m of t.members | slice:0:3"
+                           [attr.alt]="$any(m).name"
+                           class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-800 transition-transform hover:scale-110 hover:z-10"
+                           [src]="avatarUrl($any(m).name)" />
+                      <div *ngIf="t.members.length > 3"
+                           class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-xs font-semibold ring-2 ring-white dark:ring-gray-800">
+                        +{{ t.members.length - 3 }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4" (click)="toggleRow(t.id)">
+                    <div class="text-sm text-slate-600 dark:text-slate-300">
+                      {{ t.createdAt | date:'dd/MM/yyyy' }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center justify-end gap-2">
+                      <button (click)="openEdit(t); $event.stopPropagation()" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-lg transition-colors" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                      </button>
+                      <button (click)="remove(t); $event.stopPropagation()" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition-colors" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Fila expandida con detalles -->
+                <tr *ngIf="isRowExpanded(t.id)" class="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20 border-b-2 border-blue-200 dark:border-blue-800">
+                  <td colspan="7" class="px-4 py-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
+                      <!-- Lista completa de miembros -->
+                      <div class="md:col-span-2">
+                        <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                          </svg>
+                          Todos los miembros ({{ t.members.length }})
+                        </h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          <div *ngFor="let m of t.members" class="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-lg border border-slate-200 dark:border-gray-700">
+                            <img [src]="avatarUrl($any(m).name)" [attr.alt]="$any(m).name" class="w-8 h-8 rounded-full">
+                            <span class="text-sm text-slate-700 dark:text-slate-300 truncate">{{ $any(m).name }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Estadísticas visuales -->
+                      <div class="space-y-4">
+                        <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                          </svg>
+                          Estadísticas
+                        </h4>
+
+                        <!-- Mini gráfico circular -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-slate-200 dark:border-gray-700">
+                          <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-slate-600 dark:text-slate-400">Ocupación</span>
+                            <span class="text-lg font-bold" [style.color]="t.color">{{ (t.members.length / 15 * 100).toFixed(0) }}%</span>
+                          </div>
+                          <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                              <div class="text-xs text-slate-600 dark:text-slate-400">{{ t.members.length }} / 15</div>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3">
+                              <div class="rounded-full h-3 transition-all duration-500" [ngStyle]="{'width': (t.members.length / 15 * 100) + '%', 'background': 'linear-gradient(90deg, ' + t.color + ', ' + t.color + 'aa)'}"></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-slate-200 dark:border-gray-700 space-y-2">
+                          <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-600 dark:text-slate-400">Color</span>
+                            <div class="flex items-center gap-2">
+                              <div class="w-6 h-6 rounded" [ngStyle]="{'background': t.color}"></div>
+                              <span class="text-xs font-mono text-slate-500">{{ t.color }}</span>
+                            </div>
+                          </div>
+                          <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-600 dark:text-slate-400">Espacios libres</span>
+                            <span class="font-semibold text-slate-900 dark:text-white">{{ 15 - t.members.length }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mensaje cuando no hay resultados -->
+        <div *ngIf="filteredAndSortedTeams.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
+          <svg class="w-16 h-16 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-lg">No se encontraron equipos</p>
+          <p class="text-sm mt-1">Intenta con otra búsqueda</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🎨 CAROUSEL 3D VIEW (Nueva alternativa innovadora) -->
+    <div *ngIf="viewMode() === 'carousel'" class="carousel-3d-container relative h-[500px] flex items-center justify-center overflow-hidden">
+      <div class="carousel-wrapper">
+        <div *ngFor="let t of teams(); let i = index"
+             class="carousel-card absolute w-[320px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-gray-700 p-6 cursor-pointer transition-all duration-500"
+             [style.transform]="'translateX(' + (i * 100 - teams().length * 25) + 'px) translateZ(' + (-Math.abs(i - teams().length/2) * 50) + 'px) rotateY(' + ((i - teams().length/2) * 8) + 'deg)'"
+             [style.opacity]="1 - Math.abs(i - teams().length/2) * 0.15"
+             [style.zIndex]="teams().length - Math.abs(i - teams().length/2)">
+
+          <div class="flex flex-col items-center text-center">
+            <div class="w-24 h-24 rounded-full flex items-center justify-center mb-4 shadow-lg" [ngStyle]="{'background': t.color}">
+              <span class="text-white font-bold text-3xl">{{ t.name[0] }}</span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ t.name }}</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-300 mb-4">{{ t.description }}</p>
+
+            <div class="w-full space-y-3">
+              <div class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="text-lg font-semibold text-slate-900 dark:text-white">{{ t.members.length }} / 15</span>
+              </div>
+
+              <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                <div class="h-2.5 rounded-full transition-all" [ngStyle]="{'width': (t.members.length / 15 * 100) + '%', 'background': t.color}"></div>
+              </div>
+
+              <div class="flex -space-x-3 justify-center mt-3">
+                <img *ngFor="let m of t.members | slice:0:5" [attr.alt]="$any(m).name" class="w-10 h-10 rounded-full ring-2 ring-white dark:ring-gray-800" [src]="avatarUrl($any(m).name)" />
+                <div *ngIf="t.members.length > 5" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold ring-2 ring-white dark:ring-gray-800">
+                  +{{ t.members.length - 5 }}
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-2 mt-4">
+                <button (click)="openEdit(t)" class="px-4 py-2 text-sm border border-slate-300 dark:border-gray-600 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors">Editar</button>
+                <button (click)="remove(t)" class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📅 TIMELINE VIEW (Línea de tiempo horizontal) -->
+    <div *ngIf="viewMode() === 'timeline'" class="timeline-container py-8">
+      <div class="relative">
+        <!-- Línea central -->
+        <div class="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-800 dark:via-purple-800 dark:to-pink-800 transform -translate-y-1/2"></div>
+
+        <div class="flex gap-8 overflow-x-auto pb-6 px-4">
+          <div *ngFor="let t of teams(); let i = index" class="timeline-item flex-shrink-0">
+            <div class="relative flex flex-col items-center" [class.timeline-top]="i % 2 === 0" [class.timeline-bottom]="i % 2 !== 0">
+
+              <!-- Conexión vertical -->
+              <div class="timeline-connector w-1 h-20 rounded-full" [ngStyle]="{'background': t.color}"></div>
+
+              <!-- Card del equipo -->
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-xl border-2 w-[280px] transform transition-all hover:scale-105" [style.border-color]="t.color">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-14 h-14 rounded-xl flex items-center justify-center" [ngStyle]="{'background': t.color}">
+                    <span class="text-white font-bold text-xl">{{ t.name[0] }}</span>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-lg font-bold text-slate-900 dark:text-white">{{ t.name }}</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-300">{{ t.createdAt | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                </div>
+
+                <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">{{ t.description }}</p>
+
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-slate-500 dark:text-slate-400">Jugadores</span>
+                    <span class="font-semibold text-slate-900 dark:text-white">{{ t.members.length }} / 15</span>
+                  </div>
+
+                  <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                    <div class="h-2 rounded-full" [ngStyle]="{'width': (t.members.length / 15 * 100) + '%', 'background': t.color}"></div>
+                  </div>
+
+                  <div class="flex -space-x-2 mt-2">
+                    <img *ngFor="let m of t.members | slice:0:4" [attr.alt]="$any(m).name" class="w-7 h-7 rounded-full ring-2 ring-white dark:ring-gray-800" [src]="avatarUrl($any(m).name)" />
+                    <div *ngIf="t.members.length > 4" class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-xs font-semibold ring-2 ring-white dark:ring-gray-800">
+                      +{{ t.members.length - 4 }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-4">
+                  <button (click)="openEdit(t)" class="flex-1 px-3 py-1.5 text-xs border rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors">Editar</button>
+                  <button (click)="remove(t)" class="flex-1 px-3 py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Eliminar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔷 HEXAGON VIEW (Patrón hexagonal de panal de abejas) -->
+    <div *ngIf="viewMode() === 'hexagon'" class="hexagon-container py-8 px-4">
+      <div class="flex flex-wrap justify-center gap-4">
+        <div *ngFor="let t of teams(); let i = index"
+             class="hexagon-wrapper relative"
+             [style.margin-top]="i % 3 === 1 ? '60px' : '0'">
+
+          <div class="hexagon-card group cursor-pointer">
+            <!-- Hexágono usando clip-path -->
+            <div class="hexagon-shape w-[200px] h-[230px] relative flex items-center justify-center transition-all duration-300 hover:scale-110"
+                 [ngStyle]="{'background': 'linear-gradient(135deg, ' + t.color + ', ' + t.color + 'dd)'}">
+
+              <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                <div class="text-white font-bold text-4xl mb-2">{{ t.name[0] }}</div>
+                <h4 class="text-white font-bold text-sm mb-1">{{ t.name }}</h4>
+                <p class="text-white/80 text-xs mb-3 line-clamp-2">{{ t.description }}</p>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 mb-2">
+                  <span class="text-white text-xs font-semibold">{{ t.members.length }} / 15</span>
+                </div>
+
+                <div class="w-full bg-white/30 rounded-full h-1.5 overflow-hidden">
+                  <div class="h-1.5 bg-white rounded-full" [ngStyle]="{'width': (t.members.length / 15 * 100) + '%'}"></div>
+                </div>
+              </div>
+
+              <!-- Overlay con acciones (aparece en hover) -->
+              <div class="hexagon-overlay absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2">
+                <button (click)="openEdit(t)" class="px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors">
+                  Editar
+                </button>
+                <button (click)="remove(t)" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="!loading() && teams().length === 0" class="text-center py-12 text-slate-500 dark:text-slate-300">No hay equipos aún. Crea tu primer equipo.</div>
+
+  <!-- Inline create/edit panel -->
+  <div *ngIf="showForm()" class="fixed inset-0 bg-black/40 dark:bg-black/50 flex items-end sm:items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-tl-2xl rounded-tr-2xl sm:rounded-2xl w-full sm:max-w-2xl p-6 border-t border-slate-100 dark:border-gray-800">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">{{ editing ? 'Editar equipo' : 'Crear equipo' }}</h3>
+        <button (click)="showForm.set(false)" class="text-slate-500">Cerrar</button>
+      </div>
+
+      <form #f="ngForm" (ngSubmit)="submit(f.value)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="col-span-1">
+          <label class="block text-sm font-medium mb-1">Nombre</label>
+          <input name="name" required class="w-full px-3 py-2 border rounded bg-white dark:bg-gray-800 text-slate-900 dark:text-white border-slate-200 dark:border-gray-700" [value]="editing?.name || ''" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Color</label>
+          <input name="color" type="color" class="w-full h-10 p-0 border-0 rounded" [value]="editing?.color || '#2563eb'" />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium mb-1">Descripción</label>
+          <textarea name="description" class="w-full px-3 py-2 border rounded bg-white dark:bg-gray-800 text-slate-900 dark:text-white border-slate-200 dark:border-gray-700">{{ editing?.description || '' }}</textarea>
+        </div>
+
+        <div class="sm:col-span-2 flex items-center justify-end gap-2 mt-2">
+          <button type="button" (click)="showForm.set(false)" class="px-4 py-2 border rounded">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
