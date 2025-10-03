@@ -185,4 +185,31 @@ public class AuthController : ControllerBase
 
         return Ok();
     }
+
+    /// <summary>
+    /// DEBUG endpoint to verify authentication and user lookup.
+    /// </summary>
+    [Authorize]
+    [HttpGet("me")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    public ActionResult GetCurrentUser()
+    {
+        Console.WriteLine("[AuthController/me] Endpoint called");
+        Console.WriteLine($"[AuthController/me] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+        Console.WriteLine($"[AuthController/me] User.Identity.Name: {User.Identity?.Name}");
+        Console.WriteLine($"[AuthController/me] Claims count: {User.Claims.Count()}");
+        
+        foreach (var claim in User.Claims)
+        {
+            Console.WriteLine($"[AuthController/me] Claim: {claim.Type} = {claim.Value}");
+        }
+
+        return Ok(new
+        {
+            isAuthenticated = User.Identity?.IsAuthenticated,
+            name = User.Identity?.Name,
+            claims = User.Claims.Select(c => new { type = c.Type, value = c.Value })
+        });
+    }
 }

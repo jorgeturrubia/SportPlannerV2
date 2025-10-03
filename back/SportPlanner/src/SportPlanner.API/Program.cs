@@ -24,24 +24,68 @@ builder.Services.AddControllers(options =>
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        // Allow enums to be serialized/deserialized as strings instead of numbers
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Supabase JWT Authentication (Authority + Audience approach)
+// Supabase JWT Authentication
+// Supabase uses HS256 (HMAC-SHA256) for signing JWTs, not RSA
+// Therefore we must use the JWT Secret directly, not JWKS endpoint
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = $"{builder.Configuration["Supabase:Url"]}/auth/v1";
-        options.Audience = "authenticated";
+        var supabaseUrl = builder.Configuration["Supabase:Url"];
+        var supabaseJwtSecret = builder.Configuration["Supabase:JwtSecret"];
+        
+        if (string.IsNullOrEmpty(supabaseJwtSecret))
+        {
+            throw new InvalidOperationException("Supabase:JwtSecret is not configured in appsettings.json");
+        }
+        
+        // Create symmetric security key from JWT secret
+        var securityKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(supabaseJwtSecret)
+        );
+        
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
+            // Supabase issuer format: https://{project-ref}.supabase.co/auth/v1
             ValidateIssuer = true,
+            ValidIssuer = $"{supabaseUrl}/auth/v1",
+            
             ValidateAudience = true,
+            ValidAudience = "authenticated",
+            
             ValidateLifetime = true,
+            
             ValidateIssuerSigningKey = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
+            IssuerSigningKey = securityKey,
+            
+            ClockSkew = TimeSpan.FromMinutes(1),
+            
+            // Map JWT claims to standard .NET claims
+            NameClaimType = "sub",  // Map 'sub' to ClaimTypes.NameIdentifier
+            RoleClaimType = "role"  // Map 'role' to ClaimTypes.Role (if needed)
+        };
+        
+        // Add event handler for debugging token validation
+        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"[JWT] Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("[JWT] Token validated successfully");
+                Console.WriteLine($"[JWT] User: {context.Principal?.Identity?.Name}");
+                Console.WriteLine($"[JWT] Claims count: {context.Principal?.Claims.Count()}");
+                return Task.CompletedTask;
+            }
         };
     });
 

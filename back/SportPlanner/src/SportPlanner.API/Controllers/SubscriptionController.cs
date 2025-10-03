@@ -24,10 +24,29 @@ public class SubscriptionController : ControllerBase
     [ProducesResponseType(409)]
     public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
     {
-        var command = new CreateSubscriptionCommand(request.Type, request.Sport);
-        var subscriptionId = await _mediator.Send(command);
+        try
+        {
+            Console.WriteLine($"[SubscriptionController] CreateSubscription called - Type: {request.Type}, Sport: {request.Sport}");
+            Console.WriteLine($"[SubscriptionController] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+            Console.WriteLine($"[SubscriptionController] User.Identity.Name: {User.Identity?.Name}");
+            
+            var command = new CreateSubscriptionCommand(request.Type, request.Sport);
+            var subscriptionId = await _mediator.Send(command);
 
-        return CreatedAtAction(nameof(GetMySubscription), new { id = subscriptionId }, subscriptionId);
+            Console.WriteLine($"[SubscriptionController] Subscription created successfully: {subscriptionId}");
+            return CreatedAtAction(nameof(GetMySubscription), new { id = subscriptionId }, subscriptionId);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine($"[SubscriptionController] InvalidOperationException: {ex.Message}");
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SubscriptionController] Exception: {ex.GetType().Name} - {ex.Message}");
+            Console.WriteLine($"[SubscriptionController] StackTrace: {ex.StackTrace}");
+            return BadRequest(new { error = ex.Message });
+        }
     }
 
     [HttpGet("my")]

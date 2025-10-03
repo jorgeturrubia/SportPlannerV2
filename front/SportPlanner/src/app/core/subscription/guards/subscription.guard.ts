@@ -10,22 +10,25 @@ export const subscriptionGuard: CanActivateFn = async () => {
   const subscriptionService = inject(SubscriptionService);
   const router = inject(Router);
 
+  console.log('[SubscriptionGuard] Checking subscription...');
+
   try {
     const subscription = await subscriptionService.getMySubscription();
 
     if (!subscription) {
-      console.log('No subscription found, redirecting to selection page');
+      console.log('[SubscriptionGuard] No subscription found, redirecting to selection page');
       return router.createUrlTree(['/subscription/select']);
     }
 
     if (!subscription.isActive) {
-      console.log('Subscription is inactive, redirecting to selection page');
+      console.log('[SubscriptionGuard] Subscription is inactive, redirecting to selection page');
       return router.createUrlTree(['/subscription/select']);
     }
 
+    console.log('[SubscriptionGuard] Subscription active, allowing access');
     return true;
   } catch (error) {
-    console.error('Error checking subscription:', error);
+    console.error('[SubscriptionGuard] Error checking subscription:', error);
     // On error, redirect to selection page to be safe
     return router.createUrlTree(['/subscription/select']);
   }

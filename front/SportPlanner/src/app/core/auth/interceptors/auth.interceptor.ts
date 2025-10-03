@@ -22,7 +22,17 @@ export const authInterceptor: HttpInterceptorFn = (
     return next(req);
   }
 
-  const accessToken = authStateService.accessToken();
+  // Try to get token from signal first, fallback to localStorage
+  let accessToken = authStateService.accessToken();
+  
+  if (!accessToken) {
+    // Signal might be empty after navigation, try localStorage
+    accessToken = tokenService.getAccessToken();
+    
+    if (accessToken) {
+      console.log('[AuthInterceptor] Token retrieved from localStorage (signal was empty)');
+    }
+  }
 
   const authReq = accessToken ? req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } }) : req;
 
