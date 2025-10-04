@@ -1,5 +1,6 @@
 import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TableConfig, TableColumn, TableAction } from '../../models/table-config';
 
 @Component({
@@ -9,6 +10,7 @@ import { TableConfig, TableColumn, TableAction } from '../../models/table-config
   styleUrl: './data-table.css'
 })
 export class DataTable<T = any> {
+  constructor(private sanitizer: DomSanitizer) {}
   // Inputs
   data = input.required<T[]>();
   config = input.required<TableConfig<T>>();
@@ -84,5 +86,9 @@ export class DataTable<T = any> {
   getBadgeClasses(value: any, column: TableColumn<T>): string {
     if (!column.badgeConfig) return '';
     return column.badgeConfig.colorMap[value] || '';
+  }
+
+  getSafeHtml(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 }

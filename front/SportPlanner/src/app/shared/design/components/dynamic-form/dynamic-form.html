@@ -41,7 +41,6 @@
                   [formControlName]="field.key"
                   [type]="field.type"
                   [placeholder]="field.placeholder || ''"
-                  [disabled]="field.disabled || false"
                   [class.border-red-500]="hasError(field)"
                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
               }
@@ -53,7 +52,6 @@
                   [formControlName]="field.key"
                   type="number"
                   [placeholder]="field.placeholder || ''"
-                  [disabled]="field.disabled || false"
                   [attr.min]="field.min ?? null"
                   [attr.max]="field.max ?? null"
                   [class.border-red-500]="hasError(field)"
@@ -66,7 +64,6 @@
                   [id]="field.key"
                   [formControlName]="field.key"
                   type="date"
-                  [disabled]="field.disabled || false"
                   [class.border-red-500]="hasError(field)"
                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
               }
@@ -76,7 +73,6 @@
                 <select
                   [id]="field.key"
                   [formControlName]="field.key"
-                  [disabled]="field.disabled || false"
                   [class.border-red-500]="hasError(field)"
                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
                   <option value="">Select...</option>
@@ -92,7 +88,6 @@
                   [id]="field.key"
                   [formControlName]="field.key"
                   [placeholder]="field.placeholder || ''"
-                  [disabled]="field.disabled || false"
                   [rows]="field.rows || 3"
                   [class.border-red-500]="hasError(field)"
                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed resize-none">
@@ -106,7 +101,6 @@
                     [id]="field.key"
                     [formControlName]="field.key"
                     type="checkbox"
-                    [disabled]="field.disabled || false"
                     class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed">
                   <span class="text-sm text-gray-700 dark:text-gray-300">{{ field.label }}</span>
                 </label>

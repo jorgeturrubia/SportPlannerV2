@@ -72,5 +72,15 @@
       "athlete": "Atleta",
       "admin": "Administrador"
     }
+  },
+  "cards": {
+    "title": "Galería de Atletas",
+    "subtitle": "Gestiona y realiza seguimiento de tus atletas con tarjetas visuales",
+    "yearsOld": "años",
+    "sessions": "Sesiones",
+    "performance": "Rendimiento",
+    "nextSession": "Próxima Sesión",
+    "noResults": "No se encontraron atletas",
+    "tryDifferentSearch": "Intenta buscar con diferentes palabras clave"
   }
 }

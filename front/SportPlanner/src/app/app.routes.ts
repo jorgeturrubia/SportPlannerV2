@@ -39,7 +39,7 @@ export const routes: Routes = [
           },
           {
             path: 'cards',
-            loadComponent: () => import('./shared/design/sport-tables-design/sport-tables-design').then(m => m.SportTablesDesign)
+            loadComponent: () => import('./features/dashboard/pages/cards-showcase/cards-showcase').then(m => m.CardsShowcase)
           },
           {
             path: 'forms',

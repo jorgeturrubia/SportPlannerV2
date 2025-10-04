@@ -88,7 +88,7 @@
 
                   <!-- Custom Render -->
                   @else if (column.type === 'custom' && column.customRender) {
-                    <span [innerHTML]="column.customRender(getCellValue(item, column), item)"></span>
+                    <span [innerHTML]="getSafeHtml(column.customRender(getCellValue(item, column), item))"></span>
                   }
 
                   <!-- Default Text -->

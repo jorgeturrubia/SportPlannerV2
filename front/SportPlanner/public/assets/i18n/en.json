@@ -72,5 +72,15 @@
       "athlete": "Athlete",
       "admin": "Administrator"
     }
+  },
+  "cards": {
+    "title": "Athletes Gallery",
+    "subtitle": "Manage and track your athletes with beautiful cards",
+    "yearsOld": "years",
+    "sessions": "Sessions",
+    "performance": "Performance",
+    "nextSession": "Next Session",
+    "noResults": "No athletes found",
+    "tryDifferentSearch": "Try searching with different keywords"
   }
 }

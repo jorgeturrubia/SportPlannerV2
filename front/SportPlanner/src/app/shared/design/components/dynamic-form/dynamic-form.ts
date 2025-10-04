@@ -53,7 +53,12 @@ export class DynamicForm implements OnInit {
       }
 
       const initialValue = this.initialData()?.[field.key] || '';
-      group[field.key] = [initialValue, validators];
+
+      // Use FormControl config object to properly handle disabled state
+      group[field.key] = [{
+        value: initialValue,
+        disabled: field.disabled || false
+      }, validators];
     });
 
     this.formGroup.set(this.fb.group(group));
