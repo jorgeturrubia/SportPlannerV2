@@ -1,0 +1,5 @@
+/* Teams page styles (minimal) */
+
+:host {
+  display: block;
+}

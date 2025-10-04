@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CardCarouselComponent } from '../../../../shared/components/card-carousel/card-carousel.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 
 interface Team {
@@ -16,7 +17,7 @@ interface Team {
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule, CardComponent, ConfirmationDialogComponent, DynamicFormComponent],
+  imports: [CommonModule, CardComponent, ConfirmationDialogComponent, DynamicFormComponent, CardCarouselComponent],
   templateUrl: './teams.html',
   styleUrls: ['./teams.css']
 })
@@ -45,6 +46,30 @@ export class TeamsPage {
       description: 'A group of talented tennis players.',
       members: 8,
       avatar: '🎾'
+    },
+    {
+      id: 4,
+      name: 'Team Delta',
+      sport: 'Volleyball',
+      description: 'Competitive volleyball team with strong teamwork.',
+      members: 14,
+      avatar: '🏐'
+    },
+    {
+      id: 5,
+      name: 'Team Echo',
+      sport: 'Swimming',
+      description: 'Elite swimmers training for championships.',
+      members: 10,
+      avatar: '🏊'
+    },
+    {
+      id: 6,
+      name: 'Team Foxtrot',
+      sport: 'Baseball',
+      description: 'Professional baseball team with great batting lineup.',
+      members: 20,
+      avatar: '⚾'
     }
   ]);
 
@@ -97,7 +122,7 @@ export class TeamsPage {
     const selected = this.selectedTeam();
     if (selected) {
       // Update existing team
-      this.teams.update(teams => 
+      this.teams.update(teams =>
         teams.map(t => t.id === selected.id ? { ...t, ...formData } : t)
       );
     } else {

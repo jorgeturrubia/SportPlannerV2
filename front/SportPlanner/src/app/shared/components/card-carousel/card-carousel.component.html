@@ -1,0 +1,71 @@
+<div class="relative w-full overflow-hidden py-12" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <!-- Navigation Buttons -->
+  <button
+    (click)="prev()"
+    class="absolute top-1/2 left-4 -translate-y-1/2 z-20 bg-white/90 dark:bg-slate-800/90 p-3 rounded-full shadow-lg hover:bg-white dark:hover:bg-slate-800 hover:scale-110 transition-all">
+    <svg class="w-6 h-6 text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Carousel Container -->
+  <div class="w-full relative" style="perspective: 1500px;">
+    <div
+      #carouselTrack
+      class="flex flex-nowrap transition-transform ease-out"
+      [style.gap.px]="gap"
+      [class.duration-0]="!isTransitioning()"
+      [style.transform]="getTransform()"
+      style="transform-style: preserve-3d;">
+
+      <ng-container *ngIf="cardTemplate; else projected">
+        <div *ngFor="let item of loopedItems(); let idx = index; trackBy: trackByIndex"
+             class="flex-shrink-0 transition-all duration-500 cursor-pointer"
+             [style.width.px]="cardWidth"
+             [attr.data-index]="idx"
+             [attr.data-current]="currentIndex()"
+             (click)="bringToFront(idx)"
+             [ngClass]="{
+               'opacity-60': absIndexDistance(idx) > 2,
+               'opacity-90': absIndexDistance(idx) === 2,
+               'opacity-100': currentIndex() === idx,
+               'scale-95': currentIndex() !== idx,
+               'scale-100': currentIndex() === idx,
+               'z-10': currentIndex() !== idx,
+               'z-50': currentIndex() === idx,
+               'shadow-2xl': currentIndex() === idx
+             }">
+          <ng-container
+            [ngTemplateOutlet]="cardTemplate"
+            [ngTemplateOutletContext]="{ $implicit: item, index: idx, isActive: currentIndex() === idx }">
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <ng-template #projected>
+        <ng-content></ng-content>
+      </ng-template>
+
+    </div>
+  </div>
+
+  <button
+    (click)="next()"
+    class="absolute top-1/2 right-4 -translate-y-1/2 z-20 bg-white/90 dark:bg-slate-800/90 p-3 rounded-full shadow-lg hover:bg-white dark:hover:bg-slate-800 hover:scale-110 transition-all">
+    <svg class="w-6 h-6 text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Dots Indicator -->
+  <div class="flex justify-center gap-2 mt-6">
+    <button *ngFor="let index of getDotIndices()"
+            (click)="goToIndex(index)"
+            class="w-2 h-2 rounded-full transition-all hover:scale-125"
+            [ngClass]="{
+              'bg-purple-600 dark:bg-purple-500': getCurrentDotIndex() === index,
+              'bg-slate-300 dark:bg-slate-600': getCurrentDotIndex() !== index
+            }">
+    </button>
+  </div>
+</div>
