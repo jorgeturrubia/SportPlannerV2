@@ -35,15 +35,15 @@ export const routes: Routes = [
         children: [
           {
             path: 'tables',
-            loadComponent: () => import('./shared/design/sport-demo-tables.component').then(m => m.SportDemoTablesComponent)
+            loadComponent: () => import('./shared/design/sport-tables-design/sport-tables-design').then(m => m.SportTablesDesign)
           },
           {
             path: 'cards',
-            loadComponent: () => import('./shared/design/sport-demo-tables.component').then(m => m.SportDemoTablesComponent)
+            loadComponent: () => import('./shared/design/sport-tables-design/sport-tables-design').then(m => m.SportTablesDesign)
           },
           {
             path: 'forms',
-            loadComponent: () => import('./shared/design/sport-demo-forms.component').then(m => m.SportDemoFormsComponent)
+            loadComponent: () => import('./shared/design/sport-tables-design/sport-tables-design').then(m => m.SportTablesDesign)
           }
         ]
       }

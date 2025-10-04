@@ -17,7 +17,9 @@
       "Bash(dotnet build-server:*)",
       "Bash(find:*)",
       "Bash(dotnet restore:*)",
-      "Bash(npx ng generate component:*)"
+      "Bash(npx ng generate component:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

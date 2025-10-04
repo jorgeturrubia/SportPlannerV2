@@ -1,0 +1,143 @@
+@if (isOpen() && formGroup()) {
+  <!-- Backdrop -->
+  <div
+    (click)="onBackdropClick()"
+    [class.animate-fadeOut]="isClosing()"
+    class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 animate-fadeIn overflow-y-auto p-4">
+
+    <!-- Form Dialog -->
+    <div
+      (click)="$event.stopPropagation()"
+      [class.animate-scaleOut]="isClosing()"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-2xl w-full my-8 animate-scaleIn">
+
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {{ title() }}
+        </h3>
+      </div>
+
+      <!-- Body with Form -->
+      <form [formGroup]="formGroup()!" (ngSubmit)="onSubmit()" class="px-6 py-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (field of config().fields; track field.key) {
+            <div
+              [class.md:col-span-2]="field.type === 'textarea'"
+              class="flex flex-col">
+              <label
+                [for]="field.key"
+                class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {{ field.label }}
+                @if (field.required) {
+                  <span class="text-red-500">*</span>
+                }
+              </label>
+
+              <!-- Text Input -->
+              @if (field.type === 'text' || field.type === 'email') {
+                <input
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  [type]="field.type"
+                  [placeholder]="field.placeholder || ''"
+                  [disabled]="field.disabled || false"
+                  [class.border-red-500]="hasError(field)"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              }
+
+              <!-- Number Input -->
+              @else if (field.type === 'number') {
+                <input
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  type="number"
+                  [placeholder]="field.placeholder || ''"
+                  [disabled]="field.disabled || false"
+                  [attr.min]="field.min ?? null"
+                  [attr.max]="field.max ?? null"
+                  [class.border-red-500]="hasError(field)"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              }
+
+              <!-- Date Input -->
+              @else if (field.type === 'date') {
+                <input
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  type="date"
+                  [disabled]="field.disabled || false"
+                  [class.border-red-500]="hasError(field)"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              }
+
+              <!-- Select Input -->
+              @else if (field.type === 'select') {
+                <select
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  [disabled]="field.disabled || false"
+                  [class.border-red-500]="hasError(field)"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <option value="">Select...</option>
+                  @for (option of field.options; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              }
+
+              <!-- Textarea -->
+              @else if (field.type === 'textarea') {
+                <textarea
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  [placeholder]="field.placeholder || ''"
+                  [disabled]="field.disabled || false"
+                  [rows]="field.rows || 3"
+                  [class.border-red-500]="hasError(field)"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed resize-none">
+                </textarea>
+              }
+
+              <!-- Checkbox -->
+              @else if (field.type === 'checkbox') {
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    [id]="field.key"
+                    [formControlName]="field.key"
+                    type="checkbox"
+                    [disabled]="field.disabled || false"
+                    class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <span class="text-sm text-gray-700 dark:text-gray-300">{{ field.label }}</span>
+                </label>
+              }
+
+              <!-- Error Message -->
+              @if (hasError(field) && field.type !== 'checkbox') {
+                <p class="mt-1 text-xs text-red-500">
+                  {{ getFieldError(field) }}
+                </p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            {{ config().cancelText || 'Cancel' }}
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="!formGroup()!.valid">
+            {{ config().submitText || 'Submit' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
