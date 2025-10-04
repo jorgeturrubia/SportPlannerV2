@@ -1,8 +1,13 @@
-import { Component, signal, input, computed } from '@angular/core';
+import { Component, signal, Input, computed, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CardConfig } from '../../../../shared/design/models/card-config';
+import { CardsMockService } from '../../services/cards-mock.service';
+import { DynamicForm } from '../../../../shared/design/components/dynamic-form/dynamic-form';
+import { ConfirmationDialog, ConfirmationConfig } from '../../../../shared/design/components/confirmation-dialog/confirmation-dialog';
+import { FormConfig } from '../../../../shared/design/models/form-config';
 
 interface AthleteCard {
   id: number;
@@ -21,14 +26,19 @@ interface AthleteCard {
 
 @Component({
   selector: 'app-cards-showcase',
-  imports: [CommonModule, TranslateModule],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, FormsModule, DynamicForm, ConfirmationDialog],
   templateUrl: './cards-showcase.html',
-  styleUrl: './cards-showcase.css'
+  styleUrls: ['./cards-showcase.css']
 })
 export class CardsShowcase {
-  constructor(private sanitizer: DomSanitizer) {}
+  private mock = inject(CardsMockService) as CardsMockService<AthleteCard>;
+  constructor(private sanitizer: DomSanitizer) {
+    // initialize mock with demo data
+    this.mock.init(this.athletes());
+  }
 
-  // Demo data - replace with real data
+  // Demo data - replace with real data or provide via @Input() items
   athletes = signal<AthleteCard[]>([
     {
       id: 1,
@@ -201,7 +211,57 @@ export class CardsShowcase {
   ]);
 
   searchTerm = signal('');
-  filteredAthletes = signal<AthleteCard[]>(this.athletes());
+
+  @Input()
+  set items(v: AthleteCard[] | undefined) {
+    if (v && v.length) this.athletes.set(v);
+  }
+
+  filteredAthletes = computed(() => {
+    const q = this.searchTerm().trim().toLowerCase();
+    if (!q) return this.athletes();
+    const searchableFields = this.cardConfig().searchableFields || [];
+    return this.athletes().filter(item => searchableFields.some(field => {
+      const value = this.getFieldValue(item, field);
+      return String(value).toLowerCase().includes(q);
+    }));
+  });
+
+  // Events: keep legacy simple events and add a richer cardEvent
+  @Output() edit = new EventEmitter<AthleteCard>();
+  @Output() remove = new EventEmitter<AthleteCard>();
+  @Output() cardEvent = new EventEmitter<{
+    phase: 'before' | 'after';
+    action: 'update' | 'remove';
+    index: number | null;
+    before?: AthleteCard;
+    after?: AthleteCard;
+    time: string;
+  }>();
+
+  // Editing state
+  editing = signal<AthleteCard | null>(null);
+  editCopy = signal<Partial<AthleteCard>>({});
+  // Confirm modal state
+  confirmModal = signal<{ open: boolean; target?: AthleteCard | null; message?: string }>({ open: false, target: null, message: '' });
+  // Undo toast state
+  undoToast = signal<{ open: boolean; message?: string }>({ open: false, message: '' });
+
+  // Dynamic form config for editing
+  formConfig = signal<FormConfig>({
+    fields: [
+      { key: 'name', label: 'Name', type: 'text', required: true },
+      { key: 'country', label: 'Country', type: 'text' },
+      { key: 'performance', label: 'Performance', type: 'number', min: 0, max: 100 },
+      { key: 'status', label: 'Status', type: 'select', options: [
+        { value: 'Active', label: 'Active' },
+        { value: 'Inactive', label: 'Inactive' },
+        { value: 'On Leave', label: 'On Leave' },
+        { value: 'Injured', label: 'Injured' },
+        { value: 'Recovery', label: 'Recovery' }
+      ] }
+    ]
+  });
 
   // Card configuration
   cardConfig = signal<CardConfig<AthleteCard>>({
@@ -356,28 +416,134 @@ export class CardsShowcase {
 
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;
+    // Update search term; filteredAthletes is a computed signal and will react.
     this.searchTerm.set(input.value.toLowerCase());
-
-    if (!this.searchTerm()) {
-      this.filteredAthletes.set(this.athletes());
-      return;
-    }
-
-    const searchableFields = this.cardConfig().searchableFields || [];
-    const filtered = this.athletes().filter(athlete =>
-      searchableFields.some(field => {
-        const value = this.getFieldValue(athlete, field);
-        return String(value).toLowerCase().includes(this.searchTerm());
-      })
-    );
-    this.filteredAthletes.set(filtered);
   }
 
   onEdit(athlete: AthleteCard): void {
-    console.log('Edit athlete:', athlete);
+    // Open inline editor
+    this.startEdit(athlete);
+    this.edit.emit(athlete);
   }
 
   onDelete(athlete: AthleteCard): void {
-    console.log('Delete athlete:', athlete);
+    // Open custom Tailwind confirm modal instead of browser confirm()
+    this.confirmModal.set({ open: true, target: athlete, message: `Eliminar ${athlete.name}?` });
+    // emit before event
+    const idx = this.athletes().findIndex(a => a.id === athlete.id);
+    this.cardEvent.emit({ phase: 'before', action: 'remove', index: idx >= 0 ? idx : null, before: { ...athlete }, time: new Date().toISOString() });
+  }
+
+  confirmRemove() {
+    const target = this.confirmModal().target;
+    if (!target) return this.closeConfirm();
+    const res = this.mock.remove(target.id);
+    if (res.success) {
+      // update local signal from mock
+      this.athletes.set(this.mock.getAll());
+      this.remove.emit(target);
+      this.cardEvent.emit({ phase: 'after', action: 'remove', index: null, before: res.removed ? { ...res.removed } : undefined, time: new Date().toISOString() });
+      // show undo toast (persistent until user closes or clicks Undo)
+      this.undoToast.set({ open: true, message: `${target.name} eliminado` });
+    }
+    this.closeConfirm();
+  }
+
+  undoLast() {
+    const res = this.mock.undoLast();
+    if (res.success) {
+      this.athletes.set(this.mock.getAll());
+      this.undoToast.set({ open: true, message: 'Acción deshecha' });
+      // If mock returned the action that was undone, emit a cardEvent so parent can sync
+      const action = (res as any).action;
+      if (action) {
+        if (action.type === 'remove' && action.before) {
+          // restore -> treat as update/after with the restored item as 'after'
+          this.cardEvent.emit({ phase: 'after', action: 'update', index: null, after: { ...action.before }, time: new Date().toISOString() });
+        } else if (action.type === 'update' && action.before) {
+          // revert update -> emit after with before payload
+          this.cardEvent.emit({ phase: 'after', action: 'update', index: null, after: { ...action.before }, time: new Date().toISOString() });
+        }
+      }
+    }
+  }
+
+  closeConfirm() {
+    this.confirmModal.set({ open: false, target: null, message: '' });
+  }
+
+  startEdit(athlete: AthleteCard) {
+    this.editing.set(athlete);
+    this.editCopy.set({ ...athlete });
+  }
+
+  cancelEdit() {
+    this.editing.set(null);
+    this.editCopy.set({});
+  }
+
+  saveEdit() {
+    const copy = this.editCopy();
+    const current = this.editing();
+    if (!current) return;
+    const updated = { ...current, ...copy } as AthleteCard;
+    // emit before
+    const idx = this.athletes().findIndex(a => a.id === updated.id);
+    this.cardEvent.emit({ phase: 'before', action: 'update', index: idx >= 0 ? idx : null, before: { ...current }, time: new Date().toISOString() });
+
+    const result = this.mock.update(updated);
+    if (result.success) {
+      this.athletes.set(this.mock.getAll());
+      this.editing.set(null);
+      this.editCopy.set({});
+      this.edit.emit(updated);
+      this.cardEvent.emit({ phase: 'after', action: 'update', index: null, before: result.before, after: result.after, time: new Date().toISOString() });
+      // show undo toast (persistent)
+      this.undoToast.set({ open: true, message: `Cambios guardados` });
+    }
+  }
+
+  // Provide config object for the ConfirmationDialog component
+  confirmConfig(): ConfirmationConfig {
+    const msg = this.confirmModal().message || 'Are you sure?';
+    return {
+      title: 'Confirm',
+      message: msg,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      confirmColor: 'danger'
+    };
+  }
+
+  // Handler from DynamicForm submit
+  onFormSubmit(payload: any) {
+    // copy the submitted values to editCopy and save
+    this.editCopy.set({ ...this.editCopy(), ...payload });
+    this.saveEdit();
+  }
+
+  // General action caller used by template buttons to avoid inline complex expressions
+  callAction(action: { onClick?: (item: AthleteCard) => void; label?: string }, item: AthleteCard) {
+    // Prevent accidental event bubbling in template by handling actions centrally
+    if (!action) return;
+    if (action.label === 'common.edit') {
+      this.startEdit(item);
+      return;
+    }
+    if (action.label === 'common.delete') {
+      this.onDelete(item);
+      return;
+    }
+    // safe-call any custom handler
+    try {
+      action.onClick && action.onClick(item);
+    } catch (e) {
+      // swallow to avoid breaking UI; log for debugging
+      // console.error('card action error', e);
+    }
+  }
+
+  trackById(_: number, item: AthleteCard) {
+    return item.id;
   }
 }

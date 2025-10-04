@@ -18,7 +18,7 @@ This is a full-stack SportPlanner application with:
 - **Backend**: .NET 8 with Clean Architecture
 - **Authentication**: Supabase JWT with JWKS validation
 - **Database**: PostgreSQL with Entity Framework Core
-- **UI Framework**: Angular Material + Tailwind CSS v4
+- **UI Framework**: Tailwind CSS v4
 
 ### Directory Structure
 
@@ -26,7 +26,7 @@ This is a full-stack SportPlanner application with:
 src/
 ├── front/SportPlanner/          # Angular 20 frontend
 │   ├── src/app/features/        # Feature-based architecture (auth, dashboard, home, shared)
-│   ├── src/custom-theme.scss    # Material Design theme
+│   ├── src/styles.css           # Tailwind CSS v4 styles
 │   └── package.json
 ├── back/SportPlanner/           # .NET 8 backend
 │   ├── src/SportPlanner.Domain/      # Domain entities
@@ -112,7 +112,7 @@ dotnet ef migrations remove --project src/SportPlanner.Infrastructure --startup-
 - **Feature-Based Structure**: Organize by features (auth, dashboard, training, athlete, coach, planning)
 - **Lazy Loading**: Use `loadComponent` for route-level code splitting
 - **Signals**: Use Angular signals for reactive state management
-- **Material + Tailwind**: Angular Material components with Tailwind utility classes
+- **Tailwind CSS v4**: Use Tailwind utility classes for styling (no component libraries)
 - **Dependency Injection**: Use Angular's `inject()` function (not constructor injection)
 
 ### Backend Architecture
@@ -210,9 +210,9 @@ options.Audience = "authenticated";
 
 ### UI/UX Standards
 
-- Follow Material Design guidelines
 - Implement responsive design (mobile-first)
-- Use 4px grid system for spacing
+- Use Tailwind CSS v4 utility classes for all styling
+- Use 4px grid system for spacing (Tailwind's default spacing scale)
 - Provide loading states and error feedback
 - Ensure WCAG 2.1 AA accessibility compliance
 
@@ -239,7 +239,7 @@ options.Audience = "authenticated";
 Before making changes, you MUST review these files based on the type of work:
 
 - **Architecture**: [01-clean-code.md](.clinerules/01-clean-code.md), [14-dotnet-backend.md](.clinerules/14-dotnet-backend.md), [16-design-patterns-csharp.md](.clinerules/16-design-patterns-csharp.md)
-- **Frontend**: [10-angular-structure.md](.clinerules/10-angular-structure.md), [11-tailwind.md](.clinerules/11-tailwind.md), [12-material-animations.md](.clinerules/12-material-animations.md), [15-ui-ux-excellence.md](.clinerules/15-ui-ux-excellence.md)
+- **Frontend**: [10-angular-structure.md](.clinerules/10-angular-structure.md), [11-tailwind.md](.clinerules/11-tailwind.md), [15-ui-ux-excellence.md](.clinerules/15-ui-ux-excellence.md)
 - **Security**: [05-security.md](.clinerules/05-security.md), [13-supabase-jwt.md](.clinerules/13-supabase-jwt.md)
 - **Testing**: [04-testing.md](.clinerules/04-testing.md)
 - **Conventions**: [02-naming.md](.clinerules/02-naming.md), [03-adr.md](.clinerules/03-adr.md), [06-tool-usage.md](.clinerules/06-tool-usage.md)

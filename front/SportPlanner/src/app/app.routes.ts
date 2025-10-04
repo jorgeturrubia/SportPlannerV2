@@ -27,7 +27,7 @@ export const routes: Routes = [
       },
       {
         path: 'teams',
-        loadComponent: () => import('./features/dashboard/pages/teams-blank/teams-blank.component').then(m => m.TeamsBlankComponent)
+        loadComponent: () => import('./features/dashboard/pages/teams/teams').then(m => m.TeamsPage)
       }
       ,
       {
