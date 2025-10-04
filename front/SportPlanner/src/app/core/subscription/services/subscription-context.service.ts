@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -24,6 +25,7 @@ export interface Subscription {
 export class SubscriptionContextService {
   private http = inject(HttpClient);
   private apiBaseUrl = environment.apiBaseUrl;
+  private platformId = inject(PLATFORM_ID);
 
   // Signals for subscription state
   private subscriptionSignal = signal<Subscription | null>(null);
@@ -51,6 +53,12 @@ export class SubscriptionContextService {
     this.errorSignal.set(null);
 
     try {
+      if (!isPlatformBrowser(this.platformId)) {
+        console.log('[SubscriptionContext] loadSubscription skipped on server');
+        this.subscriptionSignal.set(null);
+        return null;
+      }
+
       const subscription = await firstValueFrom(
         this.http.get<Subscription>(`${this.apiBaseUrl}/api/subscription/my`)
       );

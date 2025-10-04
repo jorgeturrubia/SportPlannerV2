@@ -1,259 +1,193 @@
-<!--
-  SportDemoTables Component
-  Componente reutilizable con 7 vistas innovadoras de visualización de datos
-  Vistas: Grid | Board | DataTable | Carousel 3D | Timeline | Hexagon | Galaxy
--->
-
-<div class="sport-demo-tables-container">
-
-  <!-- Vista DATATABLE activada por defecto en esta demostración -->
-  <div *ngIf="viewMode === 'datatable'" class="datatable-container">
-    <!-- Barra de búsqueda y filtros -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4 border border-slate-200 dark:border-gray-700">
-      <div class="flex items-center gap-4">
-        <div class="flex-1 relative">
-          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input
-            type="text"
-            [value]="searchTerm()"
-            (input)="searchTerm.set($any($event.target).value)"
-            placeholder="Buscar por nombre o descripción..."
-            class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-        <div class="text-sm text-slate-600 dark:text-slate-300">
-          <span class="font-semibold">{{ filteredAndSortedItems.length }}</span> de <span class="font-semibold">{{ items.length }}</span> elementos
-        </div>
-      </div>
+<section class="p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+  <header class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-extrabold text-slate-900 dark:text-slate-100">Equipos</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Vista de tabla y tarjetas — datos de demostración</p>
     </div>
 
-    <!-- Tabla principal con todas las funcionalidades avanzadas -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 overflow-hidden shadow-lg">
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 border-b-2 border-slate-200 dark:border-gray-700">
-            <tr>
-              <th class="w-12 px-4 py-4 text-left"></th>
-              <th class="px-4 py-4 text-left">
-                <button (click)="sortBy('name')" class="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group">
-                  <span>Elemento</span>
-                  <svg class="w-4 h-4 transition-transform" [class.rotate-180]="sortColumn() === 'name' && sortDirection() === 'desc'" [class.opacity-100]="sortColumn() === 'name'" [class.opacity-30]="sortColumn() !== 'name'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-              </th>
-              <th class="px-4 py-4 text-left">
-                <button (click)="sortBy('members')" class="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  <span>Miembros</span>
-                  <svg class="w-4 h-4 transition-transform" [class.rotate-180]="sortColumn() === 'members' && sortDirection() === 'desc'" [class.opacity-100]="sortColumn() === 'members'" [class.opacity-30]="sortColumn() !== 'members'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-              </th>
-              <th class="px-4 py-4 text-left">
-                <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">Capacidad</span>
-              </th>
-              <th class="px-4 py-4 text-left">
-                <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">Participantes</span>
-              </th>
-              <th class="px-4 py-4 text-left">
-                <button (click)="sortBy('createdAt')" class="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  <span>Creado</span>
-                  <svg class="w-4 h-4 transition-transform" [class.rotate-180]="sortColumn() === 'createdAt' && sortDirection() === 'desc'" [class.opacity-100]="sortColumn() === 'createdAt'" [class.opacity-30]="sortColumn() !== 'createdAt'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-              </th>
-              <th class="px-4 py-4 text-right">
-                <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">Acciones</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let item of filteredAndSortedItems; let i = index">
-              <!-- Fila principal -->
-              <tr class="border-b border-slate-100 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group" [class.bg-blue-50]="isRowExpanded(item.id)" [class.dark:bg-blue-950/30]="isRowExpanded(item.id)">
-                <td class="px-4 py-4">
-                  <button (click)="toggleRow(item.id)" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-gray-600 transition-colors">
-                    <svg class="w-5 h-5 text-slate-500 dark:text-slate-400 transition-transform" [class.rotate-90]="isRowExpanded(item.id)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                  </button>
-                </td>
-                <td class="px-4 py-4" (click)="toggleRow(item.id)">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center" [ngStyle]="{'background': item.color}">
-                      <span class="text-white font-bold">{{ item.name[0] }}</span>
-                    </div>
-                    <div>
-                      <div class="font-semibold text-slate-900 dark:text-white">{{ item.name }}</div>
-                      <div class="text-xs text-slate-500 dark:text-slate-400">{{ item.description }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-4 py-4" (click)="toggleRow(item.id)">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    <span class="font-semibold text-slate-900 dark:text-white">{{ item.members.length }}</span>
-                    <span class="text-slate-400">/</span>
-                    <span class="text-slate-500 dark:text-slate-400">{{ maxCapacity }}</span>
-                  </div>
-                </td>
-                <td class="px-4 py-4" (click)="toggleRow(item.id)">
-                  <div class="flex items-center gap-3">
-                    <!-- Mini barra de progreso con gradiente -->
-                    <div class="flex-1 max-w-[120px]">
-                      <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                        <div class="h-2 rounded-full transition-all duration-300"
-                             [ngStyle]="{'width': (item.members.length / maxCapacity * 100) + '%', 'background': item.color}"></div>
-                      </div>
-                    </div>
-                    <!-- Badge de estado -->
-                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
-                          [class.bg-red-100]="getCapacityStatus(item) === 'low'"
-                          [class.text-red-700]="getCapacityStatus(item) === 'low'"
-                          [class.dark:bg-red-900]="getCapacityStatus(item) === 'low'"
-                          [class.dark:text-red-200]="getCapacityStatus(item) === 'low'"
-                          [class.bg-yellow-100]="getCapacityStatus(item) === 'medium'"
-                          [class.text-yellow-700]="getCapacityStatus(item) === 'medium'"
-                          [class.dark:bg-yellow-900]="getCapacityStatus(item) === 'medium'"
-                          [class.dark:text-yellow-200]="getCapacityStatus(item) === 'medium'"
-                          [class.bg-green-100]="getCapacityStatus(item) === 'high'"
-                          [class.text-green-700]="getCapacityStatus(item) === 'high'"
-                          [class.dark:bg-green-900]="getCapacityStatus(item) === 'high'"
-                          [class.dark:text-green-200]="getCapacityStatus(item) === 'high'"
-                          [class.bg-blue-100]="getCapacityStatus(item) === 'full'"
-                          [class.text-blue-700]="getCapacityStatus(item) === 'full'"
-                          [class.dark:bg-blue-900]="getCapacityStatus(item) === 'full'"
-                          [class.dark:text-blue-200]="getCapacityStatus(item) === 'full'">
-                      {{ (item.members.length / maxCapacity * 100).toFixed(0) }}%
-                    </span>
-                  </div>
-                </td>
-                <td class="px-4 py-4" (click)="toggleRow(item.id)">
-                  <div class="flex -space-x-2">
-                    <img *ngFor="let m of item.members | slice:0:3"
-                         [attr.alt]="$any(m).name"
-                         class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-800 transition-transform hover:scale-110 hover:z-10"
-                         [src]="avatarUrl($any(m).name)" />
-                    <div *ngIf="item.members.length > 3"
-                         class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-xs font-semibold ring-2 ring-white dark:ring-gray-800">
-                      +{{ item.members.length - 3 }}
-                    </div>
-                  </div>
-                </td>
-                <td class="px-4 py-4" (click)="toggleRow(item.id)">
-                  <div class="text-sm text-slate-600 dark:text-slate-300">
-                    {{ item.createdAt | date:'dd/MM/yyyy' }}
-                  </div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="flex items-center justify-end gap-2">
-                    <button (click)="handleEdit(item); $event.stopPropagation()" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-lg transition-colors" title="Editar">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                      </svg>
-                    </button>
-                    <button (click)="handleDelete(item); $event.stopPropagation()" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition-colors" title="Eliminar">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Fila expandida con detalles (solo se muestra si está expandida) -->
-              <tr *ngIf="isRowExpanded(item.id)" class="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20 border-b-2 border-blue-200 dark:border-blue-800">
-                <td colspan="7" class="px-4 py-6">
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
-                    <!-- Lista completa de miembros -->
-                    <div class="md:col-span-2">
-                      <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        Todos los miembros ({{ item.members.length }})
-                      </h4>
-                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <div *ngFor="let m of item.members" class="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-lg border border-slate-200 dark:border-gray-700">
-                          <img [src]="avatarUrl($any(m).name)" [attr.alt]="$any(m).name" class="w-8 h-8 rounded-full">
-                          <span class="text-sm text-slate-700 dark:text-slate-300 truncate">{{ $any(m).name }}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Estadísticas visuales -->
-                    <div class="space-y-4">
-                      <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        Estadísticas
-                      </h4>
-
-                      <!-- Mini gráfico circular -->
-                      <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-slate-200 dark:border-gray-700">
-                        <div class="flex items-center justify-between mb-2">
-                          <span class="text-xs text-slate-600 dark:text-slate-400">Ocupación</span>
-                          <span class="text-lg font-bold" [style.color]="item.color">{{ (item.members.length / maxCapacity * 100).toFixed(0) }}%</span>
-                        </div>
-                        <div class="relative pt-1">
-                          <div class="flex mb-2 items-center justify-between">
-                            <div class="text-xs text-slate-600 dark:text-slate-400">{{ item.members.length }} / {{ maxCapacity }}</div>
-                          </div>
-                          <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3">
-                            <div class="rounded-full h-3 transition-all duration-500" [ngStyle]="{'width': (item.members.length / maxCapacity * 100) + '%', 'background': 'linear-gradient(90deg, ' + item.color + ', ' + item.color + 'aa)'}"></div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Información adicional -->
-                      <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-slate-200 dark:border-gray-700 space-y-2">
-                        <div class="flex items-center justify-between text-sm">
-                          <span class="text-slate-600 dark:text-slate-400">Color</span>
-                          <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded" [ngStyle]="{'background': item.color}"></div>
-                            <span class="text-xs font-mono text-slate-500">{{ item.color }}</span>
-                          </div>
-                        </div>
-                        <div class="flex items-center justify-between text-sm">
-                          <span class="text-slate-600 dark:text-slate-400">Espacios libres</span>
-                          <span class="font-semibold text-slate-900 dark:text-white">{{ maxCapacity - item.members.length }}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center bg-white/60 dark:bg-slate-800/60 border rounded-full px-3 py-1 shadow-sm">
+        <input
+          class="bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
+          placeholder="Buscar por nombre o ciudad..."
+          [value]="search()"
+          (input)="search.set($any($event.target).value)"
+        />
+        <button class="ml-2 text-xs text-slate-500" (click)="search.set('')">Limpiar</button>
       </div>
 
-      <!-- Mensaje cuando no hay resultados -->
-      <div *ngIf="filteredAndSortedItems.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
-        <svg class="w-16 h-16 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <p class="text-lg">No se encontraron elementos</p>
-        <p class="text-sm mt-1">Intenta con otra búsqueda</p>
+      <div class="inline-flex rounded-lg bg-white/60 dark:bg-slate-800/60 p-1 shadow-sm">
+        <button
+          (click)="view.set('table')"
+          [class]="view() === 'table' ? 'px-3 py-1 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white text-sm font-medium' : 'px-3 py-1 rounded-lg text-sm text-slate-600 dark:text-slate-300'"
+        >Tabla</button>
+        <button
+          (click)="view.set('cards')"
+          [class]="view() === 'cards' ? 'px-3 py-1 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-medium' : 'px-3 py-1 rounded-lg text-sm text-slate-600 dark:text-slate-300'"
+        >Cards</button>
+        <button
+          (click)="view.set('professional')"
+          [class]="view() === 'professional' ? 'px-3 py-1 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 text-white text-sm font-medium' : 'px-3 py-1 rounded-lg text-sm text-slate-600 dark:text-slate-300'"
+        >Professional</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Professional Table -->
+  <div *ngIf="view() === 'professional'">
+      <app-professional-table
+          [data]="teams()"
+          [columns]="professionalColumns"
+          [actions]="professionalActions"
+          [pagination]="{ pageSize: 10, pageSizeOptions: [5, 10, 25, 50], showTotal: true }"
+          (rowClick)="professionalActions[0].onClick($event)">
+      </app-professional-table>
+  </div>
+
+  <!-- Tabla -->
+  <div *ngIf="view() === 'table'" class="overflow-x-auto bg-white/60 dark:bg-slate-800/60 rounded-lg shadow-md p-4">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <button (click)="exportCSV()" class="px-3 py-1 rounded-md bg-gradient-to-r from-slate-800 to-slate-900 text-white text-sm dark:from-slate-700 dark:to-black">Export CSV</button>
+        <label class="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+          <input type="checkbox" class="rounded" [checked]="compact()" (change)="compact.set($any($event.target).checked)" />
+          Compact
+        </label>
+        <button (click)="showFilters.set(!showFilters())" class="px-2 py-1 rounded-md text-sm bg-white/40 dark:bg-slate-800/40">Filtros</button>
+        <div class="text-xs text-slate-500">Resultados: <span class="font-medium">{{ filteredTeams().length }}</span></div>
+      </div>
+      <div class="text-sm text-slate-500">Orden: <span class="font-medium">{{ sortKey() }} {{ sortDir() === 'asc' ? '↑' : '↓' }}</span></div>
+    </div>
+
+    <table class="min-w-full table-auto border-separate" style="border-spacing: 0;">
+      <thead class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm sticky top-0 z-10">
+        <tr class="text-left text-slate-600 dark:text-slate-300 text-sm">
+          <th class="px-3 py-3">Equipo</th>
+          <th class="px-3 py-3 cursor-pointer" (click)="toggleSort('name')">Ciudad <span class="text-xs">{{ sortKey() === 'name' ? (sortDir() === 'asc' ? '▲' : '▼') : '' }}</span></th>
+          <th class="px-3 py-3 cursor-pointer" (click)="toggleSort('members')">Miembros <span class="text-xs">{{ sortKey() === 'members' ? (sortDir() === 'asc' ? '▲' : '▼') : '' }}</span></th>
+          <th class="px-3 py-3">Récord</th>
+          <th class="px-3 py-3 cursor-pointer" (click)="toggleSort('rating')">Rating <span class="text-xs">{{ sortKey() === 'rating' ? (sortDir() === 'asc' ? '▲' : '▼') : '' }}</span></th>
+          <th class="px-3 py-3">Fundado</th>
+          <th class="px-3 py-3 sticky right-0 z-20 bg-white/60 dark:bg-slate-800/60">Acciones</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="showFilters()">
+        <tr class="bg-white/50 dark:bg-slate-800/50">
+          <td class="px-3 py-2">
+            <input class="w-full rounded-md border p-1 text-sm" placeholder="Filtrar nombre" [value]="nameFilter()" (input)="nameFilter.set($any($event.target).value)" />
+          </td>
+          <td class="px-3 py-2">
+            <input class="w-full rounded-md border p-1 text-sm" placeholder="Filtrar ciudad" [value]="cityFilter()" (input)="cityFilter.set($any($event.target).value)" />
+          </td>
+          <td class="px-3 py-2">
+            <input class="w-full rounded-md border p-1 text-sm" placeholder="Miembros" [value]="membersFilter()" (input)="membersFilter.set($any($event.target).value)" />
+          </td>
+          <td class="px-3 py-2"></td>
+          <td class="px-3 py-2">
+            <input type="number" min="0" max="10" class="w-24 rounded-md border p-1 text-sm" placeholder="Min" [value]="minRating()" (input)="minRating.set($any($event.target).value ? +$any($event.target).value : null)" />
+          </td>
+          <td class="px-3 py-2"></td>
+          <td class="px-3 py-2">
+            <button class="px-2 py-1 rounded-md text-xs bg-amber-400" (click)="nameFilter.set(''); cityFilter.set(''); membersFilter.set(''); minRating.set(null)">Limpiar filtros</button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody>
+        <tr *ngFor="let t of pagedTeams()" [class]="'border-t last:border-b hover:bg-slate-50 dark:hover:bg-slate-900/40 ' + (compact() ? 'text-sm' : 'text-base')">
+          <td class="px-3 py-3 flex items-center gap-3">
+            <div class="relative">
+              <div class="h-10 w-10 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 text-white font-semibold">{{ t.name.charAt(0) }}</div>
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full blur-sm" [ngClass]="getStatus(t).color"></div>
+            </div>
+            <div>
+              <div class="font-semibold text-slate-900 dark:text-slate-100">{{ t.name }}</div>
+              <div class="text-xs text-slate-500">{{ t.members.slice(0,3).join(', ') }}{{ t.members.length > 3 ? '...' : '' }}</div>
+            </div>
+            <div class="ml-3">
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                [ngClass]="[getStatus(t).text, 'bg-gradient-to-r', getStatus(t).color + '/40']"
+              >{{ getStatus(t).label }}</span>
+            </div>
+          </td>
+          <td class="px-3 py-3 text-sm text-slate-700 dark:text-slate-200">{{ t.city }}</td>
+          <td class="px-3 py-3 text-sm text-slate-700 dark:text-slate-200">{{ t.members.length }}</td>
+          <td class="px-3 py-3 text-sm text-slate-700 dark:text-slate-200">{{ t.wins }} - {{ t.losses }}</td>
+          <td class="px-3 py-3">
+            <div class="flex items-center gap-3">
+              <div class="text-sm font-medium text-slate-900 dark:text-slate-100">{{ t.rating.toFixed(1) }}</div>
+              <div class="w-36 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div class="h-2 bg-emerald-400" [style.width.%]="getRatingPercent(t)"></div>
+              </div>
+            </div>
+          </td>
+          <td class="px-3 py-3 text-sm text-slate-600 dark:text-slate-300">{{ formatDate(t.founded) }}</td>
+          <td class="px-3 py-3">
+            <div class="relative">
+              <div class="inline-flex gap-2 sticky right-0 z-20 bg-white/60 dark:bg-slate-800/60 p-1 rounded-md backdrop-blur-sm border-l border-slate-200 dark:border-slate-700">
+                <button class="px-3 py-1 rounded-md text-xs bg-sky-500 text-white">Ver</button>
+                <button class="px-3 py-1 rounded-md text-xs bg-amber-400 text-white">Editar</button>
+                <button class="px-3 py-1 rounded-md text-xs bg-slate-200">Más</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="flex items-center justify-between mt-3">
+      <div class="flex items-center gap-3">
+        <label class="text-sm">Mostrar</label>
+        <select class="rounded-md p-1" [value]="pageSize()" (change)="setPageSize($any($event.target).value)">
+          <option [value]="10">10</option>
+          <option [value]="30">30</option>
+          <option [value]="0">Todo</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button class="px-2 py-1 rounded-md" (click)="goFirst()"><<</button>
+        <button class="px-2 py-1 rounded-md" (click)="goPrev()"><</button>
+        <div class="flex items-center gap-1">
+          <ng-container *ngFor="let p of pages()">
+            <button *ngIf="p >= 0" class="px-2 py-1 rounded-md" [class]="p === pageIndex() ? 'bg-slate-800 text-white' : ''" (click)="goToPage(p)">{{ p + 1 }}</button>
+            <span *ngIf="p === -1" class="px-2">…</span>
+          </ng-container>
+        </div>
+        <div class="text-sm">/ {{ totalPages() }}</div>
+        <button class="px-2 py-1 rounded-md" (click)="goNext()">></button>
+        <button class="px-2 py-1 rounded-md" (click)="goLast()">>></button>
       </div>
     </div>
   </div>
 
-  <!-- Placeholder para otras vistas (Grid, Board, Carousel, Timeline, Hexagon, Galaxy) -->
-  <!-- Se pueden activar cambiando el viewMode -->
-  <div *ngIf="viewMode !== 'datatable'" class="text-center py-12">
-    <p class="text-slate-600 dark:text-slate-400">
-      Vista <strong class="text-slate-900 dark:text-white">{{ viewMode }}</strong> disponible en el archivo completo.
-    </p>
-    <p class="text-sm text-slate-500 dark:text-slate-500 mt-2">
-      Consulta el archivo teams-page.visual.html para ver todas las implementaciones.
-    </p>
-  </div>
+  <!-- Cards -->
+  <div *ngIf="view() === 'cards'" class="mt-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let t of filteredTeams()" class="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-5 shadow-lg hover:scale-105 transform transition">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-rose-500 text-white flex items-center justify-center font-bold text-lg">{{ t.name.charAt(0) }}</div>
+            <div>
+              <div class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ t.name }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">{{ t.city }} · Fundado {{ t.founded | slice:0:4 }}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-slate-900 dark:text-slate-100">{{ t.rating.toFixed(1) }}</div>
+            <div class="text-xs text-slate-500">{{ t.wins }}W · {{ t.losses }}L</div>
+          </div>
+        </div>
 
-</div>
+        <div class="mt-4 flex items-center justify-between">
+          <div class="text-sm text-slate-700 dark:text-slate-300">Miembros: <span class="font-medium">{{ t.members.length }}</span></div>
+          <div class="inline-flex gap-2">
+            <button class="px-3 py-1 rounded-md bg-indigo-600 text-white text-xs">Detalle</button>
+            <button class="px-3 py-1 rounded-md bg-slate-200 text-xs">Mensaje</button>
+          </div>
+        </div>
+
+        <div class="mt-4 text-xs text-slate-500">Jugadores: {{ t.members.join(', ') }}</div>
+      </div>
+    </div>
+  </div>
+</section>

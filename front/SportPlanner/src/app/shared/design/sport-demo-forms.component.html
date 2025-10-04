@@ -1,0 +1,77 @@
+<section class="p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+  <header class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-extrabold text-slate-900 dark:text-slate-100">Forms Gallery</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Dos formularios de ejemplo: Registro de equipo y Contacto rápido</p>
+    </div>
+
+    <div class="inline-flex bg-white/60 dark:bg-slate-800/60 p-1 rounded-lg shadow-sm">
+      <button (click)="view.set('team')" [class]="view() === 'team' ? 'px-3 py-1 rounded-lg bg-indigo-600 text-white' : 'px-3 py-1 rounded-lg text-sm text-slate-600 dark:text-slate-300'">Registro equipo</button>
+      <button (click)="view.set('contact')" [class]="view() === 'contact' ? 'px-3 py-1 rounded-lg bg-emerald-600 text-white' : 'px-3 py-1 rounded-lg text-sm text-slate-600 dark:text-slate-300'">Contacto</button>
+    </div>
+  </header>
+
+  <div *ngIf="view() === 'team'" class="bg-white/60 dark:bg-slate-800/60 p-6 rounded-lg shadow-md">
+    <form [formGroup]="teamForm" (ngSubmit)="submitTeam()" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Nombre del equipo</label>
+        <input formControlName="name" class="mt-1 w-full rounded-md border p-2" placeholder="Nombre" />
+        <div *ngIf="teamForm.controls['name'].touched && teamForm.controls['name'].invalid" class="text-xs text-rose-500 mt-1">Nombre requerido (mín 3 caracteres)</div>
+      </div>
+
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Ciudad</label>
+        <input formControlName="city" class="mt-1 w-full rounded-md border p-2" placeholder="Ciudad" />
+        <div *ngIf="teamForm.controls['city'].touched && teamForm.controls['city'].invalid" class="text-xs text-rose-500 mt-1">Ciudad requerida</div>
+      </div>
+
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Año fundado</label>
+        <input formControlName="founded" type="date" class="mt-1 w-full rounded-md border p-2" />
+      </div>
+
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Miembros (coma-separated)</label>
+        <input formControlName="members" class="mt-1 w-full rounded-md border p-2" placeholder="Ana, Luis, Carlos" />
+      </div>
+
+      <div class="sm:col-span-2 flex items-center justify-between mt-2">
+        <div class="text-sm text-slate-600">Preview: <span class="font-medium">{{ teamForm.value.name || '—' }}</span></div>
+        <button type="submit" class="px-4 py-2 rounded-md bg-indigo-600 text-white">Enviar</button>
+      </div>
+    </form>
+
+    <div *ngIf="submittedTeam" class="mt-4 p-3 rounded-md bg-slate-100 dark:bg-slate-800">
+      <div class="text-sm font-semibold">Equipo enviado:</div>
+      <pre class="text-xs mt-2">{{ submittedTeam | json }}</pre>
+    </div>
+  </div>
+
+  <div *ngIf="view() === 'contact'" class="bg-white/60 dark:bg-slate-800/60 p-6 rounded-lg shadow-md">
+    <form [formGroup]="contactForm" (ngSubmit)="submitContact()" class="grid grid-cols-1 gap-4">
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Tu nombre</label>
+        <input formControlName="name" class="mt-1 w-full rounded-md border p-2" placeholder="Nombre" />
+      </div>
+
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+        <input formControlName="email" type="email" class="mt-1 w-full rounded-md border p-2" placeholder="tu@ejemplo.com" />
+      </div>
+
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Mensaje</label>
+        <textarea formControlName="message" rows="4" class="mt-1 w-full rounded-md border p-2" placeholder="Escribe tu mensaje..."></textarea>
+      </div>
+
+      <div class="flex items-center justify-end">
+        <button type="submit" class="px-4 py-2 rounded-md bg-emerald-600 text-white">Enviar mensaje</button>
+      </div>
+    </form>
+
+    <div *ngIf="submittedContact" class="mt-4 p-3 rounded-md bg-slate-100 dark:bg-slate-800">
+      <div class="text-sm font-semibold">Mensaje enviado:</div>
+      <pre class="text-xs mt-2">{{ submittedContact | json }}</pre>
+    </div>
+  </div>
+</section>

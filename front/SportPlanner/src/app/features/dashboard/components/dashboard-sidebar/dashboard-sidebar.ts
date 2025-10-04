@@ -1,10 +1,11 @@
-import { Component, input, inject } from '@angular/core';
+import { Component, input, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-sidebar',
-  imports: [TranslateModule],
+  imports: [TranslateModule, CommonModule],
   templateUrl: './dashboard-sidebar.html'
 })
 export class DashboardSidebar {
@@ -13,6 +14,9 @@ export class DashboardSidebar {
 
   // Inputs
   isCollapsed = input<boolean>(false);
+
+  // State
+  designMenuOpen = signal(false);
 
   // Methods
   goToHome() {
@@ -37,5 +41,21 @@ export class DashboardSidebar {
 
   goToHelp() {
     this.router.navigate(['/dashboard/help']);
+  }
+
+  toggleDesignMenu() {
+    this.designMenuOpen.update(open => !open);
+  }
+
+  goToDesignTables() {
+    this.router.navigate(['/dashboard/design/tables']);
+  }
+
+  goToDesignCards() {
+    this.router.navigate(['/dashboard/design/cards']);
+  }
+
+  goToDesignForms() {
+    this.router.navigate(['/dashboard/design/forms']);
   }
 }

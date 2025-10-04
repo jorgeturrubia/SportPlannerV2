@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -34,6 +35,7 @@ export class SubscriptionService {
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
   private apiBaseUrl = environment.apiBaseUrl;
+  private platformId = inject(PLATFORM_ID);
 
   /**
    * Create a new subscription for the current user.
@@ -50,6 +52,11 @@ export class SubscriptionService {
         console.error('[SubscriptionService] NO TOKEN FOUND! User may not be properly authenticated.');
       }
       
+      if (!isPlatformBrowser(this.platformId)) {
+        console.log('[SubscriptionService] createSubscription skipped on server');
+        throw new Error('Cannot create subscription during server-side render');
+      }
+
       const subscriptionId = await firstValueFrom(
         this.http.post<string>(`${this.apiBaseUrl}/api/subscription`, request)
       );
@@ -69,6 +76,11 @@ export class SubscriptionService {
    */
   async getMySubscription(): Promise<Subscription | null> {
     try {
+      if (!isPlatformBrowser(this.platformId)) {
+        console.log('[SubscriptionService] getMySubscription skipped on server');
+        return null;
+      }
+
       const subscription = await firstValueFrom(
         this.http.get<Subscription>(`${this.apiBaseUrl}/api/subscription/my`)
       );

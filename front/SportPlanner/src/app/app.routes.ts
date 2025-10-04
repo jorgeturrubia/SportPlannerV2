@@ -27,7 +27,25 @@ export const routes: Routes = [
       },
       {
         path: 'teams',
-        loadComponent: () => import('./features/dashboard/pages/teams-page/teams-page').then(m => m.TeamsPage)
+        loadComponent: () => import('./features/dashboard/pages/teams-blank/teams-blank.component').then(m => m.TeamsBlankComponent)
+      }
+      ,
+      {
+        path: 'design',
+        children: [
+          {
+            path: 'tables',
+            loadComponent: () => import('./shared/design/sport-demo-tables.component').then(m => m.SportDemoTablesComponent)
+          },
+          {
+            path: 'cards',
+            loadComponent: () => import('./shared/design/sport-demo-tables.component').then(m => m.SportDemoTablesComponent)
+          },
+          {
+            path: 'forms',
+            loadComponent: () => import('./shared/design/sport-demo-forms.component').then(m => m.SportDemoFormsComponent)
+          }
+        ]
       }
     ]
   },

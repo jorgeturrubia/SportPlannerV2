@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { SubscriptionService } from '../services/subscription.service';
+import { isPlatformBrowser } from '@angular/common';
 
 /**
  * Guard to check if user has an active subscription.
@@ -9,8 +10,14 @@ import { SubscriptionService } from '../services/subscription.service';
 export const subscriptionGuard: CanActivateFn = async () => {
   const subscriptionService = inject(SubscriptionService);
   const router = inject(Router);
+  const platformId = inject(PLATFORM_ID);
 
-  console.log('[SubscriptionGuard] Checking subscription...');
+  // Avoid running the guard's HTTP checks during server-side rendering
+  if (!isPlatformBrowser(platformId)) {
+    // Minimal log to make CI/debugging clearer, but skip network calls
+    console.log('[SubscriptionGuard] Skipping subscription check on server');
+    return true; // allow navigation during SSR; client will re-check
+  }
 
   try {
     const subscription = await subscriptionService.getMySubscription();
@@ -25,7 +32,6 @@ export const subscriptionGuard: CanActivateFn = async () => {
       return router.createUrlTree(['/subscription/select']);
     }
 
-    console.log('[SubscriptionGuard] Subscription active, allowing access');
     return true;
   } catch (error) {
     console.error('[SubscriptionGuard] Error checking subscription:', error);
