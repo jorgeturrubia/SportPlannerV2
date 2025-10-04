@@ -28,25 +28,21 @@
 
   <!-- Cards Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-  <div *ngFor="let item of filteredAthletes() ; trackBy: trackById" class="card-anim-wrapper sp-animate-in group relative bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl dark:shadow-gray-900/50 transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div *ngFor="let item of filteredAthletes() ; trackBy: trackById" class="card-anim-wrapper sp-animate-in group relative bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl dark:shadow-gray-900/50 transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700">
       <!-- Header Gradient -->
       <div class="h-24 relative overflow-hidden" [ngClass]="getGradient(item)">
         <div class="absolute inset-0 bg-black/5 dark:bg-black/20"></div>
-        <ng-container *ngIf="cardConfig().headerBadgeField">
-          <div class="absolute top-3 right-3 flex gap-2">
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/25 backdrop-blur-sm text-white shadow-sm">
-              {{ getFieldValue(item, cardConfig().headerBadgeField!) }}
-            </span>
-          </div>
-        </ng-container>
+        <div class="absolute top-3 right-3 flex gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/25 backdrop-blur-sm text-white shadow-sm">
+            {{ item.sport }}
+          </span>
+        </div>
         <!-- Avatar -->
-        <ng-container *ngIf="cardConfig().avatarField">
-          <div class="absolute -bottom-10 left-6">
-            <div class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold border-4 border-white dark:border-gray-800 shadow-lg" [ngClass]="getGradient(item)">
-              <span class="text-white">{{ getFieldValue(item, cardConfig().avatarField!) }}</span>
-            </div>
+        <div class="absolute -bottom-10 left-6">
+          <div class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold border-4 border-white dark:border-gray-800 shadow-lg" [ngClass]="getGradient(item)">
+            <span class="text-white">{{ item.avatar }}</span>
           </div>
-        </ng-container>
+        </div>
       </div>
 
       <!-- Card Content -->
@@ -54,77 +50,48 @@
         <!-- Title -->
         <div class="mb-4">
           <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            {{ getFieldValue(item, cardConfig().titleField) }}
+            {{ item.name }}
           </h3>
 
           <!-- Subtitle Badges -->
-          <ng-container *ngIf="cardConfig().subtitleFields && cardConfig().subtitleFields!.length > 0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <ng-container *ngFor="let field of cardConfig().subtitleFields">
-                <ng-container *ngIf="field.type === 'badge'">
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getBadgeColor(getFieldValue(item, field.key), field)">
-                    {{ getFieldValue(item, field.key) }}
-                  </span>
-                </ng-container>
-              </ng-container>
-            </div>
-          </ng-container>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getBadgeColor(item.level)">
+              {{ item.level }}
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getBadgeColor(item.status)">
+              {{ item.status }}
+            </span>
+          </div>
         </div>
 
         <!-- Info Fields -->
-        <ng-container *ngIf="cardConfig().infoFields && cardConfig().infoFields.length > 0">
-          <div class="space-y-3 mb-4">
-            <ng-container *ngFor="let field of cardConfig().infoFields">
-              <ng-container *ngIf="(getFieldValue(item, field.key) !== null) && (getFieldValue(item, field.key) !== undefined) && (field.visible !== false)">
-                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <ng-container *ngIf="field.icon">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="field.icon" />
-                    </svg>
-                  </ng-container>
-                  <span class="flex-shrink-0">{{ field.label | translate }}</span>
-
-                  <ng-container *ngIf="field.type === 'badge'">
-                    <span class="ml-auto px-2 py-0.5 rounded-full text-xs font-semibold" [ngClass]="getBadgeColor(getFieldValue(item, field.key), field)">
-                      {{ getFieldValue(item, field.key) }}
-                    </span>
-                  </ng-container>
-
-                  <ng-container *ngIf="field.type === 'number' || field.type === 'icon-value'">
-                    <span class="ml-auto font-semibold" [ngClass]="getColorForValue(getFieldValue(item, field.key), field)">
-                      {{ getFieldValue(item, field.key) }}<ng-container *ngIf="field.suffix"> {{ field.suffix | translate }}</ng-container>
-                    </span>
-                  </ng-container>
-
-                  <ng-container *ngIf="field.type !== 'badge' && field.type !== 'number' && field.type !== 'icon-value'">
-                    <span class="ml-auto font-semibold text-gray-900 dark:text-gray-100">
-                      {{ getFieldValue(item, field.key) }}
-                    </span>
-                  </ng-container>
-                </div>
-              </ng-container>
-            </ng-container>
+        <div class="space-y-3 mb-4">
+          <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            <span class="flex-shrink-0">{{ 'cards.country' | translate }}</span>
+            <span class="ml-auto font-semibold text-gray-900 dark:text-gray-100">{{ item.country }}</span>
           </div>
-        </ng-container>
-
-        <!-- Action Buttons -->
-        <ng-container *ngIf="cardConfig().actions && cardConfig().actions!.length > 0">
-          <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <ng-container *ngFor="let action of cardConfig().actions">
-              <button
-                (click)="callAction(action, item)"
-                [class]="(action.primary ? 'flex-1 ' : '') + 'px-4 py-2.5 rounded-lg font-semibold transition-transform duration-200 hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2 ' + action.color"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="action.icon" />
-                </svg>
-                <ng-container *ngIf="action.primary">
-                  {{ action.label | translate }}
-                </ng-container>
-              </button>
-            </ng-container>
+          <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            <span class="flex-shrink-0">{{ 'cards.age' | translate }}</span>
+            <span class="ml-auto font-semibold" [ngClass]="getColorForValue(item.age)">{{ item.age }} {{ 'cards.yearsOld' | translate }}</span>
           </div>
-        </ng-container>
+          <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            <span class="flex-shrink-0">{{ 'cards.sessions' | translate }}</span>
+            <span class="ml-auto font-semibold" [ngClass]="getColorForValue(item.totalSessions)">{{ item.totalSessions }}</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+            <span class="flex-shrink-0">{{ 'cards.performance' | translate }}</span>
+            <span class="ml-auto font-semibold" [ngClass]="getColorForValue(item.performance)">{{ item.performance }}%</span>
+          </div>
+          <div *ngIf="item.nextSession" class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            <span class="flex-shrink-0">{{ 'cards.nextSession' | translate }}</span>
+            <span class="ml-auto font-semibold text-gray-900 dark:text-gray-100">{{ item.nextSession }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Hover Effect Overlay -->
@@ -146,31 +113,4 @@
       </p>
     </div>
   </ng-container>
-
-  <!-- Edit Overlay (use shared DynamicForm) -->
-  <app-dynamic-form
-    [isOpen]="editing() !== null"
-    [config]="formConfig()"
-    [title]="'Edit Athlete'"
-    [initialData]="editing()"
-    (submit)="onFormSubmit($event)"
-    (cancel)="cancelEdit()">
-  </app-dynamic-form>
-
-  <!-- Reusable confirmation dialog -->
-  <app-confirmation-dialog
-    [isOpen]="confirmModal().open"
-    [config]="confirmConfig()"
-    (confirm)="confirmRemove()"
-    (cancel)="closeConfirm()">
-  </app-confirmation-dialog>
-
-  <!-- Undo Toast (persistent until closed or undone) -->
-  <div *ngIf="undoToast().open" class="fixed right-6 bottom-6 z-70">
-    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg px-4 py-3 flex items-center gap-4">
-      <div class="text-sm text-slate-800 dark:text-slate-100">{{ undoToast().message }}</div>
-      <button (click)="undoLast()" class="ml-2 px-3 py-1 rounded-md bg-indigo-600 text-white text-sm">Undo</button>
-      <button (click)="undoToast.set({ open: false, message: '' })" class="ml-2 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm">Cerrar</button>
-    </div>
-  </div>
 </div>

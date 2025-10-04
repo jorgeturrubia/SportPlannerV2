@@ -26,26 +26,8 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/pages/dashboard-home/dashboard-home').then(m => m.DashboardHome)
       },
       {
-        path: 'teams',
-        loadComponent: () => import('./features/dashboard/pages/teams/teams').then(m => m.TeamsPage)
-      }
-      ,
-      {
-        path: 'design',
-        children: [
-          {
-            path: 'tables',
-            loadComponent: () => import('./shared/design/sport-tables-design/sport-tables-design').then(m => m.SportTablesDesign)
-          },
-          {
-            path: 'cards',
-            loadComponent: () => import('./features/dashboard/pages/cards-showcase/cards-showcase').then(m => m.CardsShowcase)
-          },
-          {
-            path: 'forms',
-            loadComponent: () => import('./shared/design/sport-tables-design/sport-tables-design').then(m => m.SportTablesDesign)
-          }
-        ]
+        path: 'cards',
+        loadComponent: () => import('./features/dashboard/pages/cards-showcase/cards-showcase').then(m => m.CardsShowcase)
       }
     ]
   },
