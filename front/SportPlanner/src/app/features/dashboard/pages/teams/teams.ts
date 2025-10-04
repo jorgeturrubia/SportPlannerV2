@@ -181,6 +181,48 @@ export class TeamsPage implements OnInit {
     return TeamColor[color] || 'Unknown';
   }
 
+  /**
+   * Get default seed IDs based on subscription sport
+   * Using seed values from backend MasterDataSeeder
+   */
+  private getDefaultIdsBySport(sportStr: string): { categoryId: string; genderId: string; ageGroupId: string } {
+    // Parse sport string to enum (0=Football, 1=Basketball, 2=Handball)
+    const sport = sportStr === 'Football' ? Sport.Football :
+                  sportStr === 'Basketball' ? Sport.Basketball :
+                  sportStr === 'Handball' ? Sport.Handball : Sport.Football;
+
+    // Default gender: Masculino
+    const genderId = '11111111-1111-1111-1111-111111111111';
+
+    switch (sport) {
+      case Sport.Football:
+        return {
+          categoryId: '11111111-1111-1111-1111-111111111101', // Nivel A Football
+          genderId: genderId,
+          ageGroupId: '11111111-1111-1111-1111-111111111007'  // Senior Football
+        };
+      case Sport.Basketball:
+        return {
+          categoryId: '22222222-2222-2222-2222-222222222201', // Nivel A Basketball
+          genderId: genderId,
+          ageGroupId: '22222222-2222-2222-2222-222222222005'  // Senior Basketball
+        };
+      case Sport.Handball:
+        return {
+          categoryId: '33333333-3333-3333-3333-333333333301', // Nivel A Handball
+          genderId: genderId,
+          ageGroupId: '33333333-3333-3333-3333-333333333004'  // Senior Handball
+        };
+      default:
+        // Fallback to Football
+        return {
+          categoryId: '11111111-1111-1111-1111-111111111101',
+          genderId: genderId,
+          ageGroupId: '11111111-1111-1111-1111-111111111007'
+        };
+    }
+  }
+
   // --- Delete Logic ---
   openDeleteConfirm(team: TeamResponse): void {
     this.selectedTeam.set(team);
@@ -256,10 +298,35 @@ export class TeamsPage implements OnInit {
           );
         }
       } else {
-        // Add new team - Note: This requires teamCategoryId, genderId, ageGroupId
-        // For now, we'll show an error since we need to implement those selectors
-        this.error.set('Creating new teams requires additional configuration (category, gender, age group)');
-        console.error('Create team not fully implemented - missing required fields');
+        // Add new team - Using default seed values based on subscription sport
+        const subscription = this.subscriptionContext.subscription();
+        if (!subscription) {
+          throw new Error('Subscription not loaded');
+        }
+
+        // Get default IDs based on sport
+        const defaultIds = this.getDefaultIdsBySport(subscription.sport);
+
+        const createPayload: CreateTeamRequest = {
+          name: formData.name,
+          color: Number(formData.color),
+          teamCategoryId: defaultIds.categoryId,
+          genderId: defaultIds.genderId,
+          ageGroupId: defaultIds.ageGroupId,
+          description: formData.description,
+          homeVenue: formData.homeVenue,
+          coachName: formData.coachName,
+          contactEmail: formData.contactEmail,
+          contactPhone: formData.contactPhone,
+          allowMixedGender: false
+        };
+
+        const newTeamId = await this.teamsService.createTeam(subscriptionId, createPayload);
+
+        if (newTeamId) {
+          // Reload teams to get the complete data
+          await this.loadTeams();
+        }
       }
 
       this.closeForm();
