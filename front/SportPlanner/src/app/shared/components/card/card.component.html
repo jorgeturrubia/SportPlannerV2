@@ -1,16 +1,29 @@
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow duration-300 ease-in-out">
-  <!-- Card Header -->
-  <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-    <ng-content select="[card-header]"></ng-content>
-  </div>
+<div class="group relative bg-white dark:bg-slate-900 rounded-2xl shadow-md hover:shadow-2xl dark:shadow-gray-900/50 transition-all duration-300 ease-in-out border border-slate-200 dark:border-slate-800">
+  <!-- Gradient border on hover -->
+  <div class="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
+  <div class="relative h-full flex flex-col justify-between bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
 
-  <!-- Card Body -->
-  <div class="p-6">
-    <ng-content select="[card-body]"></ng-content>
-  </div>
+    <!-- Card Header -->
+    <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-800">
+      <ng-content select="[card-header]"></ng-content>
+    </div>
 
-  <!-- Card Footer -->
-  <div class="p-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
-    <ng-content select="[card-footer]"></ng-content>
+    <!-- Card Body -->
+    <div class="px-6 py-5 flex-grow">
+      <ng-content select="[card-body]"></ng-content>
+    </div>
+
+    <!-- Card Footer -->
+    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <ng-content select="[card-footer]"></ng-content>
+      <div *ngIf="showActions" class="flex items-center gap-2">
+        <button (click)="edit.emit()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <svg class="w-5 h-5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
+        </button>
+        <button (click)="delete.emit()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

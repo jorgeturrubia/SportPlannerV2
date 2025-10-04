@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,4 +8,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.css']
 })
-export class CardComponent {}
+export class CardComponent {
+  @Input() showActions = false;
+  @Output() edit = new EventEmitter<void>();
+  @Output() delete = new EventEmitter<void>();
+}
