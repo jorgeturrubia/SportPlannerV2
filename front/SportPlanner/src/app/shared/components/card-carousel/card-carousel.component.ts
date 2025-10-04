@@ -24,6 +24,7 @@ export class CardCarouselComponent implements OnInit, OnDestroy {
   }
 
   @Input() cardWidth: number = 320;
+  @Input() cardHeight: number = 420;
   @Input() gap: number = 24;
   @Input() autoPlayInterval: number = 3000;
   @Input() autoPlay: boolean = true;
@@ -242,5 +243,28 @@ export class CardCarouselComponent implements OnInit, OnDestroy {
 
     // Revisar y corregir la posición si entramos en clones
     this.checkLoopPosition();
+    // Después de la transición, asegurar que la tarjeta esté visible verticalmente
+    setTimeout(() => this.scrollActiveCardIntoView(this.currentIndex()), 520);
+  }
+
+  private scrollActiveCardIntoView(loopedIndex: number) {
+    try {
+      if (!this.carouselTrack) return;
+      const trackEl = this.carouselTrack.nativeElement as HTMLElement;
+      const child = trackEl.querySelector(`[data-index="${loopedIndex}"]`) as HTMLElement | null;
+      if (!child) return;
+
+      // Hacer scroll vertical en la página para que el elemento sea totalmente visible
+      // usamos block: 'center' para centrar verticalmente cuando sea posible
+      child.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+    } catch (e) {
+      // no bloquear si falla
+      console.warn('scrollActiveCardIntoView error', e);
+    }
+  }
+
+  // Helper para usar min en templates
+  min(a: number, b: number): number {
+    return Math.min(a, b);
   }
 }

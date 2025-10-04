@@ -11,37 +11,94 @@
     </button>
   </div>
 
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <p class="text-red-800 dark:text-red-200">{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (teams().length === 0 && !error()) {
+    <div class="text-center py-20">
+      <div class="text-6xl mb-4">🏆</div>
+      <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">No teams yet</h3>
+      <p class="text-slate-500 dark:text-slate-400">Create your first team to get started</p>
+    </div>
+  }
+
   <!-- Card Carousel -->
-  <app-card-carousel [items]="teams()">
-    <ng-template #cardTemplate let-team let-isActive="isActive">
-      <app-card
-        [class.card-active]="isActive"
-        [showActions]="isActive"
-        (edit)="openEditForm(team)"
-        (delete)="openDeleteConfirm(team)">
+  @else {
+    <app-card-carousel [items]="teams()">
+      <ng-template #cardTemplate let-team let-isActive="isActive">
+        <app-card
+          [class.card-active]="isActive"
+          [showActions]="isActive"
+          (edit)="openEditForm(team)"
+          (delete)="openDeleteConfirm(team)">
 
-        <div card-header class="flex justify-between items-start">
-          <div>
-            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ team.name }}</h2>
-            <p class="text-sm font-medium text-purple-600 dark:text-purple-400">{{ team.sport }}</p>
+          <div card-header class="flex justify-between items-start">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ team.name }}</h2>
+              <p class="text-sm font-medium text-purple-600 dark:text-purple-400">{{ getSportName(team.sport) }}</p>
+            </div>
+            <div class="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50 text-2xl">
+              {{ getSportIcon(team.sport) }}
+            </div>
           </div>
-          <div class="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50 text-2xl">
-            {{ team.avatar }}
-          </div>
-        </div>
 
-        <div card-body>
-          <p class="text-slate-600 dark:text-slate-300">{{ team.description }}</p>
-        </div>
+          <div card-body>
+            <p class="text-slate-600 dark:text-slate-300 mb-4">{{ team.description || 'No description' }}</p>
 
-        <div card-footer>
-          <div class="text-sm text-slate-500 dark:text-slate-400">
-            <span class="font-semibold text-slate-700 dark:text-slate-200">{{ team.members }}</span> Members
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <span class="text-slate-500 dark:text-slate-400">Color:</span>
+                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ getColorName(team.color) }}</span>
+              </div>
+              <div>
+                <span class="text-slate-500 dark:text-slate-400">Category:</span>
+                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.category.name }}</span>
+              </div>
+              @if (team.coachName) {
+                <div>
+                  <span class="text-slate-500 dark:text-slate-400">Coach:</span>
+                  <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.coachName }}</span>
+                </div>
+              }
+              @if (team.homeVenue) {
+                <div>
+                  <span class="text-slate-500 dark:text-slate-400">Venue:</span>
+                  <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.homeVenue }}</span>
+                </div>
+              }
+            </div>
           </div>
-        </div>
-      </app-card>
-    </ng-template>
-  </app-card-carousel>
+
+          <div card-footer>
+            <div class="flex justify-between items-center text-sm">
+              <div class="text-slate-500 dark:text-slate-400">
+                <span class="font-semibold text-slate-700 dark:text-slate-200">{{ team.currentPlayersCount }}</span> / {{ team.maxPlayers }} Players
+              </div>
+              <div class="text-xs px-2 py-1 rounded-full"
+                   [class.bg-green-100]="team.isActive"
+                   [class.text-green-700]="team.isActive"
+                   [class.bg-gray-100]="!team.isActive"
+                   [class.text-gray-700]="!team.isActive">
+                {{ team.isActive ? 'Active' : 'Inactive' }}
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </ng-template>
+    </app-card-carousel>
+  }
 
   <!-- Confirmation Dialog -->
   <app-confirmation-dialog 

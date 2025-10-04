@@ -1,4 +1,4 @@
-<div class="relative w-full overflow-hidden py-12" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+<div class="relative w-full overflow-x-hidden overflow-visible py-12" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <!-- Navigation Buttons -->
   <button
     (click)="prev()"
@@ -12,7 +12,7 @@
   <div class="w-full relative" style="perspective: 1500px;">
     <div
       #carouselTrack
-      class="flex flex-nowrap transition-transform ease-out"
+      class="flex flex-nowrap items-start transition-transform ease-out"
       [style.gap.px]="gap"
       [class.duration-0]="!isTransitioning()"
       [style.transform]="getTransform()"
@@ -20,8 +20,10 @@
 
       <ng-container *ngIf="cardTemplate; else projected">
         <div *ngFor="let item of loopedItems(); let idx = index; trackBy: trackByIndex"
-             class="flex-shrink-0 transition-all duration-500 cursor-pointer"
+             class="flex-shrink-0 transition-all duration-500 cursor-pointer flex items-start justify-center"
              [style.width.px]="cardWidth"
+             [style.maxHeight.px]="cardHeight"
+             [style.minHeight.px]="min(cardHeight, 200)"
              [attr.data-index]="idx"
              [attr.data-current]="currentIndex()"
              (click)="bringToFront(idx)"
@@ -35,10 +37,12 @@
                'z-50': currentIndex() === idx,
                'shadow-2xl': currentIndex() === idx
              }">
-          <ng-container
-            [ngTemplateOutlet]="cardTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, index: idx, isActive: currentIndex() === idx }">
-          </ng-container>
+          <div class="w-full h-full p-4">
+            <ng-container
+              [ngTemplateOutlet]="cardTemplate"
+              [ngTemplateOutletContext]="{ $implicit: item, index: idx, isActive: currentIndex() === idx }">
+            </ng-container>
+          </div>
         </div>
       </ng-container>
 
