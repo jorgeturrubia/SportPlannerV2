@@ -59,8 +59,15 @@ public class TeamsController : ControllerBase
         [FromRoute] Guid teamId,
         CancellationToken cancellationToken)
     {
-        // For now, return a simple response - this would need a proper query handler
-        return Ok(new { message = "Team endpoint - to be implemented with GetTeamQuery" });
+        var query = new GetTeamQuery(subscriptionId, teamId);
+        var team = await _mediator.Send(query, cancellationToken);
+
+        if (team == null)
+        {
+            return NotFound(new { message = "Team not found or does not belong to this subscription" });
+        }
+
+        return Ok(team);
     }
 
     /// <summary>
@@ -72,7 +79,9 @@ public class TeamsController : ControllerBase
         [FromQuery] bool activeOnly = true,
         CancellationToken cancellationToken = default)
     {
-        // For now, return a simple response - this would need a proper query handler
-        return Ok(new { message = "Teams list endpoint - to be implemented with GetTeamsQuery" });
+        var query = new GetTeamsQuery(subscriptionId, activeOnly);
+        var teams = await _mediator.Send(query, cancellationToken);
+
+        return Ok(teams);
     }
 }

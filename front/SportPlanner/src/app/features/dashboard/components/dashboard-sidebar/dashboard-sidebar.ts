@@ -17,6 +17,7 @@ export class DashboardSidebar {
 
   // State
   designMenuOpen = signal(false);
+  masterDataMenuOpen = signal(false);
 
   // Methods
   goToHome() {
@@ -57,5 +58,21 @@ export class DashboardSidebar {
 
   goToDesignForms() {
     this.router.navigate(['/dashboard/design/forms']);
+  }
+
+  toggleMasterDataMenu() {
+    this.masterDataMenuOpen.update(open => !open);
+  }
+
+  goToGenders() {
+    this.router.navigate(['/dashboard/master-data/genders']);
+  }
+
+  goToAgeGroups() {
+    this.router.navigate(['/dashboard/master-data/age-groups']);
+  }
+
+  goToCategories() {
+    this.router.navigate(['/dashboard/master-data/categories']);
   }
 }

@@ -15,7 +15,9 @@ export class CardCarouselComponent implements OnInit, OnDestroy {
   @ContentChild('cardTemplate', { read: TemplateRef }) cardTemplate?: TemplateRef<any>;
 
   @Input() set items(value: any[]) {
-    this._items.set(value);
+    // Asegurar que siempre sea un array
+    const validValue = Array.isArray(value) ? value : [];
+    this._items.set(validValue);
     this.createLoopedItems();
   }
 
@@ -78,7 +80,12 @@ export class CardCarouselComponent implements OnInit, OnDestroy {
 
   private createLoopedItems(): void {
     const items = this._items();
-    if (items.length === 0) return;
+
+    // Verificar que items es un array válido
+    if (!Array.isArray(items) || items.length === 0) {
+      this.loopedItems.set([]);
+      return;
+    }
 
     // Ajustar cloneCount si la cantidad de items es menor
     this.normalizeCloneCount();
@@ -185,7 +192,10 @@ export class CardCarouselComponent implements OnInit, OnDestroy {
 
   // Ajusta cloneCount si hay pocos items para evitar clones mayores que el array
   private normalizeCloneCount() {
-    const total = this._items().length;
+    const items = this._items();
+    if (!Array.isArray(items)) return;
+
+    const total = items.length;
     if (total === 0) return;
     if (this.cloneCount >= total) {
       // Mantener al menos 1 clone, pero no más que la mitad del array

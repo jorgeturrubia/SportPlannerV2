@@ -28,8 +28,24 @@ export const routes: Routes = [
       {
         path: 'teams',
         loadComponent: () => import('./features/dashboard/pages/teams/teams').then(m => m.TeamsPage)
-      }
-      ,
+      },
+      {
+        path: 'master-data',
+        children: [
+          {
+            path: 'genders',
+            loadComponent: () => import('./features/dashboard/pages/master-data/genders/genders.page').then(m => m.GendersPage)
+          },
+          {
+            path: 'age-groups',
+            loadComponent: () => import('./features/dashboard/pages/master-data/age-groups/age-groups.page').then(m => m.AgeGroupsPage)
+          },
+          {
+            path: 'categories',
+            loadComponent: () => import('./features/dashboard/pages/master-data/categories/categories.page').then(m => m.CategoriesPage)
+          }
+        ]
+      },
       {
         path: 'design',
         children: [

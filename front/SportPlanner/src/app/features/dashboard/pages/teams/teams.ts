@@ -6,6 +6,7 @@ import { CardCarouselComponent } from '../../../../shared/components/card-carous
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { TeamsService } from '../../services/teams.service';
 import { SubscriptionContextService } from '../../../../core/subscription/services/subscription-context.service';
+import { MasterDataService } from '../../services/master-data.service';
 
 // Enums from backend
 export enum TeamColor {
@@ -107,10 +108,16 @@ interface CreateTeamRequest {
 export class TeamsPage implements OnInit {
   private teamsService = inject(TeamsService);
   private subscriptionContext = inject(SubscriptionContextService);
+  private masterDataService = inject(MasterDataService);
 
   teams = signal<TeamResponse[]>([]);
   isLoading = signal(false);
   error = signal<string | null>(null);
+
+  // Master data options
+  genders = signal<GenderResponse[]>([]);
+  ageGroups = signal<AgeGroupResponse[]>([]);
+  teamCategories = signal<TeamCategoryResponse[]>([]);
 
   // Dialog and Form state
   isConfirmDialogOpen = signal(false);
@@ -118,18 +125,77 @@ export class TeamsPage implements OnInit {
   selectedTeam = signal<TeamResponse | null>(null);
   formTitle = 'Add New Team';
 
-  teamFormConfig: FormField[] = [
-    { key: 'name', label: 'Team Name', type: 'text', required: true },
-    { key: 'color', label: 'Color', type: 'select', required: true, options: this.getColorOptions() },
-    { key: 'description', label: 'Description', type: 'textarea' },
-    { key: 'homeVenue', label: 'Home Venue', type: 'text' },
-    { key: 'coachName', label: 'Coach Name', type: 'text' },
-    { key: 'contactEmail', label: 'Contact Email', type: 'text' },
-    { key: 'contactPhone', label: 'Contact Phone', type: 'text' }
-  ];
+  teamFormConfig = signal<FormField[]>([]);
 
   async ngOnInit(): Promise<void> {
-    await this.loadTeams();
+    await Promise.all([
+      this.loadTeams(),
+      this.loadMasterData()
+    ]);
+    this.buildFormConfig();
+  }
+
+  private async loadMasterData(): Promise<void> {
+    try {
+      const subscription = this.subscriptionContext.subscription();
+      if (!subscription) return;
+
+      const sport = this.parseSportToEnum(subscription.sport);
+
+      const [genders, ageGroups, teamCategories] = await Promise.all([
+        this.masterDataService.getGenders(),
+        this.masterDataService.getAgeGroups(sport),
+        this.masterDataService.getTeamCategories(sport)
+      ]);
+
+      this.genders.set(genders);
+      this.ageGroups.set(ageGroups);
+      this.teamCategories.set(teamCategories);
+    } catch (err: any) {
+      console.error('Failed to load master data:', err);
+    }
+  }
+
+  private buildFormConfig(): void {
+    this.teamFormConfig.set([
+      { key: 'name', label: 'Team Name', type: 'text', required: true },
+      { key: 'color', label: 'Color', type: 'select', required: true, options: this.getColorOptions() },
+      {
+        key: 'teamCategoryId',
+        label: 'Category',
+        type: 'select',
+        required: true,
+        options: this.teamCategories().map(c => ({ value: c.id, label: c.name }))
+      },
+      {
+        key: 'genderId',
+        label: 'Gender',
+        type: 'select',
+        required: true,
+        options: this.genders().map(g => ({ value: g.id, label: g.name }))
+      },
+      {
+        key: 'ageGroupId',
+        label: 'Age Group',
+        type: 'select',
+        required: true,
+        options: this.ageGroups().map(a => ({ value: a.id, label: a.name }))
+      },
+      { key: 'description', label: 'Description', type: 'textarea' },
+      { key: 'homeVenue', label: 'Home Venue', type: 'text' },
+      { key: 'coachName', label: 'Coach Name', type: 'text' },
+      { key: 'contactEmail', label: 'Contact Email', type: 'text' },
+      { key: 'contactPhone', label: 'Contact Phone', type: 'text' }
+    ]);
+  }
+
+  private parseSportToEnum(sportStr: string): number {
+    switch (sportStr) {
+      case 'Football': return Sport.Football;
+      case 'Basketball': return Sport.Basketball;
+      case 'Handball': return Sport.Handball;
+      default: return Sport.Football;
+    }
   }
 
   private async loadTeams(): Promise<void> {
@@ -181,47 +247,6 @@ export class TeamsPage implements OnInit {
     return TeamColor[color] || 'Unknown';
   }
 
-  /**
-   * Get default seed IDs based on subscription sport
-   * Using seed values from backend MasterDataSeeder
-   */
-  private getDefaultIdsBySport(sportStr: string): { categoryId: string; genderId: string; ageGroupId: string } {
-    // Parse sport string to enum (0=Football, 1=Basketball, 2=Handball)
-    const sport = sportStr === 'Football' ? Sport.Football :
-                  sportStr === 'Basketball' ? Sport.Basketball :
-                  sportStr === 'Handball' ? Sport.Handball : Sport.Football;
-
-    // Default gender: Masculino
-    const genderId = '11111111-1111-1111-1111-111111111111';
-
-    switch (sport) {
-      case Sport.Football:
-        return {
-          categoryId: '11111111-1111-1111-1111-111111111101', // Nivel A Football
-          genderId: genderId,
-          ageGroupId: '11111111-1111-1111-1111-111111111007'  // Senior Football
-        };
-      case Sport.Basketball:
-        return {
-          categoryId: '22222222-2222-2222-2222-222222222201', // Nivel A Basketball
-          genderId: genderId,
-          ageGroupId: '22222222-2222-2222-2222-222222222005'  // Senior Basketball
-        };
-      case Sport.Handball:
-        return {
-          categoryId: '33333333-3333-3333-3333-333333333301', // Nivel A Handball
-          genderId: genderId,
-          ageGroupId: '33333333-3333-3333-3333-333333333004'  // Senior Handball
-        };
-      default:
-        // Fallback to Football
-        return {
-          categoryId: '11111111-1111-1111-1111-111111111101',
-          genderId: genderId,
-          ageGroupId: '11111111-1111-1111-1111-111111111007'
-        };
-    }
-  }
 
   // --- Delete Logic ---
   openDeleteConfirm(team: TeamResponse): void {
@@ -298,21 +323,13 @@ export class TeamsPage implements OnInit {
           );
         }
       } else {
-        // Add new team - Using default seed values based on subscription sport
-        const subscription = this.subscriptionContext.subscription();
-        if (!subscription) {
-          throw new Error('Subscription not loaded');
-        }
-
-        // Get default IDs based on sport
-        const defaultIds = this.getDefaultIdsBySport(subscription.sport);
-
+        // Add new team - Using values from form
         const createPayload: CreateTeamRequest = {
           name: formData.name,
           color: Number(formData.color),
-          teamCategoryId: defaultIds.categoryId,
-          genderId: defaultIds.genderId,
-          ageGroupId: defaultIds.ageGroupId,
+          teamCategoryId: formData.teamCategoryId,
+          genderId: formData.genderId,
+          ageGroupId: formData.ageGroupId,
           description: formData.description,
           homeVenue: formData.homeVenue,
           coachName: formData.coachName,
