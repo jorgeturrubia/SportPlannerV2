@@ -1,0 +1,4 @@
+/* Entity Page Layout Styles */
+:host {
+  display: block;
+}

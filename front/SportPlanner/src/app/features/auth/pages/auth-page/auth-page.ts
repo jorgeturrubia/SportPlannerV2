@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { AuthStateService } from '../../../../core/auth/services/auth-state.service';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
 import { LoginCredentials, RegisterPayload } from '../../../../core/auth/models/user.model';
 
 @Component({
@@ -16,6 +17,7 @@ export class AuthPage {
   private authService = inject(AuthService);
   private authStateService = inject(AuthStateService);
   private router = inject(Router);
+  private ns = inject(NotificationService);
 
   // UI State
   activeTab = signal<'login' | 'register'>('login');
@@ -58,7 +60,8 @@ export class AuthPage {
       const user = await this.authService.signIn(credentials);
 
       console.log('Login successful:', user.email);
-      this.successMessage.set('¡Bienvenido!');
+  this.successMessage.set('¡Bienvenido!');
+  this.ns.success('Inicio de sesión correcto', 'Bienvenido');
 
       // Navigate to dashboard
       setTimeout(() => {
@@ -70,6 +73,7 @@ export class AuthPage {
       this.errorMessage.set(
         error instanceof Error ? error.message : 'Error al iniciar sesión'
       );
+      this.ns.error(error instanceof Error ? error.message : 'Error al iniciar sesión', 'Error');
     } finally {
       this.isLoading.set(false);
     }
@@ -115,6 +119,7 @@ export class AuthPage {
 
       console.log('Registration successful:', user.email);
       this.successMessage.set('¡Cuenta creada exitosamente! Redirigiendo...');
+  this.ns.success('Cuenta creada correctamente', 'Registro');
 
       // Navigate to dashboard after delay
       setTimeout(() => {
@@ -126,6 +131,7 @@ export class AuthPage {
       this.errorMessage.set(
         error instanceof Error ? error.message : 'Error al crear la cuenta'
       );
+      this.ns.error(error instanceof Error ? error.message : 'Error al crear la cuenta', 'Error');
     } finally {
       this.isLoading.set(false);
     }

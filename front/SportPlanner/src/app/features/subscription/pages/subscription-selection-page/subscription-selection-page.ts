@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SubscriptionService, SubscriptionType, Sport } from '../../../../core/subscription/services/subscription.service';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
 
 interface SubscriptionPlan {
   type: SubscriptionType;
@@ -23,6 +24,7 @@ interface SubscriptionPlan {
 export class SubscriptionSelectionPage {
   private subscriptionService = inject(SubscriptionService);
   private router = inject(Router);
+  private ns = inject(NotificationService);
 
   selectedSport = signal<Sport>('Football');
   isCreating = signal(false);
@@ -107,6 +109,8 @@ export class SubscriptionSelectionPage {
 
       console.log('Subscription created:', subscriptionId);
 
+  this.ns.success('Suscripción creada correctamente', 'Suscripción');
+
       // Navigate to dashboard
       await this.router.navigate(['/dashboard']);
 
@@ -115,6 +119,7 @@ export class SubscriptionSelectionPage {
       this.error.set(
         err instanceof Error ? err.message : 'No se pudo crear la suscripción'
       );
+      this.ns.error(err instanceof Error ? err.message : 'No se pudo crear la suscripción', 'Error');
     } finally {
       this.isCreating.set(false);
     }

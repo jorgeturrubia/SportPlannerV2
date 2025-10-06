@@ -1,42 +1,56 @@
-<div *ngIf="isOpen" class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4 overflow-auto">
-  <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full my-auto flex flex-col" style="max-height: calc(100vh - 2rem);">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col min-h-0">
-      <!-- Form Header (Fixed) -->
-      <div class="flex justify-between items-center p-6 pb-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
-        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ title }}</h2>
+@if (isOpen()) {
+  <div class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4 overflow-auto">
+    <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full my-auto flex flex-col" style="max-height: calc(100vh - 2rem);">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col min-h-0">
+        <!-- Form Header (Fixed) -->
+        <div class="flex justify-between items-center p-6 pb-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ title() }}</h2>
         <button type="button" (click)="onCancel()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
           <svg class="w-6 h-6 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
 
-      <!-- Dynamic Fields (Scrollable) -->
-      <div class="overflow-y-auto overflow-x-hidden flex-1 min-h-0 px-6 py-4">
-        <div class="space-y-6">
-          <div *ngFor="let field of config" class="flex flex-col">
-            <label [for]="field.key" class="mb-2 font-semibold text-slate-700 dark:text-slate-300">{{ field.label }}</label>
-            <ng-container [ngSwitch]="field.type">
-              <input *ngSwitchCase="'text'" [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
-              <input *ngSwitchCase="'number'" [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
-              <textarea *ngSwitchCase="'textarea'" [id]="field.key" [formControlName]="field.key" rows="4" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition resize-none"></textarea>
-              <select *ngSwitchCase="'select'" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
-                <option value="" disabled selected>Select {{ field.label }}</option>
-                <option *ngFor="let opt of field.options" [value]="opt.value">{{ opt.label }}</option>
-              </select>
-            </ng-container>
-            <!-- Validation Errors can be added here -->
+        <!-- Dynamic Fields (Scrollable) -->
+        <div class="overflow-y-auto overflow-x-hidden flex-1 min-h-0 px-6 py-4">
+          <div class="space-y-6">
+            @for (field of config(); track field.key) {
+              <div class="flex flex-col">
+                <label [for]="field.key" class="mb-2 font-semibold text-slate-700 dark:text-slate-300">{{ field.label }}</label>
+                @switch (field.type) {
+                  @case ('text') {
+                    <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                  }
+                  @case ('number') {
+                    <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                  }
+                  @case ('textarea') {
+                    <textarea [id]="field.key" [formControlName]="field.key" rows="4" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition resize-none"></textarea>
+                  }
+                  @case ('select') {
+                    <select [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                      <option value="" disabled selected>Select {{ field.label }}</option>
+                      @for (opt of field.options; track opt.value) {
+                        <option [value]="opt.value">{{ opt.label }}</option>
+                      }
+                    </select>
+                  }
+                }
+                <!-- Validation Errors can be added here -->
+              </div>
+            }
           </div>
         </div>
-      </div>
 
-      <!-- Form Footer (Fixed) -->
-      <div class="flex justify-end gap-4 p-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
-        <button type="button" (click)="onCancel()" class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-300">
-          Cancel
-        </button>
-        <button type="submit" [disabled]="!form.valid" class="px-6 py-3 font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-          Save Changes
-        </button>
-      </div>
-    </form>
+        <!-- Form Footer (Fixed) -->
+        <div class="flex justify-end gap-4 p-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
+          <button type="button" (click)="onCancel()" class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-300">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!form.valid" class="px-6 py-3 font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+}

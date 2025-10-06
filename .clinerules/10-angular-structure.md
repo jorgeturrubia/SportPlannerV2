@@ -74,6 +74,8 @@ export const TRAINING_ROUTES: Route[] = [
 - **Services**: Para estado compartido entre features
 - **RxJS**: Para operaciones asíncronas complejas
 
+> MANDATORY: Use Angular Signals as the default reactivity mechanism for component and feature state. Do not use Subjects/BehaviorSubjects or component-level RxJS streams as the primary reactive state unless there's a justified, documented reason (add an ADR when deviating).
+
 ```typescript
 // Ejemplo: Signal-based component
 export class TrainingListComponent {

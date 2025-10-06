@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { EntityPageLayoutComponent } from '../../../../../shared/components/entity-page-layout/entity-page-layout.component';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../../shared/components/data-table/data-table.component';
 import { DynamicFormComponent, FormField } from '../../../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -15,7 +16,7 @@ enum Sport {
 @Component({
   selector: 'app-categories-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent],
+  imports: [CommonModule, TranslateModule, EntityPageLayoutComponent, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent],
   templateUrl: './categories.page.html'
 })
 export class CategoriesPage implements OnInit {

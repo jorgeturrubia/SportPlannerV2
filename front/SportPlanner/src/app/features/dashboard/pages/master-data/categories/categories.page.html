@@ -1,42 +1,35 @@
-<div class="p-6 md:p-10 bg-slate-50 dark:bg-slate-950 min-h-screen">
-  <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">{{ 'masterData.categories.title' | translate }}</h1>
-    <p class="text-slate-500 dark:text-slate-400 text-lg">{{ 'masterData.categories.description' | translate }}</p>
-  </div>
-
-  <!-- Error Message -->
-  @if (error()) {
-    <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-      <p class="text-red-800 dark:text-red-200">{{ error() }}</p>
-    </div>
-  }
+<app-entity-page-layout
+  [title]="'masterData.categories.title' | translate"
+  [subtitle]="'masterData.categories.description' | translate"
+  [addButtonText]="'common.addNew' | translate"
+  [error]="error()"
+  [isLoading]="isLoading()"
+  (add)="openAddForm()">
 
   <!-- Data Table -->
   <app-data-table
     [columns]="columns"
     [data]="categories()"
     [actions]="actions"
-    [isLoading]="isLoading()"
-    [emptyMessage]="'masterData.categories.noRecords' | translate"
-    (add)="openAddForm()">
+    [emptyMessage]="'masterData.categories.noRecords' | translate">
   </app-data-table>
 
-  <!-- Form Dialog -->
-  <app-dynamic-form
-    [isOpen]="isFormOpen()"
-    [title]="formTitle"
-    [config]="formConfig"
-    [initialData]="selectedCategory()"
-    (formSubmit)="handleFormSubmit($event)"
-    (cancel)="closeForm()">
-  </app-dynamic-form>
+</app-entity-page-layout>
 
-  <!-- Confirmation Dialog -->
-  <app-confirmation-dialog
-    [isOpen]="isConfirmDialogOpen()"
-    [message]="'masterData.categories.deleteConfirm' | translate"
-    (confirm)="handleDeleteConfirm()"
-    (cancel)="closeConfirmDialog()">
-  </app-confirmation-dialog>
-</div>
+<!-- Form Dialog -->
+<app-dynamic-form
+  [isOpen]="isFormOpen()"
+  [title]="formTitle"
+  [config]="formConfig"
+  [initialData]="selectedCategory()"
+  (formSubmit)="handleFormSubmit($event)"
+  (cancel)="closeForm()">
+</app-dynamic-form>
+
+<!-- Confirmation Dialog -->
+<app-confirmation-dialog
+  [isOpen]="isConfirmDialogOpen()"
+  [message]="'masterData.categories.deleteConfirm' | translate"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="closeConfirmDialog()">
+</app-confirmation-dialog>

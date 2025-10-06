@@ -1,6 +1,7 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { EntityPageLayoutComponent } from '../../../../shared/components/entity-page-layout/entity-page-layout.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CardCarouselComponent } from '../../../../shared/components/card-carousel/card-carousel.component';
@@ -8,6 +9,7 @@ import { DynamicFormComponent, FormField } from '../../../../shared/components/d
 import { TeamsService } from '../../services/teams.service';
 import { SubscriptionContextService } from '../../../../core/subscription/services/subscription-context.service';
 import { MasterDataService } from '../../services/master-data.service';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
 
 // Enums from backend
 export enum TeamColor {
@@ -101,7 +103,7 @@ interface CreateTeamRequest {
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule, TranslateModule, CardComponent, ConfirmationDialogComponent, DynamicFormComponent, CardCarouselComponent],
+  imports: [CommonModule, TranslateModule, EntityPageLayoutComponent, CardComponent, ConfirmationDialogComponent, DynamicFormComponent, CardCarouselComponent],
   templateUrl: './teams.html',
   styleUrls: ['./teams.css']
 })
@@ -109,6 +111,7 @@ export class TeamsPage implements OnInit {
   private teamsService = inject(TeamsService);
   private subscriptionContext = inject(SubscriptionContextService);
   private masterDataService = inject(MasterDataService);
+  private ns = inject(NotificationService);
 
   teams = signal<TeamResponse[]>([]);
   isLoading = signal(false);
@@ -125,20 +128,51 @@ export class TeamsPage implements OnInit {
   selectedTeam = signal<TeamResponse | null>(null);
   formTitle = 'Add New Team';
 
-  teamFormConfig = signal<FormField[]>([]);
+  teamFormConfig = computed<FormField[]>(() => [
+    { key: 'name', label: 'Team Name', type: 'text', required: true },
+    { key: 'color', label: 'Color', type: 'select', required: true, options: this.getColorOptions() },
+    {
+      key: 'teamCategoryId',
+      label: 'Category',
+      type: 'select',
+      required: true,
+      options: this.teamCategories().map(c => ({ value: c.id, label: c.name }))
+    },
+    {
+      key: 'genderId',
+      label: 'Gender',
+      type: 'select',
+      required: true,
+      options: this.genders().map(g => ({ value: g.id, label: g.name }))
+    },
+    {
+      key: 'ageGroupId',
+      label: 'Age Group',
+      type: 'select',
+      required: true,
+      options: this.ageGroups().map(a => ({ value: a.id, label: a.name }))
+    },
+    { key: 'description', label: 'Description', type: 'textarea' },
+    { key: 'homeVenue', label: 'Home Venue', type: 'text' }
+  ]);
 
   async ngOnInit(): Promise<void> {
+    // Ensure subscription is loaded first
+    await this.subscriptionContext.loadSubscription();
+
     await Promise.all([
       this.loadTeams(),
       this.loadMasterData()
     ]);
-    this.buildFormConfig();
   }
 
   private async loadMasterData(): Promise<void> {
     try {
       const subscription = this.subscriptionContext.subscription();
-      if (!subscription) return;
+      if (!subscription) {
+        console.error('No subscription available to load master data');
+        return;
+      }
 
       const sport = this.parseSportToEnum(subscription.sport);
 
@@ -153,37 +187,8 @@ export class TeamsPage implements OnInit {
       this.teamCategories.set(teamCategories);
     } catch (err: any) {
       console.error('Failed to load master data:', err);
+      this.ns.error(err?.message ?? 'Error al cargar datos maestros', 'Error');
     }
-  }
-
-  private buildFormConfig(): void {
-    this.teamFormConfig.set([
-      { key: 'name', label: 'Team Name', type: 'text', required: true },
-      { key: 'color', label: 'Color', type: 'select', required: true, options: this.getColorOptions() },
-      {
-        key: 'teamCategoryId',
-        label: 'Category',
-        type: 'select',
-        required: true,
-        options: this.teamCategories().map(c => ({ value: c.id, label: c.name }))
-      },
-      {
-        key: 'genderId',
-        label: 'Gender',
-        type: 'select',
-        required: true,
-        options: this.genders().map(g => ({ value: g.id, label: g.name }))
-      },
-      {
-        key: 'ageGroupId',
-        label: 'Age Group',
-        type: 'select',
-        required: true,
-        options: this.ageGroups().map(a => ({ value: a.id, label: a.name }))
-      },
-      { key: 'description', label: 'Description', type: 'textarea' },
-      { key: 'homeVenue', label: 'Home Venue', type: 'text' }
-    ]);
   }
 
   private parseSportToEnum(sportStr: string): number {
@@ -207,6 +212,7 @@ export class TeamsPage implements OnInit {
     } catch (err: any) {
       console.error('Failed to load teams:', err);
       this.error.set(err.message || 'Failed to load teams');
+      this.ns.error(err?.message ?? 'Error al cargar equipos', 'Error');
       this.teams.set([]);
     } finally {
       this.isLoading.set(false);
@@ -260,13 +266,16 @@ export class TeamsPage implements OnInit {
       const success = await this.teamsService.deleteTeam(subscriptionId, teamToDelete.id);
 
       if (success) {
+        this.ns.success('Equipo eliminado', 'Equipos');
         this.teams.update(teams => teams.filter(t => t.id !== teamToDelete.id));
       } else {
         this.error.set('Failed to delete team');
+        this.ns.error('No se pudo eliminar el equipo', 'Error');
       }
     } catch (err: any) {
       console.error('Failed to delete team:', err);
       this.error.set(err.message || 'Failed to delete team');
+      this.ns.error(err?.message ?? 'No se pudo eliminar el equipo', 'Error');
     } finally {
       this.closeConfirmDialog();
     }
@@ -315,6 +324,7 @@ export class TeamsPage implements OnInit {
           this.teams.update(teams =>
             teams.map(t => t.id === selected.id ? updatedTeam : t)
           );
+          this.ns.success('Equipo actualizado', 'Equipos');
         }
       } else {
         // Add new team - Using values from form
@@ -334,6 +344,7 @@ export class TeamsPage implements OnInit {
         if (newTeamId) {
           // Reload teams to get the complete data
           await this.loadTeams();
+          this.ns.success('Equipo creado', 'Equipos');
         }
       }
 
@@ -341,6 +352,7 @@ export class TeamsPage implements OnInit {
     } catch (err: any) {
       console.error('Failed to save team:', err);
       this.error.set(err.message || 'Failed to save team');
+      this.ns.error(err?.message ?? 'No se pudo guardar el equipo', 'Error');
     }
   }
 

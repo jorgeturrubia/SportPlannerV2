@@ -112,6 +112,8 @@ dotnet ef migrations remove --project src/SportPlanner.Infrastructure --startup-
 - **Feature-Based Structure**: Organize by features (auth, dashboard, training, athlete, coach, planning)
 - **Lazy Loading**: Use `loadComponent` for route-level code splitting
 - **Signals**: Use Angular signals for reactive state management
+
+**MANDATORY**: Angular Signals are the default reactivity mechanism across the frontend. Prefer Signals over RxJS Subjects/BehaviorSubjects for component and feature state. If you must deviate, document the justification in an ADR.
 - **Tailwind CSS v4**: Use Tailwind utility classes for styling (no component libraries)
 - **Dependency Injection**: Use Angular's `inject()` function (not constructor injection)
 
@@ -259,3 +261,39 @@ Before making changes, you MUST review these files based on the type of work:
 - **Backend composition root**: [back/SportPlanner/src/SportPlanner.API/Program.cs](back/SportPlanner/src/SportPlanner.API/Program.cs)
 - **Infrastructure & EF**: `back/SportPlanner/src/SportPlanner.Infrastructure/`
 - **Quality rules**: `.clinerules/` folder
+
+## Notificaciones (nuevo)
+
+Este repositorio ahora incluye un sistema global de notificaciones en el frontend (Angular). Añadido en `front/SportPlanner/src/app/shared/notifications` con los siguientes artefactos:
+
+- `notification.model.ts` — modelo/shape de la notificación
+- `notification.service.ts` — servicio singleton (Signals) para crear/gestionar notificaciones
+- `notifications.container.ts` — componente standalone que muestra notificaciones globales
+
+Instrucciones para desarrolladores al crear componentes con acciones (crear/editar/eliminar/obtener):
+
+1. Importa e inyecta el servicio en el componente:
+
+```ts
+import { NotificationService } from 'src/app/shared/notifications/notification.service';
+const ns = inject(NotificationService);
+```
+
+2. Después de una acción exitosa llama a `ns.success(message, title)`; en errores usa `ns.error(message, title)`.
+
+3. Ten en cuenta la internacionalización: usa `@ngx-translate/core` para localizar `message` y `title`. Ejemplo:
+
+```ts
+const msg = translate.instant('teams.create_success');
+ns.success(msg, translate.instant('teams.title'));
+```
+
+4. Las notificaciones soportan auto-close y cierre manual (X). Ajusta la duración al crear la notificación si es necesario.
+
+5. Añade claves en los ficheros de traducción (p. ej. `public/assets/i18n/es.json`) para los mensajes y títulos comunes.
+
+6. Sigue las reglas en `.clinerules/` y añade tests unitarios que verifiquen que el servicio se invoca donde corresponde.
+
+Nota obligatoria: `notification.service.ts` is implemented using Signals; new feature-level services and components must use Signals for reactive state to ensure consistency.
+
+Nota: El contenedor global ya está incluido en la plantilla raíz (`app.html`), por lo que no necesitas añadirlo manualmente en cada página.
