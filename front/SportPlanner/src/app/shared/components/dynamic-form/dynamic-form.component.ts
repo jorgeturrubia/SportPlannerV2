@@ -41,6 +41,17 @@ export class DynamicFormComponent {
       const currentData = this.initialData();
       this.buildForm(currentConfig, currentData);
     });
+
+    // Reset form when dialog opens with null data
+    effect(() => {
+      const isDialogOpen = this.isOpen();
+      const currentData = this.initialData();
+
+      if (isDialogOpen && !currentData) {
+        // Force reset the form when opening with null data
+        this.form.reset();
+      }
+    });
   }
 
   private buildForm(config: FormField[], initialData: any): void {
@@ -49,7 +60,7 @@ export class DynamicFormComponent {
 
     for (const field of config) {
       const validators = field.required ? [Validators.required] : [];
-      const value = initialData ? initialData[field.key] : '';
+      const value = initialData?.[field.key] ?? '';
       this.form.addControl(field.key, this.fb.control(value, validators));
     }
   }

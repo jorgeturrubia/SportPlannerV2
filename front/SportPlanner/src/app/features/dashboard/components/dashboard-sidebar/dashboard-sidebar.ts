@@ -32,6 +32,10 @@ export class DashboardSidebar {
     this.router.navigate(['/dashboard/calendar']);
   }
 
+  goToObjectives() {
+    this.router.navigate(['/dashboard/objectives']);
+  }
+
   goToMessages() {
     this.router.navigate(['/dashboard/messages']);
   }

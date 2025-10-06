@@ -103,7 +103,6 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
             request.AgeGroupId,
             subscription.Sport,
             request.Description,
-            request.HomeVenue,
             request.CoachSubscriptionUserId,
             request.Season,
             request.AllowMixedGender);

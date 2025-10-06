@@ -20,11 +20,12 @@ public class AddUserToSubscriptionCommandTests
         _subscriptionRepositoryMock = new Mock<ISubscriptionRepository>();
         _subscriptionUserRepositoryMock = new Mock<ISubscriptionUserRepository>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
+        _currentUserServiceMock.Setup(x => x.GetUserEmail()).Returns("owner@example.com");
 
         _handler = new AddUserToSubscriptionCommandHandler(
-            _subscriptionRepositoryMock.Object,
-            _subscriptionUserRepositoryMock.Object,
-            _currentUserServiceMock.Object);
+            subscriptionRepository: _subscriptionRepositoryMock.Object,
+            subscriptionUserRepository: _subscriptionUserRepositoryMock.Object,
+            currentUserService: _currentUserServiceMock.Object);
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class AddUserToSubscriptionCommandTests
             su => su.SubscriptionId == subscriptionId &&
                   su.UserId == userIdToAdd &&
                   su.RoleInSubscription == UserRole.Athlete &&
-                  su.GrantedBy == "test@example.com"), It.IsAny<CancellationToken>()), Times.Once);
+                  su.GrantedBy == "owner@example.com"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

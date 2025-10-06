@@ -51,10 +51,17 @@ public class TeamRepository : ITeamRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> ExistsWithNameInSubscriptionAsync(Guid subscriptionId, string name, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsWithNameInSubscriptionAsync(Guid subscriptionId, string name, CancellationToken cancellationToken = default, Guid? excludeTeamId = null)
     {
-        return await _context.Teams
-            .AnyAsync(t => t.SubscriptionId == subscriptionId && t.Name == name, cancellationToken);
+        var query = _context.Teams
+            .Where(t => t.SubscriptionId == subscriptionId && t.Name == name);
+
+        if (excludeTeamId.HasValue)
+        {
+            query = query.Where(t => t.Id != excludeTeamId.Value);
+        }
+
+        return await query.AnyAsync(cancellationToken);
     }
 
     public async Task<int> CountActiveTeamsBySubscriptionAsync(Guid subscriptionId, CancellationToken cancellationToken = default)

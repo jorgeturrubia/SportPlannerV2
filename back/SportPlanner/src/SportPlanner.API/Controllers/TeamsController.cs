@@ -35,7 +35,6 @@ public class TeamsController : ControllerBase
             request.GenderId,
             request.AgeGroupId,
             request.Description,
-            request.HomeVenue,
             request.CoachSubscriptionUserId,
             request.Season,
             request.AllowMixedGender);
@@ -81,5 +80,52 @@ public class TeamsController : ControllerBase
         var teams = await _mediator.Send(query, cancellationToken);
 
         return Ok(teams);
+    }
+
+    /// <summary>
+    /// Update an existing team
+    /// </summary>
+    [HttpPut("{teamId:guid}")]
+    public async Task<ActionResult> UpdateTeam(
+        [FromRoute] Guid subscriptionId,
+        [FromRoute] Guid teamId,
+        [FromBody] UpdateTeamRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTeamCommand(
+            subscriptionId,
+            teamId,
+            request.Name,
+            request.Color,
+            request.Description);
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result)
+        {
+            return NotFound(new { message = "Team not found" });
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Delete a team
+    /// </summary>
+    [HttpDelete("{teamId:guid}")]
+    public async Task<ActionResult> DeleteTeam(
+        [FromRoute] Guid subscriptionId,
+        [FromRoute] Guid teamId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteTeamCommand(subscriptionId, teamId);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result)
+        {
+            return NotFound(new { message = "Team not found" });
+        }
+
+        return NoContent();
     }
 }

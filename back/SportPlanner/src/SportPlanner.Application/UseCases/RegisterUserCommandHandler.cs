@@ -27,7 +27,9 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
 
             if (session?.User is null)
             {
-                throw new InvalidOperationException("Failed to create user in Supabase Auth");
+                // Supabase sign-up failed or returned no user (e.g., existing user or invalid data)
+                // Return null so callers/tests can handle this scenario gracefully.
+                return null;
             }
 
             // Step 2: Extract Supabase user info

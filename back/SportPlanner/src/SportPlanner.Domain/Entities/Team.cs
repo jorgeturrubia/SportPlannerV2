@@ -20,7 +20,6 @@ public class Team : Entity, IAuditable
 
     // Propiedades adicionales
     public string? Description { get; private set; }
-    public string? HomeVenue { get; private set; }
     public DateTime? Season { get; private set; }
     public int MaxPlayers { get; private set; }
     public int CurrentPlayersCount { get; private set; }
@@ -51,7 +50,6 @@ public class Team : Entity, IAuditable
         Guid ageGroupId,
         Sport sport,
         string? description = null,
-        string? homeVenue = null,
         Guid? coachSubscriptionUserId = null,
         DateTime? season = null,
         bool allowMixedGender = false)
@@ -80,7 +78,6 @@ public class Team : Entity, IAuditable
         CoachSubscriptionUserId = coachSubscriptionUserId;
         Sport = sport;
         Description = description;
-        HomeVenue = homeVenue;
         Season = season;
         AllowMixedGender = allowMixedGender;
         IsActive = true;
@@ -98,12 +95,6 @@ public class Team : Entity, IAuditable
         Name = name;
         Color = color;
         Description = description;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateVenue(string? homeVenue)
-    {
-        HomeVenue = homeVenue;
         UpdatedAt = DateTime.UtcNow;
     }
 

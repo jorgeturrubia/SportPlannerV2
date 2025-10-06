@@ -70,7 +70,6 @@ interface TeamResponse {
   color: TeamColor;
   sport: Sport;
   description?: string;
-  homeVenue?: string;
   coachSubscriptionUserId?: string;
   coachFirstName?: string;
   coachLastName?: string;
@@ -94,7 +93,6 @@ interface CreateTeamRequest {
   genderId: string;
   ageGroupId: string;
   description?: string;
-  homeVenue?: string;
   coachSubscriptionUserId?: string;
   season?: string;
   allowMixedGender?: boolean;
@@ -152,8 +150,7 @@ export class TeamsPage implements OnInit {
       required: true,
       options: this.ageGroups().map(a => ({ value: a.id, label: a.name }))
     },
-    { key: 'description', label: 'Description', type: 'textarea' },
-    { key: 'homeVenue', label: 'Home Venue', type: 'text' }
+    { key: 'description', label: 'Description', type: 'textarea' }
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -310,8 +307,7 @@ export class TeamsPage implements OnInit {
         const updatePayload = {
           name: formData.name,
           color: Number(formData.color),
-          description: formData.description,
-          homeVenue: formData.homeVenue
+          description: formData.description
         };
 
         const updatedTeam = await this.teamsService.updateTeam(
@@ -335,7 +331,6 @@ export class TeamsPage implements OnInit {
           genderId: formData.genderId,
           ageGroupId: formData.ageGroupId,
           description: formData.description,
-          homeVenue: formData.homeVenue,
           allowMixedGender: false
         };
 

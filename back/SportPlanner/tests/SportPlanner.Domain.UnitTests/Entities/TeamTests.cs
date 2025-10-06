@@ -96,21 +96,6 @@ public class TeamTests
     }
 
     [Fact]
-    public void UpdateVenue_WithValidParameter_ShouldUpdate()
-    {
-        // Arrange
-        var team = new Team(_subscriptionId, "Test Team", TeamColor.Azul, _teamCategoryId, _genderId, _ageGroupId, Sport.Football);
-        var homeVenue = "Santiago Bernabéu";
-
-        // Act
-        team.UpdateVenue(homeVenue);
-
-        // Assert
-        Assert.Equal(homeVenue, team.HomeVenue);
-        Assert.NotNull(team.UpdatedAt);
-    }
-
-    [Fact]
     public void AssignCoach_WithValidSubscriptionUserId_ShouldUpdate()
     {
         // Arrange

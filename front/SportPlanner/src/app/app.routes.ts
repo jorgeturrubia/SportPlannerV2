@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/pages/teams/teams').then(m => m.TeamsPage)
       },
       {
+        path: 'objectives',
+        loadComponent: () => import('./features/dashboard/pages/objectives/objectives').then(m => m.ObjectivesPage)
+      },
+      {
         path: 'master-data',
         children: [
           {

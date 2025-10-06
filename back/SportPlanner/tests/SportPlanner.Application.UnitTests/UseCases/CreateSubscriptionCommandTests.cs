@@ -11,15 +11,19 @@ public class CreateSubscriptionCommandTests
 {
     private readonly Mock<ISubscriptionRepository> _subscriptionRepositoryMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ISubscriptionUserRepository> _subscriptionUserRepositoryMock;
     private readonly CreateSubscriptionCommandHandler _handler;
 
     public CreateSubscriptionCommandTests()
     {
         _subscriptionRepositoryMock = new Mock<ISubscriptionRepository>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
-        _handler = new CreateSubscriptionCommandHandler(
-            _subscriptionRepositoryMock.Object,
-            _currentUserServiceMock.Object);
+            _subscriptionUserRepositoryMock = new Mock<ISubscriptionUserRepository>();
+            _currentUserServiceMock.Setup(x => x.GetUserEmail()).Returns("owner@example.com");
+            _handler = new CreateSubscriptionCommandHandler(
+                _subscriptionRepositoryMock.Object,
+                _subscriptionUserRepositoryMock.Object,
+                _currentUserServiceMock.Object);
     }
 
     [Fact]

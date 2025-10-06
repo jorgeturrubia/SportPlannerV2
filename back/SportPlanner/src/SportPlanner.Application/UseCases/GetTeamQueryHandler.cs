@@ -57,7 +57,6 @@ public class GetTeamQueryHandler : IRequestHandler<GetTeamQuery, TeamResponse?>
             team.Color,
             team.Sport,
             team.Description,
-            team.HomeVenue,
             team.CoachSubscriptionUserId,
             coachFirstName,
             coachLastName,

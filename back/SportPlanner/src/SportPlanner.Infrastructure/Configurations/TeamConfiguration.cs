@@ -44,9 +44,6 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.Property(t => t.Description)
             .HasMaxLength(500);
 
-        builder.Property(t => t.HomeVenue)
-            .HasMaxLength(200);
-
         builder.Property(t => t.MaxPlayers)
             .IsRequired();
 

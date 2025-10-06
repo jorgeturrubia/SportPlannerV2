@@ -25,6 +25,10 @@ public class AddUserToSubscriptionCommandHandler : IRequestHandler<AddUserToSubs
     {
         var currentUserId = _currentUserService.GetUserId();
         var currentUserEmail = _currentUserService.GetUserEmail();
+        if (string.IsNullOrWhiteSpace(currentUserEmail))
+        {
+            currentUserEmail = currentUserId.ToString();
+        }
 
         // Get subscription
         var subscription = await _subscriptionRepository.GetByIdAsync(request.SubscriptionId, cancellationToken);

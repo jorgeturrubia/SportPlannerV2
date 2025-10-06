@@ -1,0 +1,157 @@
+<app-entity-page-layout
+  [title]="'objectives.title' | translate"
+  [subtitle]="'objectives.description' | translate"
+  [addButtonText]="'objectives.addObjective' | translate"
+  [error]="error()"
+  [isLoading]="isLoading()"
+  (add)="openAddForm()">
+
+  <!-- Empty State -->
+  @if (objectives().length === 0 && !error()) {
+    <div class="max-w-md mx-auto text-center py-16">
+      <div class="mb-8 relative">
+        <div class="w-32 h-32 mx-auto bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center">
+          <svg class="w-16 h-16 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">{{ 'objectives.emptyState.title' | translate }}</h3>
+      <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">{{ 'objectives.emptyState.description' | translate }}</p>
+      <button (click)="openAddForm()" class="px-8 py-4 font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out inline-flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+        <span>{{ 'objectives.createFirstObjective' | translate }}</span>
+      </button>
+    </div>
+  }
+
+  <!-- Single Objective Card -->
+  @else if (objectives().length === 1) {
+    <div class="max-w-2xl mx-auto">
+      <app-card
+        [showActions]="objectives()[0].isEditable"
+        (edit)="openEditForm(objectives()[0])"
+        (delete)="openDeleteConfirm(objectives()[0])">
+
+        <div card-header>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ objectives()[0].name }}</h2>
+          <p class="text-base text-slate-600 dark:text-slate-400 font-medium">{{ getCategoryName(objectives()[0].objectiveCategoryId) }}</p>
+        </div>
+
+        <div card-body>
+          @if (objectives()[0].description) {
+            <p class="text-slate-600 dark:text-slate-300 mb-4 italic">{{ objectives()[0].description }}</p>
+          }
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Subcategoría:</span>
+              <span class="text-slate-900 dark:text-white font-semibold">{{ getSubcategoryName(objectives()[0].objectiveSubcategoryId) }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tipo:</span>
+              <span class="text-slate-900 dark:text-white font-semibold">{{ getOwnershipLabel(objectives()[0].ownership) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div card-footer>
+          <div class="flex justify-center gap-2">
+            <div class="text-xs px-3 py-1.5 rounded-full font-medium"
+                 [class.bg-green-100]="objectives()[0].isActive"
+                 [class.text-green-700]="objectives()[0].isActive"
+                 [class.dark:bg-green-900/30]="objectives()[0].isActive"
+                 [class.dark:text-green-400]="objectives()[0].isActive"
+                 [class.bg-gray-100]="!objectives()[0].isActive"
+                 [class.text-gray-700]="!objectives()[0].isActive"
+                 [class.dark:bg-gray-900/30]="!objectives()[0].isActive"
+                 [class.dark:text-gray-400]="!objectives()[0].isActive">
+              {{ objectives()[0].isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
+            </div>
+            @if (!objectives()[0].isEditable) {
+              <button (click)="handleClone(objectives()[0])" class="text-xs px-3 py-1.5 rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                Clonar
+              </button>
+            }
+          </div>
+        </div>
+      </app-card>
+    </div>
+  }
+
+  <!-- Card Carousel for Multiple Objectives -->
+  @else {
+    <app-card-carousel [items]="objectives()">
+      <ng-template #cardTemplate let-objective let-isActive="isActive">
+        <app-card
+          [class.card-active]="isActive"
+          [showActions]="isActive && objective.isEditable"
+          (edit)="openEditForm(objective)"
+          (delete)="openDeleteConfirm(objective)">
+
+          <div card-header>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ objective.name }}</h2>
+            <p class="text-base text-slate-600 dark:text-slate-400 font-medium">{{ getCategoryName(objective.objectiveCategoryId) }}</p>
+          </div>
+
+          <div card-body>
+            @if (objective.description) {
+              <p class="text-slate-600 dark:text-slate-300 mb-4 italic">{{ objective.description }}</p>
+            }
+
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Subcategoría:</span>
+                <span class="text-slate-900 dark:text-white font-semibold">{{ getSubcategoryName(objective.objectiveSubcategoryId) }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tipo:</span>
+                <span class="text-slate-900 dark:text-white font-semibold">{{ getOwnershipLabel(objective.ownership) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div card-footer>
+            <div class="flex justify-center gap-2">
+              <div class="text-xs px-3 py-1.5 rounded-full font-medium"
+                   [class.bg-green-100]="objective.isActive"
+                   [class.text-green-700]="objective.isActive"
+                   [class.dark:bg-green-900/30]="objective.isActive"
+                   [class.dark:text-green-400]="objective.isActive"
+                   [class.bg-gray-100]="!objective.isActive"
+                   [class.text-gray-700]="!objective.isActive"
+                   [class.dark:bg-gray-900/30]="!objective.isActive"
+                   [class.dark:text-gray-400]="!objective.isActive">
+                {{ objective.isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
+              </div>
+              @if (!objective.isEditable && isActive) {
+                <button (click)="handleClone(objective)" class="text-xs px-3 py-1.5 rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                  Clonar
+                </button>
+              }
+            </div>
+          </div>
+        </app-card>
+      </ng-template>
+    </app-card-carousel>
+  }
+
+</app-entity-page-layout>
+
+<!-- Confirmation Dialog -->
+<app-confirmation-dialog
+  [isOpen]="isConfirmDialogOpen()"
+  [message]="'Are you sure you want to delete this objective?'"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="closeConfirmDialog()">
+</app-confirmation-dialog>
+
+<!-- Dynamic Form -->
+<app-dynamic-form
+  [isOpen]="isFormOpen()"
+  [title]="formTitle"
+  [config]="objectiveFormConfig()"
+  [initialData]="selectedObjective()"
+  (formSubmit)="handleFormSubmit($event)"
+  (cancel)="closeForm()">
+</app-dynamic-form>

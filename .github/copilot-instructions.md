@@ -5,9 +5,11 @@ Before editing code
 - Read `.clinerules/00-development-gate.md`. Do not modify files under `.clinerules/` or `docs/adr/` without human approval.
 
 Big picture (quick)
-- Frontend: Angular 20 (standalone components, Signals, Tailwind v4) at `front/SportPlanner`.
+- Frontend: Angular 20 (standalone components, Signals, **Tailwind v4 ONLY - NO Angular Material**) at `front/SportPlanner`.
 - Backend: .NET 8 Clean Architecture at `back/SportPlanner/src` (Domain → Application → Infrastructure → API).
 - Auth: Supabase JWT using Authority/JWKS in `back/SportPlanner/src/SportPlanner.API/Program.cs` — do not replace with custom JWT logic.
+
+**CRITICAL**: Never use Angular Material. All UI must be built with Tailwind CSS utilities.
 
 Fast commands (run from `src/`)
 - Frontend dev: `cd front/SportPlanner` → `npm start` (or `ng serve`).
@@ -21,6 +23,14 @@ Concrete conventions to follow
 - Use Angular `inject()` for DI in components/services (not constructor injection). E.g. `const ns = inject(NotificationService);`.
 - Prefer Signals for local reactive state; services for shared state.
  - MANDATORY: Use Angular Signals as the default reactive mechanism across the frontend. Avoid using Subjects/BehaviorSubjects as primary state holders unless documented in an ADR.
+
+```ts
+// Minimal pattern to follow in components
+const trainingService = inject(TrainingService);
+const trainings = signal<Training[]>([]);
+await trainingService.getTrainings().then(data => trainings.set(data));
+```
+
 - Backend: implement MediatR-style commands/queries in `SportPlanner.Application`; keep EF Core access inside `SportPlanner.Infrastructure`.
 
 Integration & sensitive areas

@@ -26,6 +26,7 @@
   "nav": {
     "home": "Inicio",
     "teams": "Equipos",
+    "objectives": "Objetivos",
     "calendar": "Calendario",
     "messages": "Mensajes",
     "masterData": "Datos Maestros",
@@ -125,7 +126,19 @@
       "players": "Jugadores",
       "category": "Categoría",
       "coach": "Entrenador",
-      "venue": "Recinto"
+      "venue": "Recinto",
+      "gender": "Género",
+      "ageGroup": "Grupo de Edad"
+    }
+  },
+  "objectives": {
+    "title": "Objetivos",
+    "description": "Define y gestiona tus objetivos de entrenamiento",
+    "addObjective": "Agregar Objetivo",
+    "createFirstObjective": "Crear mi primer objetivo",
+    "emptyState": {
+      "title": "Todavía no tienes objetivos",
+      "description": "Comienza creando objetivos para estructurar mejor tus entrenamientos y alcanzar metas específicas."
     }
   }
 }

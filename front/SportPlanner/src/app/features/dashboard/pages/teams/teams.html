@@ -36,53 +36,35 @@
         (edit)="openEditForm(teams()[0])"
         (delete)="openDeleteConfirm(teams()[0])">
 
-        <div card-header class="flex justify-between items-start">
-          <div>
-            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ teams()[0].name }}</h2>
-            <p class="text-sm font-medium text-purple-600 dark:text-purple-400">{{ getSportName(teams()[0].sport) }}</p>
-          </div>
-          <div class="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50 text-2xl">
-            {{ getSportIcon(teams()[0].sport) }}
-          </div>
+        <div card-header>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ teams()[0].name }}</h2>
+          <p class="text-base text-slate-600 dark:text-slate-400 font-medium">{{ teams()[0].gender.name }}</p>
         </div>
 
         <div card-body>
-          <p class="text-slate-600 dark:text-slate-300 mb-4">{{ teams()[0].description || 'No description' }}</p>
+          @if (teams()[0].description) {
+            <p class="text-slate-600 dark:text-slate-300 mb-4 italic">{{ teams()[0].description }}</p>
+          }
 
-          <div class="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <span class="text-slate-500 dark:text-slate-400">Color:</span>
-              <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ getColorName(teams()[0].color) }}</span>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">{{ 'teams.details.category' | translate }}:</span>
+              <span class="text-slate-900 dark:text-white font-semibold">{{ teams()[0].category.name }}</span>
             </div>
-            <div>
-              <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.category' | translate }}:</span>
-              <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].category.name }}</span>
-            </div>
-            @if (teams()[0].coachFirstName || teams()[0].coachLastName) {
-              <div>
-                <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.coach' | translate }}:</span>
-                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].coachFirstName }} {{ teams()[0].coachLastName }}</span>
-              </div>
-            }
-            @if (teams()[0].homeVenue) {
-              <div>
-                <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.venue' | translate }}:</span>
-                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].homeVenue }}</span>
-              </div>
-            }
           </div>
         </div>
 
         <div card-footer>
-          <div class="flex justify-between items-center text-sm">
-            <div class="text-slate-500 dark:text-slate-400">
-              <span class="font-semibold text-slate-700 dark:text-slate-200">{{ teams()[0].currentPlayersCount }}</span> / {{ teams()[0].maxPlayers }} {{ 'teams.details.players' | translate }}
-            </div>
-            <div class="text-xs px-2 py-1 rounded-full"
+          <div class="flex justify-center">
+            <div class="text-xs px-3 py-1.5 rounded-full font-medium"
                  [class.bg-green-100]="teams()[0].isActive"
                  [class.text-green-700]="teams()[0].isActive"
+                 [class.dark:bg-green-900/30]="teams()[0].isActive"
+                 [class.dark:text-green-400]="teams()[0].isActive"
                  [class.bg-gray-100]="!teams()[0].isActive"
-                 [class.text-gray-700]="!teams()[0].isActive">
+                 [class.text-gray-700]="!teams()[0].isActive"
+                 [class.dark:bg-gray-900/30]="!teams()[0].isActive"
+                 [class.dark:text-gray-400]="!teams()[0].isActive">
               {{ teams()[0].isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
             </div>
           </div>
@@ -101,53 +83,35 @@
           (edit)="openEditForm(team)"
           (delete)="openDeleteConfirm(team)">
 
-          <div card-header class="flex justify-between items-start">
-            <div>
-              <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ team.name }}</h2>
-              <p class="text-sm font-medium text-purple-600 dark:text-purple-400">{{ getSportName(team.sport) }}</p>
-            </div>
-            <div class="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50 text-2xl">
-              {{ getSportIcon(team.sport) }}
-            </div>
+          <div card-header>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ team.name }}</h2>
+            <p class="text-base text-slate-600 dark:text-slate-400 font-medium">{{ team.gender.name }}</p>
           </div>
 
           <div card-body>
-            <p class="text-slate-600 dark:text-slate-300 mb-4">{{ team.description || 'No description' }}</p>
+            @if (team.description) {
+              <p class="text-slate-600 dark:text-slate-300 mb-4 italic">{{ team.description }}</p>
+            }
 
-            <div class="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <span class="text-slate-500 dark:text-slate-400">Color:</span>
-                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ getColorName(team.color) }}</span>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">{{ 'teams.details.category' | translate }}:</span>
+                <span class="text-slate-900 dark:text-white font-semibold">{{ team.category.name }}</span>
               </div>
-              <div>
-                <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.category' | translate }}:</span>
-                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.category.name }}</span>
-              </div>
-              @if (team.coachFirstName || team.coachLastName) {
-                <div>
-                  <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.coach' | translate }}:</span>
-                  <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.coachFirstName }} {{ team.coachLastName }}</span>
-                </div>
-              }
-              @if (team.homeVenue) {
-                <div>
-                  <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.venue' | translate }}:</span>
-                  <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.homeVenue }}</span>
-                </div>
-              }
             </div>
           </div>
 
           <div card-footer>
-            <div class="flex justify-between items-center text-sm">
-              <div class="text-slate-500 dark:text-slate-400">
-                <span class="font-semibold text-slate-700 dark:text-slate-200">{{ team.currentPlayersCount }}</span> / {{ team.maxPlayers }} {{ 'teams.details.players' | translate }}
-              </div>
-              <div class="text-xs px-2 py-1 rounded-full"
+            <div class="flex justify-center">
+              <div class="text-xs px-3 py-1.5 rounded-full font-medium"
                    [class.bg-green-100]="team.isActive"
                    [class.text-green-700]="team.isActive"
+                   [class.dark:bg-green-900/30]="team.isActive"
+                   [class.dark:text-green-400]="team.isActive"
                    [class.bg-gray-100]="!team.isActive"
-                   [class.text-gray-700]="!team.isActive">
+                   [class.text-gray-700]="!team.isActive"
+                   [class.dark:bg-gray-900/30]="!team.isActive"
+                   [class.dark:text-gray-400]="!team.isActive">
                 {{ team.isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
               </div>
             </div>

@@ -139,7 +139,7 @@ public class CreateTeamCommandTests
         _currentUserServiceMock.Setup(x => x.GetUserId()).Returns(_ownerId);
         _teamRepositoryMock.Setup(x => x.CountActiveTeamsBySubscriptionAsync(_subscriptionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
-        _teamRepositoryMock.Setup(x => x.ExistsWithNameInSubscriptionAsync(_subscriptionId, command.Name, It.IsAny<CancellationToken>()))
+        _teamRepositoryMock.Setup(x => x.ExistsWithNameInSubscriptionAsync(_subscriptionId, command.Name, It.IsAny<CancellationToken>(), It.IsAny<Guid?>()))
             .ReturnsAsync(true);
 
         // Act & Assert
@@ -253,7 +253,7 @@ public class CreateTeamCommandTests
         _currentUserServiceMock.Setup(x => x.GetUserId()).Returns(_ownerId);
         _teamRepositoryMock.Setup(x => x.CountActiveTeamsBySubscriptionAsync(_subscriptionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
-        _teamRepositoryMock.Setup(x => x.ExistsWithNameInSubscriptionAsync(_subscriptionId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        _teamRepositoryMock.Setup(x => x.ExistsWithNameInSubscriptionAsync(_subscriptionId, It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<Guid?>()))
             .ReturnsAsync(false);
     }
 }

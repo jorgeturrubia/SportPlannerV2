@@ -9,7 +9,6 @@ public record TeamResponse(
     TeamColor Color,
     Sport Sport,
     string? Description,
-    string? HomeVenue,
     Guid? CoachSubscriptionUserId,
     string? CoachFirstName,
     string? CoachLastName,
