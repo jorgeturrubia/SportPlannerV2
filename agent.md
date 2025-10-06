@@ -16,6 +16,314 @@
 
 ---
 
+## 🔄 Workflow Metodológico (AI Agent Process)
+
+**Cuando recibas una tarea, sigue este proceso OBLIGATORIO:**
+
+### Fase 1: 🧠 Pensamiento Profundo (Deep Thinking)
+**Objetivo**: Entender completamente el problema antes de escribir código
+
+1. **Primer Ciclo - Comprensión del Problema**
+   - ¿Qué se está pidiendo exactamente?
+   - ¿Qué capas del sistema afecta? (Frontend, Backend, Base de datos, Ambos)
+   - ¿Hay ejemplos similares en el código existente?
+   - ¿Qué archivos/componentes necesito investigar?
+
+2. **Segundo Ciclo - Análisis de Impacto**
+   - ¿Esta tarea requiere un ADR? (nueva feature, cambio arquitectónico, integración externa)
+   - ¿Qué patrones arquitectónicos aplican? (CQRS, Repository, DDD, etc.)
+   - ¿Necesito modificar el dominio, aplicación, infraestructura, o API?
+   - ¿Qué dependencias o servicios externos se ven afectados?
+   - ¿Hay riesgos de seguridad? (autenticación, autorización, validación)
+
+3. **Tercer Ciclo - Diseño de Solución**
+   - ¿Cuál es el enfoque más simple que funciona? (KISS principle)
+   - ¿Estoy reutilizando código existente o duplicando lógica?
+   - ¿Los nombres son claros y siguen las convenciones del proyecto?
+   - ¿Cómo voy a testear esto? (Unit, Integration, E2E)
+
+**Resultado esperado**: Tienes claridad total del problema y un diseño mental de la solución.
+
+---
+
+### Fase 2: 📝 Planificación (Create Plan with TodoWrite)
+
+**MANDATORY**: Usa `TodoWrite` para crear un plan detallado ANTES de codificar.
+
+**Estructura del Plan:**
+```
+[ ] 1. Investigación inicial (leer archivos relevantes, entender contexto)
+[ ] 2. Diseñar solución (identificar componentes/clases/métodos afectados)
+[ ] 3. Implementar [Componente/Feature específico]
+[ ] 4. Escribir tests unitarios para [X]
+[ ] 5. Verificar lint (frontend: npm run lint | backend: dotnet format --verify-no-changes)
+[ ] 6. Ejecutar build (frontend: npm run build | backend: dotnet build)
+[ ] 7. Ejecutar tests (frontend: npm test | backend: dotnet test)
+[ ] 8. Revisión final y cleanup (remover console.logs, debuggers, comentarios innecesarios)
+```
+
+**Ejemplo Real:**
+```typescript
+// Tarea: "Implementar filtro de trainings por deporte"
+
+Todos:
+[ ] 1. Leer TrainingListComponent y TrainingService
+[ ] 2. Diseñar signal para sport filter y computed para filtered trainings
+[ ] 3. Implementar UI de filtro (dropdown Tailwind)
+[ ] 4. Implementar lógica de filtrado con computed signal
+[ ] 5. Escribir tests para filtro
+[ ] 6. npm run lint
+[ ] 7. npm run build
+[ ] 8. npm test
+[ ] 9. Cleanup y revisión
+```
+
+**Reglas:**
+- ✅ Divide tareas grandes en subtareas pequeñas (<20 líneas de código por tarea)
+- ✅ Marca tareas como `in_progress` cuando las empieces
+- ✅ Marca tareas como `completed` INMEDIATAMENTE al terminarlas
+- ✅ Si encuentras errores, crea nueva tarea "Fix [error]" en lugar de marcar como completada
+- ❌ NO avances a la siguiente tarea si la actual tiene errores
+
+---
+
+### Fase 3: 🔨 Implementación (Step-by-Step Execution)
+
+**REGLA DE ORO**: Una tarea del plan a la vez. No saltarte pasos.
+
+**Para cada tarea:**
+1. **Marca como `in_progress`** en TodoWrite
+2. **Implementa** siguiendo las guías:
+   - Frontend: `front/agent.md` (Signals, Tailwind, standalone components)
+   - Backend: `back/agent.md` (Clean Architecture, MediatR, EF Core)
+3. **Verifica** que funciona (compilación, no errores en consola)
+4. **Marca como `completed`** SOLO si está 100% terminada
+5. **Actualiza TodoWrite** si descubres nuevas tareas necesarias
+
+**Ejemplo de Ejecución:**
+```
+✅ Completed: Leer TrainingListComponent
+🔄 In Progress: Diseñar signal para sport filter
+   - Creating sportFilter signal
+   - Creating filteredTrainings computed signal
+✅ Completed: Diseñar signal para sport filter
+⏳ Pending: Implementar UI de filtro
+```
+
+---
+
+### Fase 4: ✅ Verificación (Quality Gates)
+
+**ANTES de considerar la tarea completa, ejecuta TODOS estos checks:**
+
+#### 4.1 Lint Check
+```bash
+# Frontend
+cd front/SportPlanner
+npm run lint
+
+# Backend
+cd back/SportPlanner
+dotnet format --verify-no-changes
+```
+**Si hay errores de lint**: Créalos como tarea en TodoWrite y arréglaolos ANTES de continuar.
+
+#### 4.2 Build Check
+```bash
+# Frontend
+cd front/SportPlanner
+npm run build
+
+# Backend
+cd back/SportPlanner
+dotnet build
+```
+**Si el build falla**: La tarea NO está completa. Crea tarea "Fix build errors" y resuélvela.
+
+#### 4.3 Test Check
+```bash
+# Frontend
+cd front/SportPlanner
+npm test
+
+# Backend
+cd back/SportPlanner
+dotnet test
+```
+**Si los tests fallan**: La tarea NO está completa. Crea tarea "Fix failing tests" y resuélvela.
+
+#### 4.4 Code Review (Self-Review)
+- [ ] ¿Hay `console.log` o `debugger` olvidados? (❌ Eliminar)
+- [ ] ¿Los nombres son claros y descriptivos?
+- [ ] ¿Seguí las convenciones de nombres del proyecto?
+- [ ] ¿Hay código duplicado que pueda extraerse?
+- [ ] ¿Los errores están manejados correctamente?
+- [ ] ¿Agregué comentarios SOLO donde el "por qué" no es obvio?
+- [ ] ¿Los archivos tienen <300 líneas?
+- [ ] ¿Las funciones tienen <20 líneas?
+
+---
+
+### Fase 5: 🎯 Completado (Task Completion)
+
+**Criterios para marcar tarea como COMPLETA:**
+- ✅ Todos los TODOs marcados como `completed`
+- ✅ Lint pasa sin errores
+- ✅ Build pasa sin errores
+- ✅ Tests pasan sin errores
+- ✅ Self-review completado
+- ✅ No hay `console.log`, `debugger`, o código comentado innecesario
+
+**Mensaje final al usuario:**
+```
+✅ Tarea completada: [Nombre de la tarea]
+
+Resumen:
+- Archivos modificados: [lista]
+- Tests añadidos/actualizados: [número]
+- Lint: ✅ Passed
+- Build: ✅ Passed
+- Tests: ✅ Passed (X/Y tests passing)
+
+Próximos pasos recomendados:
+- [Sugerencia 1]
+- [Sugerencia 2]
+```
+
+---
+
+## 🚨 Manejo de Errores Durante el Workflow
+
+**Si encuentras un error en CUALQUIER fase:**
+
+1. **NO marques la tarea actual como completada**
+2. **Crea nueva tarea** en TodoWrite: "Fix [descripción del error]"
+3. **Marca la nueva tarea como `in_progress`**
+4. **Resuelve el error** siguiendo el mismo workflow
+5. **Marca como `completed`** SOLO cuando esté realmente resuelto
+6. **Continúa** con la tarea original
+
+**Ejemplo:**
+```
+✅ Completed: Implementar UI de filtro
+🔄 In Progress: npm run build
+   ❌ Error: TS2304: Cannot find name 'Sport'
+
+🆕 New Task: Fix TypeScript error - Import Sport enum
+🔄 In Progress: Fix TypeScript error
+   - Added import { Sport } from '@/models/sport'
+✅ Completed: Fix TypeScript error
+
+🔄 In Progress: npm run build (retry)
+   ✅ Build successful
+✅ Completed: npm run build
+```
+
+---
+
+## 💡 Ejemplo Completo de Workflow
+
+**Tarea**: "Añadir funcionalidad de exportar trainings a PDF"
+
+### 1️⃣ Deep Thinking (3 ciclos)
+```
+Ciclo 1 - Comprensión:
+- Necesito generar PDF desde lista de trainings
+- Afecta Frontend (botón export) y posiblemente Backend (generación PDF)
+- Revisar si ya existe librería PDF en el proyecto
+
+Ciclo 2 - Análisis de Impacto:
+- ¿ADR necesario? → No, es una feature menor
+- Patrón: Service para lógica de export (frontend)
+- Si backend: Command pattern (ExportTrainingsToPdfCommand)
+- Seguridad: Validar permisos del usuario
+
+Ciclo 3 - Diseño:
+- Opción 1: Cliente genera PDF (jsPDF)
+- Opción 2: Backend genera PDF (QuestPDF)
+- Decisión: Backend (mejor calidad, más control)
+- Tests: Unit test del command handler
+```
+
+### 2️⃣ Planificación (TodoWrite)
+```typescript
+[ ] 1. Investigar librería PDF en backend (QuestPDF)
+[ ] 2. Crear ExportTrainingsToPdfCommand y Handler
+[ ] 3. Crear endpoint GET /api/trainings/export/pdf
+[ ] 4. Implementar botón "Export PDF" en TrainingListComponent
+[ ] 5. Conectar frontend con endpoint
+[ ] 6. Escribir tests unitarios para ExportHandler
+[ ] 7. npm run lint (frontend)
+[ ] 8. dotnet format --verify-no-changes (backend)
+[ ] 9. npm run build && dotnet build
+[ ] 10. npm test && dotnet test
+[ ] 11. Cleanup y revisión final
+```
+
+### 3️⃣ Implementación (Paso a paso)
+```
+🔄 In Progress: Investigar librería PDF en backend
+   - Encontré QuestPDF, compatible con .NET 8
+✅ Completed: Investigar librería PDF
+
+🔄 In Progress: Crear ExportTrainingsToPdfCommand y Handler
+   - Created ExportTrainingsToPdfCommand.cs
+   - Created ExportTrainingsToPdfCommandHandler.cs
+✅ Completed: Crear ExportTrainingsToPdfCommand y Handler
+
+... (continúa con cada tarea)
+```
+
+### 4️⃣ Verificación
+```bash
+# Lint
+npm run lint → ✅ No errors
+dotnet format --verify-no-changes → ✅ No changes needed
+
+# Build
+npm run build → ✅ Build successful
+dotnet build → ✅ Build succeeded
+
+# Tests
+npm test → ✅ 45/45 tests passing
+dotnet test → ✅ 127/127 tests passing
+```
+
+### 5️⃣ Completado
+```
+✅ Tarea completada: Añadir funcionalidad de exportar trainings a PDF
+
+Resumen:
+- Archivos modificados:
+  - back/SportPlanner/src/SportPlanner.Application/UseCases/ExportTrainingsToPdfCommand.cs (new)
+  - back/SportPlanner/src/SportPlanner.API/Controllers/TrainingController.cs
+  - front/SportPlanner/src/app/features/training/pages/training-list.component.ts
+  - front/SportPlanner/src/app/features/training/pages/training-list.component.html
+- Tests añadidos: 3 unit tests (ExportTrainingsToPdfCommandHandlerTests)
+- Lint: ✅ Passed
+- Build: ✅ Passed
+- Tests: ✅ Passed (172/172 tests passing)
+
+Próximos pasos recomendados:
+- Agregar opción de filtrar trainings antes de exportar
+- Añadir progreso visual durante la generación del PDF
+- Considerar caché del PDF generado para mejorar performance
+```
+
+---
+
+## 🎓 Resumen del Workflow
+
+1. **🧠 Piensa** (3 ciclos: Comprensión → Impacto → Diseño)
+2. **📝 Planifica** (TodoWrite con tareas pequeñas y específicas)
+3. **🔨 Implementa** (Una tarea a la vez, marca progreso)
+4. **✅ Verifica** (Lint → Build → Tests → Self-review)
+5. **🎯 Completa** (Mensaje final con resumen)
+
+**Regla de Oro**: No hay atajos. Cada fase es MANDATORY.
+
+---
+
 ## 📋 What This File Contains
 
 This `agent.md` contains **cross-cutting concerns** for the entire project:
@@ -204,21 +512,60 @@ src/
 
 **Run from `src/` directory:**
 
-### Frontend Development
+### 🚀 Quick Start - Restart All Services
+```bash
+# Opción 1: Script automatizado (RECOMENDADO)
+./scripts/restart-services.sh
+
+# Opción 2: Comando slash en Claude Code
+/start
+```
+
+**El script hace automáticamente:**
+1. ✋ Detiene procesos de Angular (`node`) y .NET (`dotnet`) si están corriendo
+2. 🧹 Libera puertos 4200 (Angular) y 5000/5001 (.NET)
+3. 🎨 Inicia Frontend en http://localhost:4200
+4. ⚙️ Inicia Backend en https://localhost:5001
+5. 📋 Genera logs en `/tmp/angular-dev.log` y `/tmp/dotnet-api.log`
+
+**Ver logs en tiempo real:**
+```bash
+# Angular
+tail -f /tmp/angular-dev.log
+
+# .NET
+tail -f /tmp/dotnet-api.log
+```
+
+**Detener servicios:**
+```bash
+# Opción 1: Obtener PIDs del output del script
+kill <ANGULAR_PID> <DOTNET_PID>
+
+# Opción 2: Matar todos los procesos node y dotnet
+pkill -f node
+pkill -f dotnet
+```
+
+---
+
+### Frontend Development (Manual)
 ```bash
 cd front/SportPlanner
 npm start              # Dev server (localhost:4200)
 npm test               # Run unit tests
 npm run build          # Production build
 npm run watch          # Build in watch mode
+npm run lint           # Run ESLint
 ```
 
-### Backend Development
+### Backend Development (Manual)
 ```bash
 cd back/SportPlanner
 dotnet build                                    # Build solution
 dotnet test                                     # Run all tests
 dotnet run --project src/SportPlanner.API       # Start API
+dotnet format --verify-no-changes               # Check formatting
 ```
 
 ### Database Migrations (EF Core)
