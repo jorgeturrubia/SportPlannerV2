@@ -14,6 +14,12 @@ public class SubscriptionUserRepository : ISubscriptionUserRepository
         _context = context;
     }
 
+    public async Task<SubscriptionUser?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.SubscriptionUsers
+            .FirstOrDefaultAsync(su => su.Id == id, cancellationToken);
+    }
+
     public async Task<int> GetActiveUserCountBySubscriptionIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
     {
         return await _context.SubscriptionUsers

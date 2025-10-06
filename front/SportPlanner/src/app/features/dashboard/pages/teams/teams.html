@@ -2,12 +2,12 @@
   <!-- Header -->
   <div class="flex justify-between items-center mb-10">
     <div>
-      <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">Teams</h1>
-      <p class="text-slate-500 dark:text-slate-400 text-lg">Manage your teams, view members, and track their progress.</p>
+      <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">{{ 'teams.title' | translate }}</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-lg">{{ 'teams.description' | translate }}</p>
     </div>
     <button (click)="openAddForm()" class="px-6 py-3 font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-      <span>Add Team</span>
+      <span>{{ 'teams.addTeam' | translate }}</span>
     </button>
   </div>
 
@@ -38,11 +38,11 @@
           <span class="text-4xl animate-bounce">🏆</span>
         </div>
       </div>
-      <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Todavía no tienes equipos</h3>
-      <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">Comienza creando tu primer equipo para gestionar jugadores, planificar entrenamientos y alcanzar tus objetivos deportivos.</p>
+      <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">{{ 'teams.emptyState.title' | translate }}</h3>
+      <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">{{ 'teams.emptyState.description' | translate }}</p>
       <button (click)="openAddForm()" class="px-8 py-4 font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out inline-flex items-center gap-3">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-        <span>Crear mi primer equipo</span>
+        <span>{{ 'teams.createFirstTeam' | translate }}</span>
       </button>
     </div>
   }
@@ -74,18 +74,18 @@
               <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ getColorName(teams()[0].color) }}</span>
             </div>
             <div>
-              <span class="text-slate-500 dark:text-slate-400">Category:</span>
+              <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.category' | translate }}:</span>
               <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].category.name }}</span>
             </div>
-            @if (teams()[0].coachName) {
+            @if (teams()[0].coachFirstName || teams()[0].coachLastName) {
               <div>
-                <span class="text-slate-500 dark:text-slate-400">Coach:</span>
-                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].coachName }}</span>
+                <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.coach' | translate }}:</span>
+                <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].coachFirstName }} {{ teams()[0].coachLastName }}</span>
               </div>
             }
             @if (teams()[0].homeVenue) {
               <div>
-                <span class="text-slate-500 dark:text-slate-400">Venue:</span>
+                <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.venue' | translate }}:</span>
                 <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ teams()[0].homeVenue }}</span>
               </div>
             }
@@ -95,14 +95,14 @@
         <div card-footer>
           <div class="flex justify-between items-center text-sm">
             <div class="text-slate-500 dark:text-slate-400">
-              <span class="font-semibold text-slate-700 dark:text-slate-200">{{ teams()[0].currentPlayersCount }}</span> / {{ teams()[0].maxPlayers }} Players
+              <span class="font-semibold text-slate-700 dark:text-slate-200">{{ teams()[0].currentPlayersCount }}</span> / {{ teams()[0].maxPlayers }} {{ 'teams.details.players' | translate }}
             </div>
             <div class="text-xs px-2 py-1 rounded-full"
                  [class.bg-green-100]="teams()[0].isActive"
                  [class.text-green-700]="teams()[0].isActive"
                  [class.bg-gray-100]="!teams()[0].isActive"
                  [class.text-gray-700]="!teams()[0].isActive">
-              {{ teams()[0].isActive ? 'Active' : 'Inactive' }}
+              {{ teams()[0].isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
             </div>
           </div>
         </div>
@@ -139,18 +139,18 @@
                 <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ getColorName(team.color) }}</span>
               </div>
               <div>
-                <span class="text-slate-500 dark:text-slate-400">Category:</span>
+                <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.category' | translate }}:</span>
                 <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.category.name }}</span>
               </div>
-              @if (team.coachName) {
+              @if (team.coachFirstName || team.coachLastName) {
                 <div>
-                  <span class="text-slate-500 dark:text-slate-400">Coach:</span>
-                  <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.coachName }}</span>
+                  <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.coach' | translate }}:</span>
+                  <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.coachFirstName }} {{ team.coachLastName }}</span>
                 </div>
               }
               @if (team.homeVenue) {
                 <div>
-                  <span class="text-slate-500 dark:text-slate-400">Venue:</span>
+                  <span class="text-slate-500 dark:text-slate-400">{{ 'teams.details.venue' | translate }}:</span>
                   <span class="ml-1 font-medium text-slate-700 dark:text-slate-200">{{ team.homeVenue }}</span>
                 </div>
               }
@@ -160,14 +160,14 @@
           <div card-footer>
             <div class="flex justify-between items-center text-sm">
               <div class="text-slate-500 dark:text-slate-400">
-                <span class="font-semibold text-slate-700 dark:text-slate-200">{{ team.currentPlayersCount }}</span> / {{ team.maxPlayers }} Players
+                <span class="font-semibold text-slate-700 dark:text-slate-200">{{ team.currentPlayersCount }}</span> / {{ team.maxPlayers }} {{ 'teams.details.players' | translate }}
               </div>
               <div class="text-xs px-2 py-1 rounded-full"
                    [class.bg-green-100]="team.isActive"
                    [class.text-green-700]="team.isActive"
                    [class.bg-gray-100]="!team.isActive"
                    [class.text-gray-700]="!team.isActive">
-                {{ team.isActive ? 'Active' : 'Inactive' }}
+                {{ team.isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
               </div>
             </div>
           </div>

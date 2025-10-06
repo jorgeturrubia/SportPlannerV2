@@ -7,10 +7,17 @@ namespace SportPlanner.Application.UseCases;
 public class GetTeamQueryHandler : IRequestHandler<GetTeamQuery, TeamResponse?>
 {
     private readonly ITeamRepository _teamRepository;
+    private readonly ISubscriptionUserRepository _subscriptionUserRepository;
+    private readonly IUserRepository _userRepository;
 
-    public GetTeamQueryHandler(ITeamRepository teamRepository)
+    public GetTeamQueryHandler(
+        ITeamRepository teamRepository,
+        ISubscriptionUserRepository subscriptionUserRepository,
+        IUserRepository userRepository)
     {
         _teamRepository = teamRepository;
+        _subscriptionUserRepository = subscriptionUserRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<TeamResponse?> Handle(GetTeamQuery request, CancellationToken cancellationToken)
@@ -23,6 +30,26 @@ public class GetTeamQueryHandler : IRequestHandler<GetTeamQuery, TeamResponse?>
             return null;
         }
 
+        // Enrich coach data if CoachSubscriptionUserId exists
+        string? coachFirstName = null;
+        string? coachLastName = null;
+        string? coachEmail = null;
+
+        if (team.CoachSubscriptionUserId.HasValue)
+        {
+            var coachSubscriptionUser = await _subscriptionUserRepository.GetByIdAsync(team.CoachSubscriptionUserId.Value, cancellationToken);
+            if (coachSubscriptionUser != null)
+            {
+                var coachUser = await _userRepository.GetByIdAsync(coachSubscriptionUser.UserId, cancellationToken);
+                if (coachUser != null)
+                {
+                    coachFirstName = coachUser.FirstName;
+                    coachLastName = coachUser.LastName;
+                    coachEmail = coachUser.Email.Value;
+                }
+            }
+        }
+
         return new TeamResponse(
             team.Id,
             team.SubscriptionId,
@@ -31,9 +58,10 @@ public class GetTeamQueryHandler : IRequestHandler<GetTeamQuery, TeamResponse?>
             team.Sport,
             team.Description,
             team.HomeVenue,
-            team.CoachName,
-            team.ContactEmail,
-            team.ContactPhone,
+            team.CoachSubscriptionUserId,
+            coachFirstName,
+            coachLastName,
+            coachEmail,
             team.Season,
             team.MaxPlayers,
             team.CurrentPlayersCount,

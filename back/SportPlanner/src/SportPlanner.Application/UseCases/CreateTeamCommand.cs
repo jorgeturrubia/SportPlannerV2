@@ -12,9 +12,7 @@ public record CreateTeamCommand(
     Guid AgeGroupId,
     string? Description = null,
     string? HomeVenue = null,
-    string? CoachName = null,
-    string? ContactEmail = null,
-    string? ContactPhone = null,
+    Guid? CoachSubscriptionUserId = null,
     DateTime? Season = null,
     bool AllowMixedGender = false
 ) : IRequest<Guid>;

@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Navbar } from './features/shared/components/navbar/navbar';
+import { NotificationsContainerComponent } from './shared/notifications/notifications.container';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
 import { LanguageService } from './services/language.service';
@@ -10,7 +11,7 @@ import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, CommonModule],
+  imports: [RouterOutlet, Navbar, CommonModule, NotificationsContainerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -14,6 +14,7 @@ public class CreateTeamCommandTests
     private readonly Mock<ITeamCategoryRepository> _teamCategoryRepositoryMock;
     private readonly Mock<IGenderRepository> _genderRepositoryMock;
     private readonly Mock<IAgeGroupRepository> _ageGroupRepositoryMock;
+    private readonly Mock<ISubscriptionUserRepository> _subscriptionUserRepositoryMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly CreateTeamCommandHandler _handler;
 
@@ -30,6 +31,7 @@ public class CreateTeamCommandTests
         _teamCategoryRepositoryMock = new Mock<ITeamCategoryRepository>();
         _genderRepositoryMock = new Mock<IGenderRepository>();
         _ageGroupRepositoryMock = new Mock<IAgeGroupRepository>();
+        _subscriptionUserRepositoryMock = new Mock<ISubscriptionUserRepository>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
 
         _handler = new CreateTeamCommandHandler(
@@ -38,6 +40,7 @@ public class CreateTeamCommandTests
             _teamCategoryRepositoryMock.Object,
             _genderRepositoryMock.Object,
             _ageGroupRepositoryMock.Object,
+            _subscriptionUserRepositoryMock.Object,
             _currentUserServiceMock.Object);
     }
 

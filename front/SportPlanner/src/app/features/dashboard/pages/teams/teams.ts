@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CardCarouselComponent } from '../../../../shared/components/card-carousel/card-carousel.component';
@@ -68,9 +69,10 @@ interface TeamResponse {
   sport: Sport;
   description?: string;
   homeVenue?: string;
-  coachName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
+  coachSubscriptionUserId?: string;
+  coachFirstName?: string;
+  coachLastName?: string;
+  coachEmail?: string;
   season?: string;
   maxPlayers: number;
   currentPlayersCount: number;
@@ -91,9 +93,7 @@ interface CreateTeamRequest {
   ageGroupId: string;
   description?: string;
   homeVenue?: string;
-  coachName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
+  coachSubscriptionUserId?: string;
   season?: string;
   allowMixedGender?: boolean;
 }
@@ -101,7 +101,7 @@ interface CreateTeamRequest {
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule, CardComponent, ConfirmationDialogComponent, DynamicFormComponent, CardCarouselComponent],
+  imports: [CommonModule, TranslateModule, CardComponent, ConfirmationDialogComponent, DynamicFormComponent, CardCarouselComponent],
   templateUrl: './teams.html',
   styleUrls: ['./teams.css']
 })
@@ -182,10 +182,7 @@ export class TeamsPage implements OnInit {
         options: this.ageGroups().map(a => ({ value: a.id, label: a.name }))
       },
       { key: 'description', label: 'Description', type: 'textarea' },
-      { key: 'homeVenue', label: 'Home Venue', type: 'text' },
-      { key: 'coachName', label: 'Coach Name', type: 'text' },
-      { key: 'contactEmail', label: 'Contact Email', type: 'text' },
-      { key: 'contactPhone', label: 'Contact Phone', type: 'text' }
+      { key: 'homeVenue', label: 'Home Venue', type: 'text' }
     ]);
   }
 
@@ -305,10 +302,7 @@ export class TeamsPage implements OnInit {
           name: formData.name,
           color: Number(formData.color),
           description: formData.description,
-          homeVenue: formData.homeVenue,
-          coachName: formData.coachName,
-          contactEmail: formData.contactEmail,
-          contactPhone: formData.contactPhone
+          homeVenue: formData.homeVenue
         };
 
         const updatedTeam = await this.teamsService.updateTeam(
@@ -332,9 +326,6 @@ export class TeamsPage implements OnInit {
           ageGroupId: formData.ageGroupId,
           description: formData.description,
           homeVenue: formData.homeVenue,
-          coachName: formData.coachName,
-          contactEmail: formData.contactEmail,
-          contactPhone: formData.contactPhone,
           allowMixedGender: false
         };
 

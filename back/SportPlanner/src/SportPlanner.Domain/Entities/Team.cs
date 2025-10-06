@@ -10,6 +10,7 @@ public class Team : Entity, IAuditable
     public Guid TeamCategoryId { get; private set; }
     public Guid GenderId { get; private set; }
     public Guid AgeGroupId { get; private set; }
+    public Guid? CoachSubscriptionUserId { get; private set; }
 
     // Propiedades directas
     public string Name { get; private set; }
@@ -20,9 +21,6 @@ public class Team : Entity, IAuditable
     // Propiedades adicionales
     public string? Description { get; private set; }
     public string? HomeVenue { get; private set; }
-    public string? CoachName { get; private set; }
-    public string? ContactEmail { get; private set; }
-    public string? ContactPhone { get; private set; }
     public DateTime? Season { get; private set; }
     public int MaxPlayers { get; private set; }
     public int CurrentPlayersCount { get; private set; }
@@ -33,6 +31,7 @@ public class Team : Entity, IAuditable
     public virtual TeamCategory Category { get; private set; } = null!;
     public virtual Gender Gender { get; private set; } = null!;
     public virtual AgeGroup AgeGroup { get; private set; } = null!;
+    public virtual SubscriptionUser? Coach { get; private set; }
 
     // IAuditable
     public DateTime CreatedAt { get; set; }
@@ -53,9 +52,7 @@ public class Team : Entity, IAuditable
         Sport sport,
         string? description = null,
         string? homeVenue = null,
-        string? coachName = null,
-        string? contactEmail = null,
-        string? contactPhone = null,
+        Guid? coachSubscriptionUserId = null,
         DateTime? season = null,
         bool allowMixedGender = false)
     {
@@ -74,21 +71,16 @@ public class Team : Entity, IAuditable
         if (ageGroupId == Guid.Empty)
             throw new ArgumentException("AgeGroupId cannot be empty", nameof(ageGroupId));
 
-        if (!string.IsNullOrWhiteSpace(contactEmail) && !IsValidEmail(contactEmail))
-            throw new ArgumentException("ContactEmail is not valid", nameof(contactEmail));
-
         SubscriptionId = subscriptionId;
         Name = name;
         Color = color;
         TeamCategoryId = teamCategoryId;
         GenderId = genderId;
         AgeGroupId = ageGroupId;
+        CoachSubscriptionUserId = coachSubscriptionUserId;
         Sport = sport;
         Description = description;
         HomeVenue = homeVenue;
-        CoachName = coachName;
-        ContactEmail = contactEmail;
-        ContactPhone = contactPhone;
         Season = season;
         AllowMixedGender = allowMixedGender;
         IsActive = true;
@@ -109,15 +101,15 @@ public class Team : Entity, IAuditable
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdateContactInfo(string? homeVenue, string? coachName, string? contactEmail, string? contactPhone)
+    public void UpdateVenue(string? homeVenue)
     {
-        if (!string.IsNullOrWhiteSpace(contactEmail) && !IsValidEmail(contactEmail))
-            throw new ArgumentException("ContactEmail is not valid", nameof(contactEmail));
-
         HomeVenue = homeVenue;
-        CoachName = coachName;
-        ContactEmail = contactEmail;
-        ContactPhone = contactPhone;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void AssignCoach(Guid? coachSubscriptionUserId)
+    {
+        CoachSubscriptionUserId = coachSubscriptionUserId;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -182,18 +174,5 @@ public class Team : Entity, IAuditable
             Sport.Handball => 18,     // 7 titulares + 11 suplentes
             _ => 20                   // Default
         };
-    }
-
-    private static bool IsValidEmail(string email)
-    {
-        try
-        {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }

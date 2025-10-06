@@ -4,6 +4,7 @@ namespace SportPlanner.Application.Interfaces;
 
 public interface ISubscriptionUserRepository
 {
+    Task<SubscriptionUser?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<int> GetActiveUserCountBySubscriptionIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
     Task<SubscriptionUser?> GetBySubscriptionAndUserIdAsync(Guid subscriptionId, Guid userId, CancellationToken cancellationToken = default);
     Task<bool> ExistsUserInSubscriptionAsync(Guid subscriptionId, Guid userId, CancellationToken cancellationToken = default);

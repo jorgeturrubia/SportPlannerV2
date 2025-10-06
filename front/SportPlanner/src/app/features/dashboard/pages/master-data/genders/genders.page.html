@@ -1,8 +1,8 @@
 <div class="p-6 md:p-10 bg-slate-50 dark:bg-slate-950 min-h-screen">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">Genders</h1>
-    <p class="text-slate-500 dark:text-slate-400 text-lg">Manage gender master data</p>
+    <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">{{ 'masterData.genders.title' | translate }}</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-lg">{{ 'masterData.genders.description' | translate }}</p>
   </div>
 
   <!-- Error Message -->
@@ -18,7 +18,7 @@
     [data]="genders()"
     [actions]="actions"
     [isLoading]="isLoading()"
-    [emptyMessage]="'No genders found'"
+    [emptyMessage]="'masterData.genders.noRecords' | translate"
     (add)="openAddForm()">
   </app-data-table>
 
@@ -35,7 +35,7 @@
   <!-- Confirmation Dialog -->
   <app-confirmation-dialog
     [isOpen]="isConfirmDialogOpen()"
-    [message]="'Are you sure you want to delete this gender?'"
+    [message]="'masterData.genders.deleteConfirm' | translate"
     (confirm)="handleDeleteConfirm()"
     (cancel)="closeConfirmDialog()">
   </app-confirmation-dialog>

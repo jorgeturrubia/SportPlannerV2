@@ -23,6 +23,8 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.Property(t => t.AgeGroupId)
             .IsRequired();
 
+        builder.Property(t => t.CoachSubscriptionUserId);
+
         builder.Property(t => t.Name)
             .HasMaxLength(100)
             .IsRequired();
@@ -44,15 +46,6 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
 
         builder.Property(t => t.HomeVenue)
             .HasMaxLength(200);
-
-        builder.Property(t => t.CoachName)
-            .HasMaxLength(100);
-
-        builder.Property(t => t.ContactEmail)
-            .HasMaxLength(255);
-
-        builder.Property(t => t.ContactPhone)
-            .HasMaxLength(20);
 
         builder.Property(t => t.MaxPlayers)
             .IsRequired();
@@ -94,6 +87,11 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             .WithMany()
             .HasForeignKey(t => t.AgeGroupId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(t => t.Coach)
+            .WithMany()
+            .HasForeignKey(t => t.CoachSubscriptionUserId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         // Indices
         builder.HasIndex(t => new { t.SubscriptionId, t.Name })

@@ -7,13 +7,21 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
+    "addNew": "Add New",
     "close": "Close",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "showing": "Showing",
+    "of": "of",
+    "entries": "entries",
+    "clearSearch": "Clear search"
   },
   "nav": {
     "home": "Home",
@@ -83,5 +91,41 @@
     "nextSession": "Next Session",
     "noResults": "No athletes found",
     "tryDifferentSearch": "Try searching with different keywords"
+  },
+  "masterData": {
+    "genders": {
+      "title": "Genders",
+      "description": "Manage gender master data",
+      "noRecords": "No genders found",
+      "deleteConfirm": "Are you sure you want to delete this gender?"
+    },
+    "ageGroups": {
+      "title": "Age Groups",
+      "description": "Manage age group master data",
+      "noRecords": "No age groups found",
+      "deleteConfirm": "Are you sure you want to delete this age group?"
+    },
+    "categories": {
+      "title": "Categories",
+      "description": "Manage category master data",
+      "noRecords": "No categories found",
+      "deleteConfirm": "Are you sure you want to delete this category?"
+    }
+  },
+  "teams": {
+    "title": "Teams",
+    "description": "Manage your teams, view members, and track their progress.",
+    "addTeam": "Add Team",
+    "createFirstTeam": "Create my first team",
+    "emptyState": {
+      "title": "You don't have any teams yet",
+      "description": "Start by creating your first team to manage players, plan trainings and achieve your sports goals."
+    },
+    "details": {
+      "players": "Players",
+      "category": "Category",
+      "coach": "Coach",
+      "venue": "Venue"
+    }
   }
 }

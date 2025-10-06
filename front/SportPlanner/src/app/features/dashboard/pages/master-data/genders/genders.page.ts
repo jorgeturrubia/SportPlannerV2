@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../../shared/components/data-table/data-table.component';
 import { DynamicFormComponent, FormField } from '../../../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -8,7 +9,7 @@ import { MasterDataService, GenderResponse } from '../../../services/master-data
 @Component({
   selector: 'app-genders-page',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent],
   templateUrl: './genders.page.html'
 })
 export class GendersPage implements OnInit {

@@ -11,6 +11,7 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
     private readonly ITeamCategoryRepository _teamCategoryRepository;
     private readonly IGenderRepository _genderRepository;
     private readonly IAgeGroupRepository _ageGroupRepository;
+    private readonly ISubscriptionUserRepository _subscriptionUserRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public CreateTeamCommandHandler(
@@ -19,6 +20,7 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
         ITeamCategoryRepository teamCategoryRepository,
         IGenderRepository genderRepository,
         IAgeGroupRepository ageGroupRepository,
+        ISubscriptionUserRepository subscriptionUserRepository,
         ICurrentUserService currentUserService)
     {
         _teamRepository = teamRepository;
@@ -26,6 +28,7 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
         _teamCategoryRepository = teamCategoryRepository;
         _genderRepository = genderRepository;
         _ageGroupRepository = ageGroupRepository;
+        _subscriptionUserRepository = subscriptionUserRepository;
         _currentUserService = currentUserService;
     }
 
@@ -74,7 +77,23 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
         if (request.AllowMixedGender && gender.Code != "X")
             throw new InvalidOperationException("Mixed gender is only allowed when gender is set to 'Mixto'");
 
-        // 8. Crear equipo con datos validados
+        // 8. Validar CoachSubscriptionUserId si se proporciona
+        if (request.CoachSubscriptionUserId.HasValue)
+        {
+            var coachSubscriptionUser = await _subscriptionUserRepository.GetByIdAsync(request.CoachSubscriptionUserId.Value, cancellationToken);
+            if (coachSubscriptionUser == null)
+                throw new InvalidOperationException("Coach subscription user not found");
+
+            // Validar que el coach pertenece a la misma subscription
+            if (coachSubscriptionUser.SubscriptionId != request.SubscriptionId)
+                throw new InvalidOperationException("Coach must belong to the same subscription");
+
+            // Validar que el coach está activo
+            if (!coachSubscriptionUser.IsActive)
+                throw new InvalidOperationException("Coach subscription user is not active");
+        }
+
+        // 9. Crear equipo con datos validados
         var team = new Team(
             request.SubscriptionId,
             request.Name,
@@ -85,9 +104,7 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
             subscription.Sport,
             request.Description,
             request.HomeVenue,
-            request.CoachName,
-            request.ContactEmail,
-            request.ContactPhone,
+            request.CoachSubscriptionUserId,
             request.Season,
             request.AllowMixedGender);
 

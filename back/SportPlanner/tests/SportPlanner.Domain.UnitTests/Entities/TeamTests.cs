@@ -60,28 +60,8 @@ public class TeamTests
             new Team(_subscriptionId, "Test Team", TeamColor.Azul, Guid.Empty, _genderId, _ageGroupId, Sport.Football));
     }
 
-    [Fact]
-    public void CreateTeam_WithInvalidEmail_ShouldThrowException()
-    {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-            new Team(_subscriptionId, "Test Team", TeamColor.Azul, _teamCategoryId, _genderId, _ageGroupId, Sport.Football,
-                     contactEmail: "invalid-email"));
-    }
-
-    [Fact]
-    public void CreateTeam_WithValidEmail_ShouldSucceed()
-    {
-        // Arrange
-        var validEmail = "coach@example.com";
-
-        // Act
-        var team = new Team(_subscriptionId, "Test Team", TeamColor.Azul, _teamCategoryId, _genderId, _ageGroupId, Sport.Football,
-                           contactEmail: validEmail);
-
-        // Assert
-        Assert.Equal(validEmail, team.ContactEmail);
-    }
+    // Tests removed: ContactEmail, ContactPhone, CoachName fields no longer exist
+    // Coach data is now enriched from SubscriptionUser -> User relationship
 
     [Theory]
     [InlineData(Sport.Football, 22)]
@@ -116,23 +96,32 @@ public class TeamTests
     }
 
     [Fact]
-    public void UpdateContactInfo_WithValidParameters_ShouldUpdate()
+    public void UpdateVenue_WithValidParameter_ShouldUpdate()
     {
         // Arrange
         var team = new Team(_subscriptionId, "Test Team", TeamColor.Azul, _teamCategoryId, _genderId, _ageGroupId, Sport.Football);
         var homeVenue = "Santiago Bernabéu";
-        var coachName = "Carlo Ancelotti";
-        var contactEmail = "coach@realmadrid.com";
-        var contactPhone = "+34 123 456 789";
 
         // Act
-        team.UpdateContactInfo(homeVenue, coachName, contactEmail, contactPhone);
+        team.UpdateVenue(homeVenue);
 
         // Assert
         Assert.Equal(homeVenue, team.HomeVenue);
-        Assert.Equal(coachName, team.CoachName);
-        Assert.Equal(contactEmail, team.ContactEmail);
-        Assert.Equal(contactPhone, team.ContactPhone);
+        Assert.NotNull(team.UpdatedAt);
+    }
+
+    [Fact]
+    public void AssignCoach_WithValidSubscriptionUserId_ShouldUpdate()
+    {
+        // Arrange
+        var team = new Team(_subscriptionId, "Test Team", TeamColor.Azul, _teamCategoryId, _genderId, _ageGroupId, Sport.Football);
+        var coachSubscriptionUserId = Guid.NewGuid();
+
+        // Act
+        team.AssignCoach(coachSubscriptionUserId);
+
+        // Assert
+        Assert.Equal(coachSubscriptionUserId, team.CoachSubscriptionUserId);
         Assert.NotNull(team.UpdatedAt);
     }
 

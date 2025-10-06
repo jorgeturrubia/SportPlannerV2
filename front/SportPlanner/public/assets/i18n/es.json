@@ -7,13 +7,21 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "add": "Agregar",
+    "addNew": "Agregar Nuevo",
     "close": "Cerrar",
     "loading": "Cargando...",
     "error": "Error",
     "success": "Éxito",
     "confirm": "Confirmar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "actions": "Acciones",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "showing": "Mostrando",
+    "of": "de",
+    "entries": "registros",
+    "clearSearch": "Limpiar búsqueda"
   },
   "nav": {
     "home": "Inicio",
@@ -83,5 +91,41 @@
     "nextSession": "Próxima Sesión",
     "noResults": "No se encontraron atletas",
     "tryDifferentSearch": "Intenta buscar con diferentes palabras clave"
+  },
+  "masterData": {
+    "genders": {
+      "title": "Géneros",
+      "description": "Gestionar datos maestros de género",
+      "noRecords": "No se encontraron géneros",
+      "deleteConfirm": "¿Estás seguro de que quieres eliminar este género?"
+    },
+    "ageGroups": {
+      "title": "Grupos de Edad",
+      "description": "Gestionar datos maestros de grupos de edad",
+      "noRecords": "No se encontraron grupos de edad",
+      "deleteConfirm": "¿Estás seguro de que quieres eliminar este grupo de edad?"
+    },
+    "categories": {
+      "title": "Categorías",
+      "description": "Gestionar datos maestros de categorías",
+      "noRecords": "No se encontraron categorías",
+      "deleteConfirm": "¿Estás seguro de que quieres eliminar esta categoría?"
+    }
+  },
+  "teams": {
+    "title": "Equipos",
+    "description": "Gestiona tus equipos, ve los miembros y haz seguimiento de su progreso.",
+    "addTeam": "Agregar Equipo",
+    "createFirstTeam": "Crear mi primer equipo",
+    "emptyState": {
+      "title": "Todavía no tienes equipos",
+      "description": "Comienza creando tu primer equipo para gestionar jugadores, planificar entrenamientos y alcanzar tus objetivos deportivos."
+    },
+    "details": {
+      "players": "Jugadores",
+      "category": "Categoría",
+      "coach": "Entrenador",
+      "venue": "Recinto"
+    }
   }
 }

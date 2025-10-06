@@ -36,9 +36,7 @@ public class TeamsController : ControllerBase
             request.AgeGroupId,
             request.Description,
             request.HomeVenue,
-            request.CoachName,
-            request.ContactEmail,
-            request.ContactPhone,
+            request.CoachSubscriptionUserId,
             request.Season,
             request.AllowMixedGender);
 
