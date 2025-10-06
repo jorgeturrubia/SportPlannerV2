@@ -1,1 +1,25 @@
 /* Data Table Styles */
+
+/* Sticky Actions Column */
+.sticky {
+  position: sticky;
+  z-index: 10;
+}
+
+/* Ensure proper scrolling */
+:host ::ng-deep table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Smooth shadow transition on scroll */
+.sticky.right-0 {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Enhanced shadow for better visual separation */
+@media (prefers-color-scheme: dark) {
+  .sticky.right-0 {
+    box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.5);
+  }
+}
