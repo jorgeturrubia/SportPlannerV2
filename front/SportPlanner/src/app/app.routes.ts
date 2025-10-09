@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)
   },
   {
+    path: 'marketplace',
+    loadChildren: () => import('./features/marketplace/marketplace.routes').then(m => m.MARKETPLACE_ROUTES),
+    canActivate: [authGuard, subscriptionGuard]
+  },
+  {
     path: 'subscription/select',
     loadComponent: () => import('./features/subscription/pages/subscription-selection-page/subscription-selection-page').then(m => m.SubscriptionSelectionPage),
     canActivate: [authGuard] // Requires auth but NOT subscription

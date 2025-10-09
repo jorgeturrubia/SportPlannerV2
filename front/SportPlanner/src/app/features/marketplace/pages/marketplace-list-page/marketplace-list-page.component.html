@@ -1,0 +1,112 @@
+<div class="container mx-auto p-4 sm:p-6 lg:p-8">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Marketplace</h1>
+    <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
+      Discover plans, exercises, and objectives shared by the community.
+    </p>
+  </header>
+
+  <!-- Filter Controls -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border dark:border-gray-700">
+    <!-- Search Input -->
+    <div class="lg:col-span-2">
+      <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
+      <input type="text" id="search"
+             [ngModel]="searchTerm()" (ngModelChange)="onSearchTermChange($event)"
+             placeholder="Search by name..."
+             class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder:text-gray-400">
+    </div>
+
+    <!-- Sport Filter -->
+    <div>
+      <label for="sport" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sport</label>
+      <select id="sport" [(ngModel)]="selectedSport"
+              class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white cursor-pointer">
+        <option *ngFor="let sport of Sports" [value]="sport">{{ sport }}</option>
+      </select>
+    </div>
+
+    <!-- Type Filter -->
+    <div>
+      <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
+      <select id="type" [(ngModel)]="selectedType"
+              class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white cursor-pointer">
+        <option [ngValue]="undefined">All Types</option>
+        <option *ngFor="let type of ItemTypes" [value]="type">{{ type }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (i of [1,2,3,4,5,6,7,8]; track i) {
+          <div class="animate-pulse space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
+            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+            <div class="h-12 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+            <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between">
+              <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+              <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error(); as errorMessage) {
+      <div class="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+        <div class="flex-1">
+          <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Error</h3>
+          <p class="text-sm text-red-700 dark:text-red-400 mt-1">
+            Could not load marketplace items. {{ errorMessage }}
+          </p>
+        </div>
+      </div>
+    }
+
+    <!-- Content Grid -->
+    @if (!loading() && !error()) {
+      @if (items().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          @for (item of items(); track item.id) {
+            <app-marketplace-item-card [item]="item" />
+          }
+        </div>
+
+        <!-- Pagination -->
+        @if (pagination(); as pageInfo) {
+          <div class="mt-8 flex justify-between items-center">
+            <p class="text-sm text-gray-700 dark:text-gray-400">
+              Showing <span class="font-medium">{{ ((pageInfo.pageNumber - 1) * pageInfo.pageSize) + 1 }}</span>
+              to <span class="font-medium">{{ ((pageInfo.pageNumber - 1) * pageInfo.pageSize) + items().length }}</span>
+              of <span class="font-medium">{{ pageInfo.totalCount }}</span> results
+            </p>
+            <div class="flex gap-2">
+              <button (click)="changePage(pageInfo.pageNumber - 1)"
+                      [disabled]="!pageInfo.hasPreviousPage"
+                      class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md font-medium hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition duration-150 ease-in-out">
+                Previous
+              </button>
+              <button (click)="changePage(pageInfo.pageNumber + 1)"
+                      [disabled]="!pageInfo.hasNextPage"
+                      class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md font-medium hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition duration-150 ease-in-out">
+                Next
+              </button>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="text-center py-16">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">No Items Found</h3>
+          <p class="mt-2 text-gray-500 dark:text-gray-400">
+            Try adjusting your search filters to find what you're looking for.
+          </p>
+        </div>
+      }
+    }
+  </main>
+</div>
