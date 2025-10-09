@@ -170,4 +170,35 @@ public class TrainingPlan : Entity, IAuditable
         return totalTargetSessions >= Schedule.TotalSessions * 0.8 &&
                totalTargetSessions <= Schedule.TotalSessions * 1.2;
     }
+
+    /// <summary>
+    /// Creates a deep copy of the training plan for a different subscription.
+    /// The objectives themselves are not cloned, but the links (PlanObjective) are.
+    /// </summary>
+    /// <param name="targetSubscriptionId">The ID of the subscription to own the new plan.</param>
+    /// <param name="createdBy">The user creating the clone.</param>
+    /// <returns>A new TrainingPlan instance.</returns>
+    public TrainingPlan Clone(Guid targetSubscriptionId, string createdBy)
+    {
+        // A plan is always user-owned, so we can't clone one that doesn't have a subscription ID.
+        // The logic to check if the *source* is a system/marketplace item will be in the handler.
+        // Here, we just create a new user-owned plan from the template.
+
+        var clonedPlan = new TrainingPlan(
+            targetSubscriptionId,
+            this.Name,
+            this.StartDate, // The handler might want to adjust start/end dates
+            this.EndDate,
+            this.Schedule) // TrainingSchedule is a value object, so it's copied by value.
+        {
+            CreatedBy = createdBy
+        };
+
+        foreach (var objective in this.Objectives)
+        {
+            clonedPlan.AddObjective(objective.ObjectiveId, objective.Priority, objective.TargetSessions);
+        }
+
+        return clonedPlan;
+    }
 }

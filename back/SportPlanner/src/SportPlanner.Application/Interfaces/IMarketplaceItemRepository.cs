@@ -22,4 +22,5 @@ public interface IMarketplaceItemRepository
         CancellationToken cancellationToken = default);
     Task AddAsync(MarketplaceItem item, CancellationToken cancellationToken = default);
     Task UpdateAsync(MarketplaceItem item, CancellationToken cancellationToken = default);
+    Task<MarketplaceItem?> GetByIdWithRatingsAsync(Guid id, CancellationToken cancellationToken = default);
 }
