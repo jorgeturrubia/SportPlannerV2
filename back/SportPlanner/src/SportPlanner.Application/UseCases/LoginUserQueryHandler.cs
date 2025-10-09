@@ -38,16 +38,16 @@ public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, AuthRespons
                 var supabaseUser = session.User;
 
                 // Extract name from metadata if available, otherwise use email prefix
-                var firstName = supabaseUser.UserMetadata?.TryGetValue("first_name", out var fName) == true && fName is not null 
-                    ? fName.ToString() 
+                var firstName = supabaseUser.UserMetadata?.TryGetValue("first_name", out var fName) == true && fName is not null
+                    ? fName.ToString()
                     : "User";
-                var lastName = supabaseUser.UserMetadata?.TryGetValue("last_name", out var lName) == true && lName is not null 
-                    ? lName.ToString() 
+                var lastName = supabaseUser.UserMetadata?.TryGetValue("last_name", out var lName) == true && lName is not null
+                    ? lName.ToString()
                     : supabaseUser.Email?.Split('@')[0] ?? "Unknown";
 
                 // Create user with Supabase ID for tracking
                 var supabaseUserId = supabaseUser.Id ?? throw new InvalidOperationException("Supabase user ID is null");
-                
+
                 user = new SportPlanner.Domain.Entities.User(
                     firstName,
                     lastName,

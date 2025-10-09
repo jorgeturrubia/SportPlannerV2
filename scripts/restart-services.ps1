@@ -135,21 +135,21 @@ Write-Host "⏳ Waiting 10 seconds for services to start..." -ForegroundColor Ye
 Start-Sleep -Seconds 10
 
 # Verificar Angular
-Write-Host "🔍 Checking Angular dev server..." -ForegroundColor Yellow
+Write-Host "Checking Angular dev server..." -ForegroundColor Yellow
 try {
     $response = Invoke-WebRequest -Uri "http://localhost:4200" -TimeoutSec 5 -ErrorAction SilentlyContinue
-    Write-Host "   ✓ Angular is responding on http://localhost:4200" -ForegroundColor Green
+    Write-Host "   Angular is responding on http://localhost:4200" -ForegroundColor Green
 } catch {
-    Write-Host "   ⚠️  Angular might still be starting" -ForegroundColor Yellow
+    Write-Host "   Angular might still be starting" -ForegroundColor Yellow
 }
 
 # Verificar .NET
-Write-Host "🔍 Checking .NET API..." -ForegroundColor Yellow
+Write-Host "Checking .NET API..." -ForegroundColor Yellow
 try {
     $response = Invoke-WebRequest -Uri "https://localhost:5001" -SkipCertificateCheck -TimeoutSec 5 -ErrorAction SilentlyContinue
-    Write-Host "   ✓ .NET API is responding on https://localhost:5001" -ForegroundColor Green
+    Write-Host "   .NET API is responding on https://localhost:5001" -ForegroundColor Green
 } catch {
-    Write-Host "   ⚠️  .NET API might still be starting" -ForegroundColor Yellow
+    Write-Host "   .NET API might still be starting" -ForegroundColor Yellow
 }
 
 # Resumen final
@@ -163,10 +163,10 @@ Write-Host "http://localhost:4200" -ForegroundColor White
 Write-Host "📍 Backend (.NET):     " -NoNewline -ForegroundColor Cyan
 Write-Host "https://localhost:5001" -ForegroundColor White
 Write-Host ""
-Write-Host "💡 Both services are running in separate PowerShell windows" -ForegroundColor Yellow
+Write-Host "Both services are running in separate PowerShell windows" -ForegroundColor Yellow
 Write-Host "   Close those windows or press Ctrl+C to stop the services" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "✨ Happy coding!" -ForegroundColor Green
+Write-Host "Happy coding!" -ForegroundColor Green
 Write-Host ""
 
 # Volver al directorio original

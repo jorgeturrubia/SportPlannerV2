@@ -1,0 +1,35 @@
+<app-entity-page-layout
+  title="Subcategorías de Objetivos"
+  subtitle="Gestión de subcategorías de objetivos"
+  [addButtonText]="'common.addNew' | translate"
+  [error]="error()"
+  [isLoading]="isLoading()"
+  (add)="openAddForm()">
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns()"
+    [data]="subcategories()"
+    [actions]="actions"
+    emptyMessage="No hay subcategorías de objetivos registradas">
+  </app-data-table>
+
+</app-entity-page-layout>
+
+<!-- Form Dialog -->
+<app-dynamic-form
+  [isOpen]="isFormOpen()"
+  [title]="formTitle"
+  [config]="formConfig()"
+  [initialData]="selectedSubcategory()"
+  (formSubmit)="handleFormSubmit($event)"
+  (cancel)="closeForm()">
+</app-dynamic-form>
+
+<!-- Confirmation Dialog -->
+<app-confirmation-dialog
+  [isOpen]="isConfirmDialogOpen()"
+  message="¿Está seguro de eliminar esta subcategoría de objetivos?"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="closeConfirmDialog()">
+</app-confirmation-dialog>

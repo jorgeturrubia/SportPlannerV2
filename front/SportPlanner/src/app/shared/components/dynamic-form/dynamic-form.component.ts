@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 export interface FormField {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'textarea' | 'select' | 'checkbox';
+  type: 'text' | 'number' | 'textarea' | 'select' | 'checkbox' | 'date';
   required?: boolean;
   options?: { label: string; value: any }[];
 }

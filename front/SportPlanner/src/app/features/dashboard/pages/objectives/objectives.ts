@@ -1,11 +1,9 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { EntityPageLayoutComponent } from '../../../../shared/components/entity-page-layout/entity-page-layout.component';
-import { CardComponent } from '../../../../shared/components/card/card.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { CardCarouselComponent } from '../../../../shared/components/card-carousel/card-carousel.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
+import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
 import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, UpdateObjectiveDto, Sport, ContentOwnership } from '../../services/objectives.service';
 import { ObjectiveCategoriesService } from '../../services/objective-categories.service';
 import { ObjectiveSubcategoriesService } from '../../services/objective-subcategories.service';
@@ -15,7 +13,7 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 @Component({
   selector: 'app-objectives',
   standalone: true,
-  imports: [CommonModule, TranslateModule, EntityPageLayoutComponent, CardComponent, ConfirmationDialogComponent, DynamicFormComponent, CardCarouselComponent],
+  imports: [CommonModule, TranslateModule, ConfirmationDialogComponent, DynamicFormComponent, DataTableComponent],
   templateUrl: './objectives.html',
   styleUrls: ['./objectives.css']
 })
@@ -39,6 +37,58 @@ export class ObjectivesPage implements OnInit {
   isFormOpen = signal(false);
   selectedObjective = signal<ObjectiveDto | null>(null);
   formTitle = 'Add New Objective';
+
+  // Table configuration
+  tableColumns = computed<TableColumn[]>(() => [
+    { key: 'name', label: 'Nombre', sortable: true },
+    { key: 'description', label: 'Descripción', sortable: false },
+    {
+      key: 'objectiveCategoryId',
+      label: 'Categoría',
+      sortable: true,
+      formatter: (value: string) => this.getCategoryName(value)
+    },
+    {
+      key: 'objectiveSubcategoryId',
+      label: 'Subcategoría',
+      sortable: false,
+      formatter: (value?: string) => this.getSubcategoryName(value)
+    },
+    {
+      key: 'ownership',
+      label: 'Tipo',
+      sortable: true,
+      formatter: (value: ContentOwnership) => this.getOwnershipLabel(value)
+    },
+    { key: 'isActive', label: 'Estado', sortable: true, type: 'badge' }
+  ]);
+
+  tableActions = computed<TableAction[]>(() => [
+    {
+      icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+      label: 'Editar',
+      color: 'blue',
+      handler: (row: ObjectiveDto) => {
+        if (row.isEditable) this.openEditForm(row);
+      }
+    },
+    {
+      icon: 'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z',
+      label: 'Clonar',
+      color: 'green',
+      handler: (row: ObjectiveDto) => {
+        if (!row.isEditable) this.handleClone(row);
+      }
+    },
+    {
+      icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+      label: 'Eliminar',
+      color: 'red',
+      handler: (row: ObjectiveDto) => {
+        if (row.isEditable) this.openDeleteConfirm(row);
+      }
+    }
+  ]);
 
   objectiveFormConfig = computed<FormField[]>(() => [
     { key: 'name', label: 'Name', type: 'text', required: true },

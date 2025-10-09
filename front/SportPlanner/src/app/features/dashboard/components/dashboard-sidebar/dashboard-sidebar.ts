@@ -79,4 +79,32 @@ export class DashboardSidebar {
   goToCategories() {
     this.router.navigate(['/dashboard/master-data/categories']);
   }
+
+  goToObjectiveCategories() {
+    this.router.navigate(['/dashboard/master-data/objective-categories']);
+  }
+
+  goToObjectiveSubcategories() {
+    this.router.navigate(['/dashboard/master-data/objective-subcategories']);
+  }
+
+  goToExerciseCategories() {
+    this.router.navigate(['/dashboard/master-data/exercise-categories']);
+  }
+
+  goToExerciseTypes() {
+    this.router.navigate(['/dashboard/master-data/exercise-types']);
+  }
+
+  goToTrainingPlans() {
+    this.router.navigate(['/dashboard/training-plans']);
+  }
+
+  goToExercises() {
+    this.router.navigate(['/dashboard/exercises']);
+  }
+
+  goToWorkouts() {
+    this.router.navigate(['/dashboard/workouts']);
+  }
 }

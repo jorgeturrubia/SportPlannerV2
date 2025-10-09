@@ -34,6 +34,22 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/pages/objectives/objectives').then(m => m.ObjectivesPage)
       },
       {
+        path: 'training-plans',
+        loadComponent: () => import('./features/dashboard/pages/training-plans/training-plans.page').then(m => m.TrainingPlansPage)
+      },
+      {
+        path: 'exercises',
+        loadComponent: () => import('./features/dashboard/pages/exercises/exercises.page').then(m => m.ExercisesPage)
+      },
+      {
+        path: 'workouts',
+        loadComponent: () => import('./features/dashboard/pages/workouts/workouts.page').then(m => m.WorkoutsPage)
+      },
+      {
+        path: 'calendar',
+        loadComponent: () => import('./features/dashboard/pages/calendar/calendar.page').then(m => m.CalendarPage)
+      },
+      {
         path: 'master-data',
         children: [
           {
@@ -47,6 +63,22 @@ export const routes: Routes = [
           {
             path: 'categories',
             loadComponent: () => import('./features/dashboard/pages/master-data/categories/categories.page').then(m => m.CategoriesPage)
+          },
+          {
+            path: 'objective-categories',
+            loadComponent: () => import('./features/dashboard/pages/master-data/objective-categories/objective-categories.page').then(m => m.ObjectiveCategoriesPage)
+          },
+          {
+            path: 'objective-subcategories',
+            loadComponent: () => import('./features/dashboard/pages/master-data/objective-subcategories/objective-subcategories.page').then(m => m.ObjectiveSubcategoriesPage)
+          },
+          {
+            path: 'exercise-categories',
+            loadComponent: () => import('./features/dashboard/pages/master-data/exercise-categories/exercise-categories.page').then(m => m.ExerciseCategoriesPage)
+          },
+          {
+            path: 'exercise-types',
+            loadComponent: () => import('./features/dashboard/pages/master-data/exercise-types/exercise-types.page').then(m => m.ExerciseTypesPage)
           }
         ]
       },

@@ -1,0 +1,35 @@
+<app-entity-page-layout
+  title="Tipos de Ejercicios"
+  subtitle="Gestión de tipos de ejercicios y sus requisitos"
+  [addButtonText]="'common.addNew' | translate"
+  [error]="error()"
+  [isLoading]="isLoading()"
+  (add)="openAddForm()">
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="types()"
+    [actions]="actions"
+    emptyMessage="No hay tipos de ejercicios registrados">
+  </app-data-table>
+
+</app-entity-page-layout>
+
+<!-- Form Dialog -->
+<app-dynamic-form
+  [isOpen]="isFormOpen()"
+  [title]="formTitle"
+  [config]="formConfig"
+  [initialData]="selectedType()"
+  (formSubmit)="handleFormSubmit($event)"
+  (cancel)="closeForm()">
+</app-dynamic-form>
+
+<!-- Confirmation Dialog -->
+<app-confirmation-dialog
+  [isOpen]="isConfirmDialogOpen()"
+  message="¿Está seguro de eliminar este tipo de ejercicio?"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="closeConfirmDialog()">
+</app-confirmation-dialog>

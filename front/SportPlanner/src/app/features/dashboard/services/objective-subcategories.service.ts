@@ -8,6 +8,16 @@ export interface ObjectiveSubcategoryDto {
   name: string;
 }
 
+export interface CreateObjectiveSubcategoryDto {
+  name: string;
+  objectiveCategoryId: string;
+}
+
+export interface UpdateObjectiveSubcategoryDto {
+  name: string;
+  objectiveCategoryId: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,5 +31,17 @@ export class ObjectiveSubcategoriesService {
       params['categoryId'] = categoryId;
     }
     return await this.http.get<ObjectiveSubcategoryDto[]>(this.apiUrl, { params }).toPromise() || [];
+  }
+
+  async createSubcategory(dto: CreateObjectiveSubcategoryDto): Promise<ObjectiveSubcategoryDto> {
+    return await this.http.post<ObjectiveSubcategoryDto>(this.apiUrl, dto).toPromise() as ObjectiveSubcategoryDto;
+  }
+
+  async updateSubcategory(id: string, dto: UpdateObjectiveSubcategoryDto): Promise<ObjectiveSubcategoryDto> {
+    return await this.http.put<ObjectiveSubcategoryDto>(`${this.apiUrl}/${id}`, dto).toPromise() as ObjectiveSubcategoryDto;
+  }
+
+  async deleteSubcategory(id: string): Promise<void> {
+    await this.http.delete<void>(`${this.apiUrl}/${id}`).toPromise();
   }
 }

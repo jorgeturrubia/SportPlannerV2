@@ -42,6 +42,9 @@ public class SportPlannerDbContext : DbContext
     public DbSet<WorkoutExercise> WorkoutExercises { get; set; }
     public DbSet<WorkoutObjective> WorkoutObjectives { get; set; }
 
+    // Planning entities - Calendar
+    public DbSet<CalendarEvent> CalendarEvents { get; set; }
+
     // Planning entities - Marketplace
     public DbSet<MarketplaceItem> MarketplaceItems { get; set; }
     public DbSet<MarketplaceRating> MarketplaceRatings { get; set; }

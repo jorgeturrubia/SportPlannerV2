@@ -24,8 +24,8 @@ public class RegisterUserCommandTests
         // Create a Supabase session object
         var session = new Session();
         session.User = new SBUser { Email = command.Email };
-    // Ensure Supabase user id is set in the test so handler can proceed
-    session.User.Id = "supabase-user-id";
+        // Ensure Supabase user id is set in the test so handler can proceed
+        session.User.Id = "supabase-user-id";
         session.AccessToken = "supabase-access-token";
 
         mockUserRepository.Setup(x => x.AddAsync(It.IsAny<DomainUser>(), It.IsAny<CancellationToken>()))

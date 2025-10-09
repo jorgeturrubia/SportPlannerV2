@@ -1,0 +1,43 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Ejercicios</h1>
+    <p class="text-slate-600 dark:text-slate-400">Catálogo de ejercicios disponibles</p>
+  </div>
+
+  @if (error()) {
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-red-800 dark:text-red-200">{{ error() }}</p>
+      </div>
+    </div>
+  }
+
+  <app-data-table
+    [columns]="columns()"
+    [data]="exercises()"
+    [actions]="actions"
+    [isLoading]="isLoading()"
+    emptyMessage="No hay ejercicios disponibles"
+    [showSearch]="true"
+    (add)="openAddForm()">
+  </app-data-table>
+</div>
+
+<app-dynamic-form
+  [isOpen]="isFormOpen()"
+  [title]="formTitle"
+  [config]="formConfig()"
+  [initialData]="selectedExercise()"
+  (formSubmit)="handleFormSubmit($event)"
+  (cancel)="closeForm()">
+</app-dynamic-form>
+
+<app-confirmation-dialog
+  [isOpen]="isConfirmDialogOpen()"
+  message="¿Está seguro de eliminar este ejercicio?"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="closeConfirmDialog()">
+</app-confirmation-dialog>

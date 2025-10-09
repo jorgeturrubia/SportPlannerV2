@@ -36,7 +36,7 @@ public class UserTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public void Create_EmptyFirstName_ShouldThrowArgumentException(string firstName)
+    public void Create_EmptyFirstName_ShouldThrowArgumentException(string? firstName)
     {
         // Arrange
         var lastName = "Doe";
@@ -55,7 +55,7 @@ public class UserTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public void Create_EmptyLastName_ShouldThrowArgumentException(string lastName)
+    public void Create_EmptyLastName_ShouldThrowArgumentException(string? lastName)
     {
         // Arrange
         var firstName = "John";
@@ -125,7 +125,7 @@ public class UserTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public void SyncSupabaseUserId_EmptyUserId_ShouldThrowArgumentException(string supabaseUserId)
+    public void SyncSupabaseUserId_EmptyUserId_ShouldThrowArgumentException(string? supabaseUserId)
     {
         // Arrange
         var user = new User("John", "Doe", Email.Create("john.doe@example.com"), UserRole.Admin);

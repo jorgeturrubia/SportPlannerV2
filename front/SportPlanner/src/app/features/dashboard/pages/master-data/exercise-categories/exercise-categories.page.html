@@ -1,0 +1,35 @@
+<app-entity-page-layout
+  title="Categorías de Ejercicios"
+  subtitle="Gestión de categorías de ejercicios por deporte"
+  [addButtonText]="'common.addNew' | translate"
+  [error]="error()"
+  [isLoading]="isLoading()"
+  (add)="openAddForm()">
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="categories()"
+    [actions]="actions"
+    emptyMessage="No hay categorías de ejercicios registradas">
+  </app-data-table>
+
+</app-entity-page-layout>
+
+<!-- Form Dialog -->
+<app-dynamic-form
+  [isOpen]="isFormOpen()"
+  [title]="formTitle"
+  [config]="formConfig"
+  [initialData]="selectedCategory()"
+  (formSubmit)="handleFormSubmit($event)"
+  (cancel)="closeForm()">
+</app-dynamic-form>
+
+<!-- Confirmation Dialog -->
+<app-confirmation-dialog
+  [isOpen]="isConfirmDialogOpen()"
+  message="¿Está seguro de eliminar esta categoría de ejercicios?"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="closeConfirmDialog()">
+</app-confirmation-dialog>

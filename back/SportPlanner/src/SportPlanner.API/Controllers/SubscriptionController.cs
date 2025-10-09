@@ -29,7 +29,7 @@ public class SubscriptionController : ControllerBase
             Console.WriteLine($"[SubscriptionController] CreateSubscription called - Type: {request.Type}, Sport: {request.Sport}");
             Console.WriteLine($"[SubscriptionController] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
             Console.WriteLine($"[SubscriptionController] User.Identity.Name: {User.Identity?.Name}");
-            
+
             var command = new CreateSubscriptionCommand(request.Type, request.Sport);
             var subscriptionId = await _mediator.Send(command);
 

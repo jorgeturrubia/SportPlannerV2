@@ -23,6 +23,9 @@
                   @case ('number') {
                     <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
                   }
+                  @case ('date') {
+                    <input type="date" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                  }
                   @case ('textarea') {
                     <textarea [id]="field.key" [formControlName]="field.key" rows="4" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition resize-none"></textarea>
                   }

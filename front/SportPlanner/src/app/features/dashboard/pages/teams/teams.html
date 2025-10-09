@@ -56,15 +56,17 @@
 
         <div card-footer>
           <div class="flex justify-center">
-            <div class="text-xs px-3 py-1.5 rounded-full font-medium"
-                 [class.bg-green-100]="teams()[0].isActive"
-                 [class.text-green-700]="teams()[0].isActive"
-                 [class.dark:bg-green-900/30]="teams()[0].isActive"
-                 [class.dark:text-green-400]="teams()[0].isActive"
-                 [class.bg-gray-100]="!teams()[0].isActive"
-                 [class.text-gray-700]="!teams()[0].isActive"
-                 [class.dark:bg-gray-900/30]="!teams()[0].isActive"
-                 [class.dark:text-gray-400]="!teams()[0].isActive">
+            <div
+              class="text-xs px-3 py-1.5 rounded-full font-medium"
+              [class.bg-green-100]="teams()[0].isActive"
+              [class.text-green-700]="teams()[0].isActive"
+              [class.dark:bg-green-900/30]="teams()[0].isActive"
+              [class.dark:text-green-400]="teams()[0].isActive"
+              [class.bg-gray-100]="!teams()[0].isActive"
+              [class.text-gray-700]="!teams()[0].isActive"
+              [class.dark:bg-gray-900/30]="!teams()[0].isActive"
+              [class.dark:text-gray-400]="!teams()[0].isActive"
+            >
               {{ teams()[0].isActive ? ('common.active' | translate) : ('common.inactive' | translate) }}
             </div>
           </div>

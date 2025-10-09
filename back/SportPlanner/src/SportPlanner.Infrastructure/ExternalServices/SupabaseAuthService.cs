@@ -62,8 +62,8 @@ public class SupabaseAuthService : IAuthService
         if (string.IsNullOrWhiteSpace(refreshToken)) return null;
 
         // Call Supabase token endpoint to exchange refresh token
-    var supabaseUrl = _supabaseUrl.TrimEnd('/');
-    var tokenUrl = $"{supabaseUrl}/auth/v1/token";
+        var supabaseUrl = _supabaseUrl.TrimEnd('/');
+        var tokenUrl = $"{supabaseUrl}/auth/v1/token";
 
         using var http = new System.Net.Http.HttpClient();
         var content = new System.Net.Http.FormUrlEncodedContent(new[]

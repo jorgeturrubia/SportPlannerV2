@@ -199,7 +199,7 @@ public class AuthController : ControllerBase
         Console.WriteLine($"[AuthController/me] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
         Console.WriteLine($"[AuthController/me] User.Identity.Name: {User.Identity?.Name}");
         Console.WriteLine($"[AuthController/me] Claims count: {User.Claims.Count()}");
-        
+
         foreach (var claim in User.Claims)
         {
             Console.WriteLine($"[AuthController/me] Claim: {claim.Type} = {claim.Value}");

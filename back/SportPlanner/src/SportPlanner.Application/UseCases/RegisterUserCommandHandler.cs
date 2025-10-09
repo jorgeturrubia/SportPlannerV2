@@ -19,7 +19,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
     public async Task<AuthResponse?> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         Supabase.Gotrue.Session? session = null;
-        
+
         try
         {
             // Step 1: Create user in Supabase Auth first (this validates email, password strength, etc.)
@@ -38,7 +38,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
 
             // Step 3: Check if user already exists in local database (by email)
             var existingUser = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
-            
+
             if (existingUser is not null)
             {
                 // User already exists locally, just sync Supabase ID and return

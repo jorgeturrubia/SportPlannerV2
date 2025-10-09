@@ -9,14 +9,20 @@ public class CurrentUserService : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserRepository _userRepository;
+    private readonly ISubscriptionRepository _subscriptionRepository;
 
     // Cache for current request to avoid multiple database lookups
     private Guid? _cachedUserId;
+    private Guid? _cachedSubscriptionId;
 
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
+    public CurrentUserService(
+        IHttpContextAccessor httpContextAccessor,
+        IUserRepository userRepository,
+        ISubscriptionRepository subscriptionRepository)
     {
         _httpContextAccessor = httpContextAccessor;
         _userRepository = userRepository;
+        _subscriptionRepository = subscriptionRepository;
     }
 
     public Guid GetUserId()
@@ -41,7 +47,7 @@ public class CurrentUserService : ICurrentUserService
         Console.WriteLine($"[CurrentUserService] Supabase User ID from JWT: {supabaseUserId ?? "NULL"}");
         Console.WriteLine($"[CurrentUserService] IsAuthenticated: {httpContext.User.Identity?.IsAuthenticated}");
         Console.WriteLine($"[CurrentUserService] Claims count: {httpContext.User.Claims.Count()}");
-        
+
         // Log all claims for debugging
         foreach (var claim in httpContext.User.Claims)
         {
@@ -70,6 +76,31 @@ public class CurrentUserService : ICurrentUserService
         _cachedUserId = user.Id;
 
         return user.Id;
+    }
+
+    public Guid GetSubscriptionId()
+    {
+        // Return cached value if available (per-request cache)
+        if (_cachedSubscriptionId.HasValue)
+        {
+            return _cachedSubscriptionId.Value;
+        }
+
+        // First get the user ID
+        var userId = GetUserId();
+
+        // Look up subscription owned by this user
+        var subscription = _subscriptionRepository.GetByOwnerIdAsync(userId).GetAwaiter().GetResult();
+
+        if (subscription == null)
+        {
+            throw new UnauthorizedAccessException($"User {userId} does not have an active subscription");
+        }
+
+        // Cache for this request
+        _cachedSubscriptionId = subscription.Id;
+
+        return subscription.Id;
     }
 
     public string GetUserEmail()

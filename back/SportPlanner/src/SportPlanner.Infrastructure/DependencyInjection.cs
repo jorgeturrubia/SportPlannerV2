@@ -44,6 +44,9 @@ public static class DependencyInjection
         // Planning Repositories - Workouts
         services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
+        // Planning Repositories - Calendar
+        services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
+
         // Planning Repositories - Marketplace
         services.AddScoped<IMarketplaceItemRepository, MarketplaceItemRepository>();
 

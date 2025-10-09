@@ -9,6 +9,16 @@ export interface ObjectiveCategoryDto {
   sport: Sport;
 }
 
+export interface CreateObjectiveCategoryDto {
+  name: string;
+  sport: Sport;
+}
+
+export interface UpdateObjectiveCategoryDto {
+  name: string;
+  sport: Sport;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,5 +32,17 @@ export class ObjectiveCategoriesService {
       params['sport'] = sport.toString();
     }
     return await this.http.get<ObjectiveCategoryDto[]>(this.apiUrl, { params }).toPromise() || [];
+  }
+
+  async createCategory(dto: CreateObjectiveCategoryDto): Promise<ObjectiveCategoryDto> {
+    return await this.http.post<ObjectiveCategoryDto>(this.apiUrl, dto).toPromise() as ObjectiveCategoryDto;
+  }
+
+  async updateCategory(id: string, dto: UpdateObjectiveCategoryDto): Promise<ObjectiveCategoryDto> {
+    return await this.http.put<ObjectiveCategoryDto>(`${this.apiUrl}/${id}`, dto).toPromise() as ObjectiveCategoryDto;
+  }
+
+  async deleteCategory(id: string): Promise<void> {
+    await this.http.delete<void>(`${this.apiUrl}/${id}`).toPromise();
   }
 }
