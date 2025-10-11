@@ -49,6 +49,10 @@ public class SportPlannerDbContext : DbContext
     public DbSet<MarketplaceItem> MarketplaceItems { get; set; }
     public DbSet<MarketplaceRating> MarketplaceRatings { get; set; }
 
+    // Planning entities - Itineraries
+    public DbSet<Itinerary> Itineraries { get; set; }
+    public DbSet<ItineraryMarketplaceItem> ItineraryMarketplaceItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -126,6 +130,39 @@ public class SportPlannerDbContext : DbContext
             // Index for active users
             entity.HasIndex(su => new { su.SubscriptionId, su.RemovedAt })
                 .HasFilter("removed_at IS NULL");
+        });
+
+        // Configure Itinerary entity
+        modelBuilder.Entity<Itinerary>(entity =>
+        {
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Name).HasMaxLength(200).IsRequired();
+            entity.Property(i => i.Description).HasMaxLength(2000).IsRequired();
+            entity.Property(i => i.Sport).IsRequired().HasConversion<string>();
+            entity.Property(i => i.Level).IsRequired().HasConversion<string>();
+            entity.Property(i => i.IsActive).IsRequired();
+            entity.Property(i => i.CreatedAt).IsRequired();
+            entity.Property(i => i.CreatedBy).HasMaxLength(255).IsRequired();
+            entity.Property(i => i.UpdatedBy).HasMaxLength(255);
+        });
+
+        // Configure ItineraryMarketplaceItem joining entity
+        modelBuilder.Entity<ItineraryMarketplaceItem>(entity =>
+        {
+            // Composite primary key
+            entity.HasKey(imi => new { imi.ItineraryId, imi.MarketplaceItemId });
+
+            // Foreign key to Itinerary
+            entity.HasOne(imi => imi.Itinerary)
+                .WithMany(i => i.Items)
+                .HasForeignKey(imi => imi.ItineraryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Foreign key to MarketplaceItem
+            entity.HasOne(imi => imi.MarketplaceItem)
+                .WithMany() // No navigation property back from MarketplaceItem
+                .HasForeignKey(imi => imi.MarketplaceItemId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 
