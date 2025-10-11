@@ -28,7 +28,7 @@ public class ItineraryController : ControllerBase
         string Description,
         Sport Sport,
         Difficulty Level,
-        List<CreateItineraryCommand.ItineraryItemToAdd> Items);
+        List<SportPlanner.Application.UseCases.Planning.ItineraryItemToAdd> Items);
 
     /// <summary>
     /// Gets all active itineraries.

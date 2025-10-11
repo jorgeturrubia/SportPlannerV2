@@ -166,3 +166,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Expose Program for integration tests (WebApplicationFactory requires a Program type)
+public partial class Program { }

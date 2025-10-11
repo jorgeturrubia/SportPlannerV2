@@ -1,6 +1,6 @@
 using SportPlanner.Domain.Enum;
 
-namespace SportPlanner.Application.DTOs.Planning;
+namespace SportPlanner.Application.Dtos.Planning;
 
 public class MarketplaceSearchDto
 {
@@ -12,20 +12,6 @@ public class MarketplaceSearchDto
     public int PageSize { get; set; } = 20;
 }
 
-public class MarketplaceItemDto
-{
-    public Guid Id { get; set; }
-    public MarketplaceItemType Type { get; set; }
-    public Sport Sport { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public bool IsSystemOfficial { get; set; }
-    public decimal AverageRating { get; set; }
-    public int TotalRatings { get; set; }
-    public int TotalDownloads { get; set; }
-    public int TotalViews { get; set; }
-    public DateTime PublishedAt { get; set; }
-}
 
 public class PagedResult<T>
 {

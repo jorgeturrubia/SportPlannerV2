@@ -68,8 +68,8 @@ public class DownloadFromMarketplaceCommandHandlerTests
         _currentUserServiceMock.Setup(s => s.GetSubscriptionId()).Returns(subscriptionId);
         _currentUserServiceMock.Setup(s => s.GetUserId()).Returns(userId);
 
-        var sourceExercise = new Exercise(null, ContentOwnership.System, "Test Ex", "Desc", Guid.NewGuid(), Guid.NewGuid(), "system");
-        var marketplaceItem = MarketplaceItem.CreateSystemItem(MarketplaceItemType.Exercise, Sport.General, sourceExercise.Id, "Test Item", "Desc", "system");
+    var sourceExercise = new Exercise(null, ContentOwnership.System, "Test Ex", "Desc", Guid.NewGuid(), Guid.NewGuid(), "system");
+    var marketplaceItem = MarketplaceItem.CreateSystemItem(MarketplaceItemType.Exercise, Sport.Football, sourceExercise.Id, "Test Item", "Desc", "system");
 
         _marketplaceItemRepositoryMock.Setup(r => r.GetByIdAsync(marketplaceItem.Id, It.IsAny<CancellationToken>())).ReturnsAsync(marketplaceItem);
         _exerciseRepositoryMock.Setup(r => r.GetByIdAsync(sourceExercise.Id, It.IsAny<CancellationToken>())).ReturnsAsync(sourceExercise);

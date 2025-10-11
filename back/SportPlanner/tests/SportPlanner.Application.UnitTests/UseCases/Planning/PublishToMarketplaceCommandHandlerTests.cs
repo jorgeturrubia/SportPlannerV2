@@ -69,7 +69,7 @@ public class PublishToMarketplaceCommandHandlerTests
         var ownerSubscriptionId = Guid.NewGuid();
         _currentUserServiceMock.Setup(s => s.GetSubscriptionId()).Returns(userSubscriptionId);
 
-        var trainingPlan = new TrainingPlan(ownerSubscriptionId, "Other User's Plan", DateTime.Now, DateTime.Now.AddDays(7), new TrainingSchedule(1, 1, Sport.Basketball));
+    var trainingPlan = new TrainingPlan(ownerSubscriptionId, "Other User's Plan", DateTime.Now, DateTime.Now.AddDays(7), new TrainingSchedule(new[] { DayOfWeek.Monday }, new System.Collections.Generic.Dictionary<DayOfWeek,int> { { DayOfWeek.Monday, 1 } }, 1));
         _trainingPlanRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(trainingPlan);
 
         var command = new PublishToMarketplaceCommand(MarketplaceItemType.TrainingPlan, trainingPlan.Id);
@@ -87,7 +87,7 @@ public class PublishToMarketplaceCommandHandlerTests
         _currentUserServiceMock.Setup(s => s.GetSubscriptionId()).Returns(subscriptionId);
         _currentUserServiceMock.Setup(s => s.GetUserId()).Returns(userId);
 
-        var trainingPlan = new TrainingPlan(subscriptionId, "My Plan", DateTime.Now, DateTime.Now.AddDays(7), new TrainingSchedule(1, 1, Sport.Football));
+    var trainingPlan = new TrainingPlan(subscriptionId, "My Plan", DateTime.Now, DateTime.Now.AddDays(7), new TrainingSchedule(new[] { DayOfWeek.Monday }, new System.Collections.Generic.Dictionary<DayOfWeek,int> { { DayOfWeek.Monday, 1 } }, 1));
         _trainingPlanRepositoryMock.Setup(r => r.GetByIdAsync(trainingPlan.Id, It.IsAny<CancellationToken>())).ReturnsAsync(trainingPlan);
 
         var command = new PublishToMarketplaceCommand(MarketplaceItemType.TrainingPlan, trainingPlan.Id);

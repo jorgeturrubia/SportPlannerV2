@@ -15,7 +15,10 @@
       "Bash(npm test:*)",
       "Bash(dotnet test)",
       "Bash(dotnet build)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": []

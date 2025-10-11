@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MarketplaceApiService, MarketplaceSearchParams } from './marketplace-api.service';
-import { Itinerary, MarketplaceItem, PagedResult } from '../models/marketplace.models';
+import { Itinerary, MarketplaceItem, PagedResult, PaginationInfo } from '../models/marketplace.models';
 
 export interface MarketplaceState {
   itemsResult: PagedResult<MarketplaceItem> | null;
@@ -26,8 +26,10 @@ export class MarketplaceStateService {
 
   // Public selectors from state
   readonly items = computed(() => this.state().itemsResult?.items ?? []);
-  readonly pagination = computed(() => {
-    const { items, ...pagination } = this.state().itemsResult ?? {};
+  readonly pagination = computed<PaginationInfo | null>(() => {
+    const result = this.state().itemsResult;
+    if (!result) return null;
+    const { items, ...pagination } = result;
     return pagination;
   });
   readonly itineraries = computed(() => this.state().itineraries);

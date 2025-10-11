@@ -3,6 +3,7 @@ using SportPlanner.Application.Interfaces;
 using SportPlanner.Domain.Entities.Planning;
 using SportPlanner.Domain.Enum;
 using SportPlanner.Shared.Exceptions;
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;

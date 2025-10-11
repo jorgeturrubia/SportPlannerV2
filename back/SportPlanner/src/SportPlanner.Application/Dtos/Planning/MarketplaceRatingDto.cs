@@ -4,7 +4,6 @@ namespace SportPlanner.Application.Dtos.Planning;
 /// Data transfer object for a marketplace item rating.
 /// </summary>
 public record MarketplaceRatingDto(
-    Guid Id,
     Guid RatedBySubscriptionId,
     int Stars,
     string? Comment,

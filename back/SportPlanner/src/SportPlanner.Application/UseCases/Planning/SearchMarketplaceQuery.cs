@@ -1,5 +1,5 @@
 using MediatR;
-using SportPlanner.Application.DTOs.Planning;
+using SportPlanner.Application.Dtos.Planning;
 
 namespace SportPlanner.Application.UseCases.Planning;
 

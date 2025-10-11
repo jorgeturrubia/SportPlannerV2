@@ -32,7 +32,7 @@ public class CreateItineraryCommandHandlerTests
     {
         // Arrange
         _currentUserServiceMock.Setup(s => s.GetUserId()).Returns(Guid.Empty);
-        var command = new CreateItineraryCommand("Test", "Desc", Sport.General, Difficulty.Beginner, new List<CreateItineraryCommand.ItineraryItemToAdd>());
+    var command = new CreateItineraryCommand("Test", "Desc", Sport.Football, Difficulty.Beginner, new List<ItineraryItemToAdd>());
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
@@ -45,7 +45,7 @@ public class CreateItineraryCommandHandlerTests
         var userId = Guid.NewGuid();
         _currentUserServiceMock.Setup(s => s.GetUserId()).Returns(userId);
 
-        var itemsToAdd = new List<CreateItineraryCommand.ItineraryItemToAdd>
+        var itemsToAdd = new List<ItineraryItemToAdd>
         {
             new(Guid.NewGuid(), 1),
             new(Guid.NewGuid(), 2)

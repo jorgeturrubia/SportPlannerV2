@@ -71,7 +71,7 @@ public class ItineraryControllerTests : IClassFixture<WebApplicationFactory<Prog
         var request = new
         {
             Description = "A plan with no name.",
-            Sport = Sport.Tennis,
+            Sport = Sport.Handball,
             Level = Difficulty.Beginner,
             Items = new List<object>()
         };

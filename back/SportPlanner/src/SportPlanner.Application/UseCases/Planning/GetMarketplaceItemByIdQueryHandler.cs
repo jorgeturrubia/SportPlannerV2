@@ -23,7 +23,7 @@ public class GetMarketplaceItemByIdQueryHandler : IRequestHandler<GetMarketplace
             ?? throw new NotFoundException($"MarketplaceItem with ID '{request.MarketplaceItemId}' not found.");
 
         var ratingDtos = item.Ratings
-            .Select(r => new MarketplaceRatingDto(r.Id, r.RatedBySubscriptionId, r.Stars, r.Comment, r.CreatedAt))
+            .Select(r => new MarketplaceRatingDto(r.RatedBySubscriptionId, r.Stars, r.Comment, r.CreatedAt))
             .ToList();
 
         return new MarketplaceItemDto(

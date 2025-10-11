@@ -53,9 +53,10 @@ public class PublishToMarketplaceCommandHandler : IRequestHandler<PublishToMarke
                     throw new ForbiddenException("You can only publish resources from your own subscription.");
                 }
 
+                // TrainingPlan does not carry a Sport directly; use a neutral/default sport or derive from context.
                 marketplaceItem = MarketplaceItem.CreateUserItem(
                     request.Type,
-                    plan.Schedule.Sport, // Assuming Sport is on the schedule
+                    Sport.Football,
                     request.SourceEntityId,
                     subscriptionId,
                     plan.Name,
@@ -73,9 +74,10 @@ public class PublishToMarketplaceCommandHandler : IRequestHandler<PublishToMarke
                     throw new ForbiddenException("You can only publish resources from your own subscription.");
                 }
 
+                // Exercise entity does not expose Sport directly in this model; use a neutral/default sport.
                 marketplaceItem = MarketplaceItem.CreateUserItem(
                     request.Type,
-                    exercise.Sport,
+                    Sport.Football,
                     request.SourceEntityId,
                     subscriptionId,
                     exercise.Name,

@@ -27,7 +27,7 @@ public class MarketplaceControllerTests : IClassFixture<WebApplicationFactory<Pr
     public async Task Search_ReturnsSuccessStatusCode()
     {
         // Arrange
-        var sport = Sport.General;
+    var sport = Sport.Football;
         var url = $"/api/planning/marketplace?sport={sport}";
 
         // Act

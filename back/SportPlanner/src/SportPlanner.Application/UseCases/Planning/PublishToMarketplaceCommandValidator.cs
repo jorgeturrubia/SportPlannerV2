@@ -13,8 +13,6 @@ public class PublishToMarketplaceCommandValidator : AbstractValidator<PublishToM
 
         RuleFor(x => x.Type)
             .IsInEnum()
-            .WithMessage("A valid item type must be specified.")
-            .Must(type => type != MarketplaceItemType.Itinerary)
-            .WithMessage("Itineraries cannot be published directly as marketplace items.");
+            .WithMessage("A valid item type must be specified.");
     }
 }

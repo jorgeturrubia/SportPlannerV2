@@ -35,12 +35,22 @@ public class MarketplaceController : ControllerBase
     public async Task<IActionResult> Search(
         [FromQuery] Sport sport,
         [FromQuery] MarketplaceItemType? type,
-        [FromQuery] MarketplaceFilter filter = MarketplaceFilter.MostPopular,
+    [FromQuery] MarketplaceFilter filter = MarketplaceFilter.Popular,
         [FromQuery] string? searchTerm = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        var query = new SearchMarketplaceQuery(sport, type, filter, searchTerm, page, pageSize);
+        var criteria = new MarketplaceSearchDto
+        {
+            Sport = sport,
+            Type = type,
+            Filter = filter,
+            SearchTerm = searchTerm,
+            Page = page,
+            PageSize = pageSize
+        };
+
+        var query = new SearchMarketplaceQuery(criteria);
         var result = await _mediator.Send(query);
         return Ok(result);
     }

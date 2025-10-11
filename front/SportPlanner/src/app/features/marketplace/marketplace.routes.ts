@@ -1,7 +1,5 @@
 import { Route } from '@angular/router';
 
-import { Route } from '@angular/router';
-
 export const MARKETPLACE_ROUTES: Route[] = [
   {
     path: '',

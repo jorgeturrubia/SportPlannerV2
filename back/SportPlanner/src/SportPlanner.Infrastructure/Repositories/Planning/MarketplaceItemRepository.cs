@@ -22,6 +22,14 @@ public class MarketplaceItemRepository : IMarketplaceItemRepository
             .FirstOrDefaultAsync(mi => mi.Id == id, cancellationToken);
     }
 
+    public async Task<MarketplaceItem?> GetByIdWithRatingsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        // Currently identical to GetByIdAsync; kept separate in case additional includes are needed later
+        return await _context.MarketplaceItems
+            .Include(mi => mi.Ratings)
+            .FirstOrDefaultAsync(mi => mi.Id == id, cancellationToken);
+    }
+
     public async Task<List<MarketplaceItem>> SearchAsync(
         Sport sport,
         MarketplaceItemType? type,

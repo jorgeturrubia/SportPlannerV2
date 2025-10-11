@@ -49,6 +49,7 @@ public static class DependencyInjection
 
         // Planning Repositories - Marketplace
         services.AddScoped<IMarketplaceItemRepository, MarketplaceItemRepository>();
+        services.AddScoped<IItineraryRepository, ItineraryRepository>();
 
         // External Services
         services.AddScoped<IAuthService, SupabaseAuthService>();
