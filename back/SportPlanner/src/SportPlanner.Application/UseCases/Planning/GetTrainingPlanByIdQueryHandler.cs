@@ -48,8 +48,8 @@ public class GetTrainingPlanByIdQueryHandler : IRequestHandler<GetTrainingPlanBy
             EndDate = tp.EndDate,
             Schedule = new TrainingScheduleDto
             {
-                TrainingDays = tp.Schedule.TrainingDays,
-                HoursPerDay = tp.Schedule.HoursPerDay,
+                TrainingDays = tp.Schedule.TrainingDays.Select(d => (int)d).ToArray(),
+                HoursPerDay = tp.Schedule.HoursPerDay.ToDictionary(kvp => (int)kvp.Key, kvp => kvp.Value),
                 TotalWeeks = tp.Schedule.TotalWeeks,
                 TotalSessions = tp.Schedule.TotalSessions,
                 TotalHours = tp.Schedule.TotalHours

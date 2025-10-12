@@ -43,6 +43,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/pages/training-plans/training-plans.page').then(m => m.TrainingPlansPage)
       },
       {
+        path: 'itineraries',
+        loadComponent: () => import('./features/dashboard/pages/itineraries/itineraries.page').then(m => m.ItinerariesPage)
+      },
+      {
         path: 'exercises',
         loadComponent: () => import('./features/dashboard/pages/exercises/exercises.page').then(m => m.ExercisesPage)
       },

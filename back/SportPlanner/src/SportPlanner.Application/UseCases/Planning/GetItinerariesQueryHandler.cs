@@ -19,27 +19,36 @@ public class GetItinerariesQueryHandler : IRequestHandler<GetItinerariesQuery, I
 
     public async Task<IReadOnlyCollection<ItineraryDto>> Handle(GetItinerariesQuery request, CancellationToken cancellationToken)
     {
-        var itineraries = await _itineraryRepository.GetAllWithItemsAsync(cancellationToken);
+        try
+        {
+            var itineraries = await _itineraryRepository.GetAllWithItemsAsync(cancellationToken);
 
-        var itineraryDtos = itineraries
-            .Where(i => i.IsActive)
-            .Select(i => new ItineraryDto(
-                i.Id,
-                i.Name,
-                i.Description,
-                i.Sport,
-                i.Level,
-                i.IsActive,
-                i.Items
-                    .OrderBy(item => item.Order)
-                    .Select(item => new ItineraryItemDto(
-                        item.MarketplaceItemId,
-                        item.MarketplaceItem.Name, // Assumes MarketplaceItem is loaded
-                        item.MarketplaceItem.Type,
-                        item.Order))
-                    .ToList()))
-            .ToList();
+            var itineraryDtos = itineraries
+                .Where(i => i.IsActive)
+                .Select(i => new ItineraryDto(
+                    i.Id,
+                    i.Name,
+                    i.Description,
+                    i.Sport,
+                    i.Level,
+                    i.IsActive,
+                    i.Items
+                        .OrderBy(item => item.Order)
+                        .Select(item => new ItineraryItemDto(
+                            item.MarketplaceItemId,
+                            item.MarketplaceItem.Name, // Assumes MarketplaceItem is loaded
+                            item.MarketplaceItem.Type,
+                            item.Order))
+                        .ToList()))
+                .ToList();
 
-        return itineraryDtos;
+            return itineraryDtos;
+
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+       
     }
 }

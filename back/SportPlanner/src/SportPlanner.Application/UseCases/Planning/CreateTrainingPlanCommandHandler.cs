@@ -33,33 +33,69 @@ public class CreateTrainingPlanCommandHandler : IRequestHandler<CreateTrainingPl
         var subscription = await _subscriptionRepository.GetByOwnerIdAsync(userId, cancellationToken)
             ?? throw new InvalidOperationException("User does not have an active subscription");
 
+        // Convert int[] to DayOfWeek[] and Dictionary<int, int> to Dictionary<DayOfWeek, int>
+        var trainingDays = dto.Schedule?.TrainingDays
+            ?.Select(d => (DayOfWeek)d)
+            .ToArray() ?? Array.Empty<DayOfWeek>();
+
+        var hoursPerDay = dto.Schedule?.HoursPerDay
+            ?.ToDictionary(kvp => (DayOfWeek)kvp.Key, kvp => kvp.Value) ?? new Dictionary<DayOfWeek, int>();
+
         // Create training schedule value object
         var schedule = new TrainingSchedule(
-            dto.Schedule.TrainingDays,
-            dto.Schedule.HoursPerDay,
-            dto.Schedule.TotalWeeks);
+            trainingDays,
+            hoursPerDay,
+            dto.Schedule?.TotalWeeks ?? 0);
+
+        // Ensure dates are UTC (Postgres timestamptz requires UTC or DateTimeOffset)
+        DateTime ToUtcKind(DateTime dt)
+        {
+            if (dt == default) return dt;
+            return dt.Kind == DateTimeKind.Utc ? dt : DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        }
+
+        var startDateUtc = ToUtcKind(dto.StartDate);
+        var endDateUtc = ToUtcKind(dto.EndDate);
 
         // Create training plan
         var trainingPlan = new TrainingPlan(
             subscription.Id,
             dto.Name,
-            dto.StartDate,
-            dto.EndDate,
+            startDateUtc,
+            endDateUtc,
             schedule);
 
-        // Add objectives
-        foreach (var objectiveDto in dto.Objectives)
-        {
-            // Validate objective exists
-            if (!await _objectiveRepository.ExistsAsync(objectiveDto.ObjectiveId, cancellationToken))
-            {
-                throw new InvalidOperationException($"Objective with ID {objectiveDto.ObjectiveId} does not exist");
-            }
+        // Set audit fields
+        trainingPlan.CreatedBy = userId.ToString();
 
-            trainingPlan.AddObjective(objectiveDto.ObjectiveId, objectiveDto.Priority, objectiveDto.TargetSessions);
+        // Set IsActive if specified as false (default is true)
+        if (!dto.IsActive)
+        {
+            trainingPlan.Deactivate();
         }
 
+        // Add objectives
+        if (dto.Objectives != null)
+        {
+            foreach (var objectiveDto in dto.Objectives)
+            {
+                // Validate objective exists
+                if (!await _objectiveRepository.ExistsAsync(objectiveDto.ObjectiveId, cancellationToken))
+                {
+                    throw new InvalidOperationException($"Objective with ID {objectiveDto.ObjectiveId} does not exist");
+                }
+
+                trainingPlan.AddObjective(objectiveDto.ObjectiveId, objectiveDto.Priority, objectiveDto.TargetSessions);
+            }
+        }
+        try
+        {
         await _trainingPlanRepository.AddAsync(trainingPlan, cancellationToken);
+
+        }catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
 
         return trainingPlan.Id;
     }

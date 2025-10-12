@@ -79,6 +79,7 @@ public class AuthController : ControllerBase
     {
         try
         {
+            
             var query = new LoginUserQuery(request.Email, request.Password);
             var result = await _mediator.Send(query);
 

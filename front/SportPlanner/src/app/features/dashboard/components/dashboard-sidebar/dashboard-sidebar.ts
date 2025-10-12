@@ -104,6 +104,10 @@ export class DashboardSidebar {
     this.router.navigate(['/dashboard/training-plans']);
   }
 
+  goToItineraries() {
+    this.router.navigate(['/dashboard/itineraries']);
+  }
+
   goToExercises() {
     this.router.navigate(['/dashboard/exercises']);
   }

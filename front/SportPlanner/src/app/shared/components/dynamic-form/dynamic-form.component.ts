@@ -60,7 +60,11 @@ export class DynamicFormComponent {
 
     for (const field of config) {
       const validators = field.required ? [Validators.required] : [];
-      const value = initialData?.[field.key] ?? '';
+      // Handle checkbox default value
+      let value = initialData?.[field.key];
+      if (value === undefined || value === null) {
+        value = field.type === 'checkbox' ? false : '';
+      }
       this.form.addControl(field.key, this.fb.control(value, validators));
     }
   }

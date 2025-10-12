@@ -65,6 +65,7 @@ public class TrainingPlan : Entity, IAuditable
         EndDate = endDate;
         Schedule = schedule;
         IsActive = true;
+        CreatedAt = DateTime.UtcNow;
     }
 
     public void Update(string name, DateTime startDate, DateTime endDate, TrainingSchedule schedule)

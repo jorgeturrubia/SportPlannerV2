@@ -39,10 +39,18 @@ public class UpdateTrainingPlanCommandHandler : IRequestHandler<UpdateTrainingPl
             throw new UnauthorizedAccessException("Cannot modify training plan from another subscription");
         }
 
+        // Convert int[] to DayOfWeek[] and Dictionary<int, int> to Dictionary<DayOfWeek, int>
+        var trainingDays = dto.Schedule.TrainingDays
+            .Select(d => (DayOfWeek)d)
+            .ToArray();
+
+        var hoursPerDay = dto.Schedule.HoursPerDay
+            .ToDictionary(kvp => (DayOfWeek)kvp.Key, kvp => kvp.Value);
+
         // Create training schedule value object
         var schedule = new TrainingSchedule(
-            dto.Schedule.TrainingDays,
-            dto.Schedule.HoursPerDay,
+            trainingDays,
+            hoursPerDay,
             dto.Schedule.TotalWeeks);
 
         // Update training plan

@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:5112' // .NET API base URL (HTTP for development - avoid SSL cert issues)
+  apiBaseUrl: 'https://localhost:7103' // .NET API base URL (HTTP for development - avoid SSL cert issues)
 };

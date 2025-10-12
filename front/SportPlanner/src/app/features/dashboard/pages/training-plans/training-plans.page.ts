@@ -52,7 +52,10 @@ export class TrainingPlansPage implements OnInit {
       key: 'schedule',
       label: 'Sesiones/Semana',
       sortable: false,
-      formatter: (value: any) => value?.sessionsPerWeek || '-'
+      formatter: (value: any) =>
+        value?.totalSessions && value?.totalWeeks
+          ? Math.round(value.totalSessions / value.totalWeeks).toString()
+          : '-'
     },
     { key: 'isActive', label: 'Estado', sortable: true, type: 'badge' }
   ];
@@ -77,8 +80,14 @@ export class TrainingPlansPage implements OnInit {
     { key: 'startDate', label: 'Fecha Inicio', type: 'date', required: true },
     { key: 'endDate', label: 'Fecha Fin', type: 'date', required: true },
     {
-      key: 'schedule.sessionsPerWeek',
+      key: 'sessionsPerWeek',
       label: 'Sesiones por Semana',
+      type: 'number',
+      required: true
+    },
+    {
+      key: 'hoursPerSession',
+      label: 'Horas por Sesión',
       type: 'number',
       required: true
     },
@@ -113,7 +122,15 @@ export class TrainingPlansPage implements OnInit {
   }
 
   openEditForm(plan: TrainingPlanDto): void {
-    this.selectedPlan.set(plan);
+    // Map the plan data to form structure
+    const formData = {
+      ...plan,
+      sessionsPerWeek: plan.schedule?.totalSessions ? Math.round(plan.schedule.totalSessions / plan.schedule.totalWeeks) : 0,
+      hoursPerSession: plan.schedule?.totalHours && plan.schedule?.totalSessions
+        ? Math.round(plan.schedule.totalHours / plan.schedule.totalSessions)
+        : 0
+    };
+    this.selectedPlan.set(formData as any);
     this.formTitle = `Edit ${plan.name}`;
     this.isFormOpen.set(true);
   }
@@ -127,6 +144,28 @@ export class TrainingPlansPage implements OnInit {
     const selected = this.selectedPlan();
 
     try {
+      // Calculate training schedule based on form data
+      const startDate = new Date(formData.startDate);
+      const endDate = new Date(formData.endDate);
+      const durationDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const totalWeeks = Math.ceil(durationDays / 7);
+
+      // Generate training days based on sessions per week
+      const sessionsPerWeek = Number(formData.sessionsPerWeek);
+      const hoursPerSession = Number(formData.hoursPerSession);
+
+      // Map sessions to days (Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6, Sun=0)
+      const trainingDays: number[] = [];
+      const hoursPerDay: { [key: number]: number } = {};
+
+      // Distribute sessions evenly across the week
+      const dayMapping = [1, 3, 5, 2, 4, 6, 0]; // Mon, Wed, Fri, Tue, Thu, Sat, Sun
+      for (let i = 0; i < Math.min(sessionsPerWeek, 7); i++) {
+        const day = dayMapping[i];
+        trainingDays.push(day);
+        hoursPerDay[day] = hoursPerSession;
+      }
+
       if (selected) {
         // Update existing plan
         const updateDto = {
@@ -135,7 +174,11 @@ export class TrainingPlansPage implements OnInit {
           startDate: formData.startDate,
           endDate: formData.endDate,
           schedule: {
-            sessionsPerWeek: formData['schedule.sessionsPerWeek']
+            trainingDays,
+            hoursPerDay,
+            totalWeeks,
+            totalSessions: sessionsPerWeek * totalWeeks,
+            totalHours: sessionsPerWeek * hoursPerSession * totalWeeks
           },
           isActive: formData.isActive ?? selected.isActive
         };
@@ -148,8 +191,14 @@ export class TrainingPlansPage implements OnInit {
           startDate: formData.startDate,
           endDate: formData.endDate,
           schedule: {
-            sessionsPerWeek: formData['schedule.sessionsPerWeek']
-          }
+            trainingDays,
+            hoursPerDay,
+            totalWeeks,
+            totalSessions: sessionsPerWeek * totalWeeks,
+            totalHours: sessionsPerWeek * hoursPerSession * totalWeeks
+          },
+          isActive: formData.isActive ?? true,
+          objectives: []
         };
         await this.plansService.createPlan(createDto);
         this.ns.success('Plan creado', 'Planes de Entrenamiento');

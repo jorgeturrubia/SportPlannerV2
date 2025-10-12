@@ -18,7 +18,11 @@
       "Bash(dotnet build:*)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(Select-String -Pattern \"MarketplaceController|ItineraryController|ExerciseCategoriesController\" -Context 2,0)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet ef database update:*)"
     ],
     "deny": [],
     "ask": []

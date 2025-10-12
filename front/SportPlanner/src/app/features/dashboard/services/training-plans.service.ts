@@ -3,8 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
 export interface TrainingScheduleDto {
-  sessionsPerWeek: number;
-  preferredDays?: string[];
+  trainingDays: number[];
+  hoursPerDay: { [key: number]: number };
+  totalWeeks: number;
+  totalSessions: number;
+  totalHours: number;
 }
 
 export interface PlanObjectiveDto {
@@ -35,6 +38,8 @@ export interface CreateTrainingPlanDto {
   startDate: string;
   endDate: string;
   schedule: TrainingScheduleDto;
+  isActive?: boolean;
+  objectives?: AddObjectiveToPlanDto[];
 }
 
 export interface UpdateTrainingPlanDto {

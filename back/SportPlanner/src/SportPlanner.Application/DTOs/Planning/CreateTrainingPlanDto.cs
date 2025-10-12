@@ -6,6 +6,7 @@ public class CreateTrainingPlanDto
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public TrainingScheduleDto Schedule { get; set; }
+    public bool IsActive { get; set; } = true;
     public List<AddObjectiveToPlanDto> Objectives { get; set; } = new();
 }
 
