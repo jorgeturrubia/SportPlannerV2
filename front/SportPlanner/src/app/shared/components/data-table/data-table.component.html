@@ -99,8 +99,13 @@
                       {{ getCellValue(row, column) ? ('common.active' | translate) : ('common.inactive' | translate) }}
                     </span>
                   } @else {
-                    <span class="text-sm text-slate-900 dark:text-slate-100">
-                      {{ getCellValue(row, column) || '-' }}
+                    <span class="text-sm text-slate-900 dark:text-slate-100"
+                          [title]="getCellValue(row, column) || '-'"
+                          [class.overflow-hidden]="column.truncate"
+                          [class.overflow-ellipsis]="column.truncate"
+                          [class.whitespace-nowrap]="column.truncate"
+                          [style.maxWidth]="column.truncate ? '24rem' : null">
+                      {{ getCellDisplay(row, column) }}
                     </span>
                   }
                 </td>

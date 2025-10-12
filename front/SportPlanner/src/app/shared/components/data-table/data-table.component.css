@@ -23,3 +23,8 @@
     box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.5);
   }
 }
+
+/* Truncation helper classes (minimal fallback) */
+.overflow-hidden { overflow: hidden; }
+.overflow-ellipsis { text-overflow: ellipsis; overflow: hidden; display: inline-block; }
+.whitespace-nowrap { white-space: nowrap; }

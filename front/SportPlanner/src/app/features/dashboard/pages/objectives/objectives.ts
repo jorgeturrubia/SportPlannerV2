@@ -40,8 +40,8 @@ export class ObjectivesPage implements OnInit {
 
   // Table configuration
   tableColumns = computed<TableColumn[]>(() => [
-    { key: 'name', label: 'Nombre', sortable: true },
-    { key: 'description', label: 'Descripción', sortable: false },
+  { key: 'name', label: 'Nombre', sortable: true },
+  { key: 'description', label: 'Descripción', sortable: false, truncate: true, truncateLength: 120 },
     {
       key: 'objectiveCategoryId',
       label: 'Categoría',
@@ -54,12 +54,7 @@ export class ObjectivesPage implements OnInit {
       sortable: false,
       formatter: (value?: string) => this.getSubcategoryName(value)
     },
-    {
-      key: 'ownership',
-      label: 'Tipo',
-      sortable: true,
-      formatter: (value: ContentOwnership) => this.getOwnershipLabel(value)
-    },
+    // 'ownership' column removed as requested
     { key: 'isActive', label: 'Estado', sortable: true, type: 'badge' }
   ]);
 

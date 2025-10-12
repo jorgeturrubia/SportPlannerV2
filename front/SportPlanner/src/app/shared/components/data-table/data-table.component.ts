@@ -8,6 +8,10 @@ export interface TableColumn {
   sortable?: boolean;
   type?: 'text' | 'badge' | 'date' | 'number';
   formatter?: (value: any) => string;
+  // Optional truncation: when true the cell will be clipped and show ellipsis.
+  // truncateLength defines the maximum visible characters (defaults to 100).
+  truncate?: boolean;
+  truncateLength?: number;
 }
 
 export interface TableAction {
@@ -87,6 +91,20 @@ export class DataTableComponent {
     }
 
     return value;
+  }
+
+  // Returns the final string to display in the cell, applying truncation when configured
+  getCellDisplay(row: any, column: TableColumn): string {
+    const raw = this.getCellValue(row, column);
+    if (raw === null || raw === undefined) return '-';
+
+    const str = typeof raw === 'string' ? raw : String(raw);
+    if (column.truncate) {
+      const max = column.truncateLength ?? 100;
+      if (str.length > max) return str.slice(0, max) + '...';
+    }
+
+    return str;
   }
 
   toggleSort(column: TableColumn): void {
