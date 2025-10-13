@@ -15,6 +15,7 @@ export interface PlanObjectiveDto {
   objectiveName: string;
   priority: number;
   targetSessions: number;
+  level?: number;
 }
 
 export interface TrainingPlanDto {

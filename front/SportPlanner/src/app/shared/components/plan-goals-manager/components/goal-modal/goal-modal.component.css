@@ -1,4 +1,8 @@
-/* Animations only - use Tailwind classes in HTML */
+/* ============================================
+   ANIMATIONS & PSEUDO-ELEMENTS ONLY
+   Use Tailwind classes in HTML for everything else
+   ============================================ */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -19,11 +23,11 @@
   }
 }
 
-.modal-overlay {
+.animate-fade-in {
   animation: fadeIn 0.2s ease-out;
 }
 
-.modal-container {
+.animate-slide-up {
   animation: slideUp 0.3s ease-out;
 }
 

@@ -9,5 +9,6 @@ public class CreateObjectiveDto
     public string Description { get; set; }
     public Guid ObjectiveCategoryId { get; set; }
     public Guid? ObjectiveSubcategoryId { get; set; }
+    public int Level { get; set; } = 1; // Default to level 1
     public List<ObjectiveTechniqueDto> Techniques { get; set; } = new();
 }

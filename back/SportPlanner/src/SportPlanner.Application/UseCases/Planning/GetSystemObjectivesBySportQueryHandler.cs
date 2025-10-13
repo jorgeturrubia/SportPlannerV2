@@ -30,6 +30,7 @@ public class GetSystemObjectivesBySportQueryHandler : IRequestHandler<GetSystemO
             Description = o.Description,
             ObjectiveCategoryId = o.ObjectiveCategoryId,
             ObjectiveSubcategoryId = o.ObjectiveSubcategoryId,
+            Level = o.Level,
             IsActive = o.IsActive,
             SourceMarketplaceItemId = o.SourceMarketplaceItemId,
             Techniques = o.Techniques.Select(t => new ObjectiveTechniqueDto

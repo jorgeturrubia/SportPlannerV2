@@ -58,7 +58,8 @@ public class GetTrainingPlansBySubscriptionQueryHandler : IRequestHandler<GetTra
                 Priority = po.Priority,
                 TargetSessions = po.TargetSessions,
                 ObjectiveName = po.Objective?.Name ?? "",
-                ObjectiveDescription = po.Objective?.Description ?? ""
+                ObjectiveDescription = po.Objective?.Description ?? "",
+                Level = po.Objective?.Level ?? 1
             }).ToList(),
             CreatedAt = tp.CreatedAt,
             UpdatedAt = tp.UpdatedAt,

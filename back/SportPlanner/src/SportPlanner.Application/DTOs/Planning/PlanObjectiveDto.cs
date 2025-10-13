@@ -7,6 +7,8 @@ public class PlanObjectiveDto
     public int TargetSessions { get; set; }
 
     // Include objective details for convenience
-    public string ObjectiveName { get; set; }
-    public string ObjectiveDescription { get; set; }
+    public string? ObjectiveName { get; set; }
+    public string? ObjectiveDescription { get; set; }
+    // Objective level (1-5)
+    public int Level { get; set; } = 1;
 }

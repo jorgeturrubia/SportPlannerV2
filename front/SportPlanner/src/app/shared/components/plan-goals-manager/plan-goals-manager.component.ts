@@ -1,10 +1,13 @@
 import { Component, Input, Output, EventEmitter, signal, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ObjectivesService, ObjectiveDto } from '../../../features/dashboard/services/objectives.service';
+import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, Sport } from '../../../features/dashboard/services/objectives.service';
 import { ObjectiveCategoriesService } from '../../../features/dashboard/services/objective-categories.service';
 import { ObjectiveSubcategoriesService } from '../../../features/dashboard/services/objective-subcategories.service';
 import { TrainingPlansService } from '../../../features/dashboard/services/training-plans.service';
+import { SubscriptionContextService } from '../../../core/subscription/services/subscription-context.service';
+import { NotificationService } from '../../notifications/notification.service';
+import { DynamicFormComponent, FormField } from '../dynamic-form/dynamic-form.component';
 import { GoalCardComponent } from './components/goal-card/goal-card.component';
 import { GoalFiltersComponent } from './components/goal-filters/goal-filters.component';
 import { GoalModalComponent } from './components/goal-modal/goal-modal.component';
@@ -29,6 +32,7 @@ export interface FilterState {
   imports: [
     CommonModule,
     FormsModule,
+    DynamicFormComponent,
     GoalCardComponent,
     GoalFiltersComponent,
     GoalModalComponent
@@ -41,11 +45,14 @@ export class PlanGoalsManagerComponent implements OnInit {
   private categoriesService = inject(ObjectiveCategoriesService);
   private subcategoriesService = inject(ObjectiveSubcategoriesService);
   private plansService = inject(TrainingPlansService);
+  private subscriptionContext = inject(SubscriptionContextService);
+  private ns = inject(NotificationService);
 
   @Input() planId: string | null = null;
   @Input() viewOnly = false;
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
+  @Output() objectiveCreated = new EventEmitter<ObjectiveDto>();
   @Output() changed = new EventEmitter<void>();
 
   // State
@@ -57,7 +64,11 @@ export class PlanGoalsManagerComponent implements OnInit {
   isModalOpen = signal(false);
   selectedGoal = signal<PlanObjective | null>(null);
   goalToDelete = signal<PlanObjective | null>(null);
-  isMaximized = signal(false);
+  
+  // Create Form State
+  showCreateForm = signal(false);
+  isCreatingObjective = signal(false);
+  createFormFields = signal<FormField[]>([]);
 
   // Filters
   filterState = signal<FilterState>({
@@ -228,8 +239,54 @@ export class PlanGoalsManagerComponent implements OnInit {
     this.goalToDelete.set(null);
   }
 
-  openAddModal(): void {
-    this.selectedGoal.set(null);
+  openCreateNewObjectiveModal(): void {
+    // Preparar los campos del formulario
+    this.createFormFields.set([
+      {
+        key: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true
+      },
+      {
+        key: 'description',
+        label: 'Descripción',
+        type: 'textarea',
+        required: false
+      },
+      {
+        key: 'objectiveCategoryId',
+        label: 'Categoría',
+        type: 'select',
+        required: true,
+        options: this.categories().map(c => ({ value: c.id, label: c.name }))
+      },
+      {
+        key: 'objectiveSubcategoryId',
+        label: 'Subcategoría',
+        type: 'select',
+        required: false,
+        options: this.subcategories().map(s => ({ value: s.id, label: s.name }))
+      }
+      ,
+      {
+        key: 'level',
+        label: 'Nivel',
+        type: 'number',
+        required: false
+      }
+    ]);
+    
+    this.showCreateForm.set(true);
+  }
+
+  openAddExistingGoalModal(goal?: ObjectiveDto): void {
+    // Si se pasa un goal específico, lo pre-seleccionamos
+    if (goal) {
+      this.selectedGoal.set(goal as PlanObjective);
+    } else {
+      this.selectedGoal.set(null);
+    }
     this.isModalOpen.set(true);
   }
 
@@ -248,10 +305,6 @@ export class PlanGoalsManagerComponent implements OnInit {
     this.closeModal();
   }
 
-  toggleMaximize(): void {
-    this.isMaximized.update(v => !v);
-  }
-
   onClose(): void {
     this.close.emit();
   }
@@ -262,5 +315,65 @@ export class PlanGoalsManagerComponent implements OnInit {
 
   trackByGoalId(index: number, goal: PlanObjective): string {
     return goal.id;
+  }
+
+  // Create Objective Form Methods
+  async handleCreateFormSubmit(formData: any): Promise<void> {
+    this.isCreatingObjective.set(true);
+
+    try {
+      const subscription = this.subscriptionContext.subscription();
+      if (!subscription) {
+        this.ns.error('No se pudo obtener la suscripción', 'Error');
+        return;
+      }
+
+      const sport = this.parseSportToEnum(subscription.sport);
+
+      const createPayload: CreateObjectiveDto = {
+        sport: sport,
+        name: formData.name,
+        description: formData.description,
+        objectiveCategoryId: formData.objectiveCategoryId,
+        objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
+        level: formData.level ?? 1,
+        techniques: []
+      };
+
+      const newObjectiveId = await this.objectivesService.createObjective(createPayload);
+      
+      // Recargar la lista de objetivos
+      await this.loadData();
+      
+      // Buscar el objetivo recién creado en la lista
+      const newObjective = this.allObjectives().find(obj => obj.id === newObjectiveId);
+      if (newObjective) {
+        this.objectiveCreated.emit(newObjective);
+      }
+      
+      // Cerrar el formulario
+      this.closeCreateForm();
+      
+      this.ns.success('Objetivo creado correctamente', 'Objetivos');
+    } catch (err: any) {
+      console.error('Failed to create objective:', err);
+      this.ns.error(err?.message ?? 'No se pudo crear el objetivo', 'Error');
+    } finally {
+      this.isCreatingObjective.set(false);
+    }
+  }
+
+  closeCreateForm(): void {
+    this.showCreateForm.set(false);
+    this.createFormFields.set([]);
+  }
+
+  private parseSportToEnum(sportString: string): Sport {
+    const sportMap: Record<string, Sport> = {
+      'Basketball': Sport.Basketball,
+      'Football': Sport.Football,
+      'Handball': Sport.Handball
+    };
+    return sportMap[sportString] || Sport.Basketball;
   }
 }

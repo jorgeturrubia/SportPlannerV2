@@ -45,6 +45,7 @@ public class GetObjectivesBySubscriptionQueryHandler : IRequestHandler<GetObject
             Description = o.Description,
             ObjectiveCategoryId = o.ObjectiveCategoryId,
             ObjectiveSubcategoryId = o.ObjectiveSubcategoryId,
+            Level = o.Level,
             IsActive = o.IsActive,
             SourceMarketplaceItemId = o.SourceMarketplaceItemId,
             Techniques = o.Techniques.Select(t => new ObjectiveTechniqueDto

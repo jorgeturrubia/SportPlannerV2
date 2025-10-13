@@ -102,6 +102,15 @@ export class ObjectivesPage implements OnInit {
       required: false,
       options: this.subcategories().map(s => ({ value: s.id, label: s.name }))
     }
+    ,
+    {
+      key: 'level',
+      label: 'Level',
+      type: 'number',
+      required: false,
+      min: 1,
+      max: 5
+    }
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -234,7 +243,8 @@ export class ObjectivesPage implements OnInit {
           name: formData.name,
           description: formData.description,
           objectiveCategoryId: formData.objectiveCategoryId,
-          objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
+            objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
+            level: formData.level ?? undefined,
           techniques: []
         };
 
@@ -249,7 +259,8 @@ export class ObjectivesPage implements OnInit {
           description: formData.description,
           objectiveCategoryId: formData.objectiveCategoryId,
           objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
-          techniques: []
+            level: formData.level ?? 1,
+            techniques: []
         };
 
         await this.objectivesService.createObjective(createPayload);

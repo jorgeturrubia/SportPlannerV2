@@ -2,6 +2,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Custom z-index utilities */
+.z-60 {
+  z-index: 60;
+}
+
 /* Custom Scrollbar Styles */
 .scrollbar-thin {
   scrollbar-width: thin;

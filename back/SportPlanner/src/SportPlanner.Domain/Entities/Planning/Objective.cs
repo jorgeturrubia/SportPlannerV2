@@ -16,6 +16,7 @@ public class Objective : Entity, IAuditable
     public string Description { get; private set; }
     public Guid ObjectiveCategoryId { get; private set; }
     public Guid? ObjectiveSubcategoryId { get; private set; }
+    public int Level { get; private set; }
     public bool IsActive { get; private set; }
     public Guid? SourceMarketplaceItemId { get; private set; }
     public DateTime CreatedAt { get; set; }
@@ -42,12 +43,14 @@ public class Objective : Entity, IAuditable
         string name,
         string description,
         Guid categoryId,
-        Guid? subcategoryId = null)
+        Guid? subcategoryId = null,
+        int level = 1)
     {
         if (subscriptionId == Guid.Empty)
             throw new ArgumentException("SubscriptionId cannot be empty for user content", nameof(subscriptionId));
 
         ValidateCommonFields(name, description, categoryId, sport);
+        ValidateLevel(level);
 
         SubscriptionId = subscriptionId;
         Ownership = ContentOwnership.User;
@@ -56,6 +59,7 @@ public class Objective : Entity, IAuditable
         Description = description;
         ObjectiveCategoryId = categoryId;
         ObjectiveSubcategoryId = subcategoryId;
+        Level = level;
         IsActive = true;
     }
 
@@ -67,9 +71,11 @@ public class Objective : Entity, IAuditable
         string name,
         string description,
         Guid categoryId,
-        Guid? subcategoryId = null)
+        Guid? subcategoryId = null,
+        int level = 1)
     {
         ValidateCommonFields(name, description, categoryId, sport);
+        ValidateLevel(level);
 
         return new Objective
         {
@@ -80,6 +86,7 @@ public class Objective : Entity, IAuditable
             Description = description,
             ObjectiveCategoryId = categoryId,
             ObjectiveSubcategoryId = subcategoryId,
+            Level = level,
             IsActive = true
         };
     }
@@ -94,7 +101,8 @@ public class Objective : Entity, IAuditable
         string name,
         string description,
         Guid categoryId,
-        Guid? subcategoryId = null)
+        Guid? subcategoryId = null,
+        int level = 1)
     {
         if (subscriptionId == Guid.Empty)
             throw new ArgumentException("SubscriptionId cannot be empty", nameof(subscriptionId));
@@ -103,6 +111,7 @@ public class Objective : Entity, IAuditable
             throw new ArgumentException("SourceMarketplaceItemId cannot be empty", nameof(sourceMarketplaceItemId));
 
         ValidateCommonFields(name, description, categoryId, sport);
+        ValidateLevel(level);
 
         return new Objective
         {
@@ -113,6 +122,7 @@ public class Objective : Entity, IAuditable
             Description = description,
             ObjectiveCategoryId = categoryId,
             ObjectiveSubcategoryId = subcategoryId,
+            Level = level,
             SourceMarketplaceItemId = sourceMarketplaceItemId,
             IsActive = true
         };
@@ -135,7 +145,8 @@ public class Objective : Entity, IAuditable
             Name,
             Description,
             ObjectiveCategoryId,
-            ObjectiveSubcategoryId);
+            ObjectiveSubcategoryId,
+            Level);
 
         // Clone techniques
         foreach (var technique in _techniques.OrderBy(t => t.Order))
@@ -146,10 +157,16 @@ public class Objective : Entity, IAuditable
         return cloned;
     }
 
-    public void Update(string name, string description, Guid categoryId, Guid? subcategoryId = null)
+    public void Update(string name, string description, Guid categoryId, Guid? subcategoryId = null, int? level = null)
     {
         EnsureIsEditable();
         ValidateCommonFields(name, description, categoryId, Sport);
+        
+        if (level.HasValue)
+        {
+            ValidateLevel(level.Value);
+            Level = level.Value;
+        }
 
         Name = name;
         Description = description;
@@ -220,5 +237,11 @@ public class Objective : Entity, IAuditable
 
         if (categoryId == Guid.Empty)
             throw new ArgumentException("CategoryId cannot be empty", nameof(categoryId));
+    }
+
+    private static void ValidateLevel(int level)
+    {
+        if (level < 1 || level > 5)
+            throw new ArgumentException("Level must be between 1 and 5", nameof(level));
     }
 }

@@ -28,6 +28,7 @@ export interface ObjectiveDto {
   description: string;
   objectiveCategoryId: string;
   objectiveSubcategoryId?: string;
+  level: number;
   isActive: boolean;
   sourceMarketplaceItemId?: string;
   techniques: ObjectiveTechniqueDto[];
@@ -45,6 +46,7 @@ export interface CreateObjectiveDto {
   description: string;
   objectiveCategoryId: string;
   objectiveSubcategoryId?: string;
+  level?: number;
   techniques: ObjectiveTechniqueDto[];
 }
 
@@ -54,6 +56,7 @@ export interface UpdateObjectiveDto {
   description: string;
   objectiveCategoryId: string;
   objectiveSubcategoryId?: string;
+  level?: number | null;
   techniques: ObjectiveTechniqueDto[];
 }
 

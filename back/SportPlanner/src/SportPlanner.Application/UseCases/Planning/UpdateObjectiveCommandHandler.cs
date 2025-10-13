@@ -59,12 +59,13 @@ public class UpdateObjectiveCommandHandler : IRequestHandler<UpdateObjectiveComm
             throw new InvalidOperationException($"Subcategory with ID {dto.ObjectiveSubcategoryId} does not exist");
         }
 
-        // Update objective
+        // Update objective (include Level if provided)
         objective.Update(
             dto.Name,
             dto.Description,
             dto.ObjectiveCategoryId,
-            dto.ObjectiveSubcategoryId);
+            dto.ObjectiveSubcategoryId,
+            dto.Level);
 
         // Update techniques
         var techniques = dto.Techniques

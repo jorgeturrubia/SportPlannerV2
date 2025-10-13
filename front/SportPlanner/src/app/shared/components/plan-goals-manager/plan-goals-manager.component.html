@@ -1,82 +1,75 @@
 @if (isOpen) {
-  <div class="goals-manager-overlay" (click)="onClose()">
-    <div
-      [class.maximized]="isMaximized()"
-      class="goals-manager-container"
+  <!-- Fullscreen Modal Overlay -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
+    
+    <!-- Modal Container - Fullscreen -->
+    <div 
+      class="relative bg-white dark:bg-slate-900 shadow-2xl w-full h-full flex flex-col animate-slide-up"
       (click)="$event.stopPropagation()">
 
-      <!-- Header -->
-      <div class="goals-manager-header">
-        <div class="flex items-center justify-between flex-1">
-          <div>
-            <h2 class="goals-manager-title">
-              <svg class="w-6 h-6 mr-2 inline text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Header - Fixed -->
+      <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
               </svg>
-              {{ viewOnly ? 'Objetivos del Plan' : 'Gestión de Objetivos' }}
-            </h2>
-            <p class="goals-manager-subtitle">
-              {{ viewOnly ? 'Vista de objetivos asociados' : 'Agrega, edita y elimina objetivos del plan de entrenamiento' }}
-            </p>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+                {{ viewOnly ? 'Objetivos del Plan' : 'Gestión de Objetivos' }}
+              </h2>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                {{ viewOnly ? 'Vista de objetivos asociados' : 'Agrega, edita y elimina objetivos del plan de entrenamiento' }}
+              </p>
+            </div>
           </div>
 
           <!-- Stats -->
-          <div class="stats-container">
-            <div class="stat-item">
-              <div class="stat-value">{{ stats().total }}</div>
-              <div class="stat-label">Objetivos</div>
+          <div class="hidden lg:flex items-center gap-6 ml-8">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ stats().total }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Objetivos</div>
             </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ stats().categories }}</div>
-              <div class="stat-label">Categorías</div>
+            <div class="w-px h-12 bg-slate-300 dark:bg-slate-600"></div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ stats().categories }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Categorías</div>
             </div>
           </div>
         </div>
 
         <!-- Header Actions -->
-        <div class="header-actions">
+        <div class="flex items-center gap-2">
           @if (!viewOnly) {
             <button
-              (click)="openAddModal()"
-              class="btn-header-action btn-primary-action"
-              title="Agregar objetivo">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              (click)="openCreateNewObjectiveModal()"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md"
+              title="Crear un nuevo objetivo desde cero">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
-              <span class="hidden sm:inline">Agregar</span>
+              <span class="hidden sm:inline">Crear Nuevo Objetivo</span>
             </button>
           }
 
           <button
-            (click)="toggleMaximize()"
-            class="btn-header-action"
-            title="Maximizar/Restaurar">
-            @if (!isMaximized()) {
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-              </svg>
-            } @else {
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            }
-          </button>
-
-          <button
             (click)="onClose()"
-            class="btn-header-action"
+            class="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             title="Cerrar">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
       </div>
 
-      <!-- Body -->
-      <div class="goals-manager-body">
+      <!-- Body - Scrollable with Sidebar -->
+      <div class="flex-1 flex overflow-hidden">
+        
         <!-- Sidebar with Filters -->
-        <aside class="goals-sidebar">
+        <aside class="w-80 flex-shrink-0 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 overflow-y-auto">
           <app-goal-filters
             [categories]="categories()"
             [subcategories]="subcategories()"
@@ -87,51 +80,49 @@
           </app-goal-filters>
         </aside>
 
-        <!-- Main Content -->
-        <main class="goals-content">
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 bg-slate-100 dark:bg-slate-950">
+          
           <!-- Loading State -->
           @if (isLoading()) {
-            <div class="loading-state">
-              <div class="loading-spinner"></div>
-              <p class="loading-text">Cargando objetivos...</p>
+            <div class="flex flex-col items-center justify-center h-full">
+              <div class="w-12 h-12 border-4 border-slate-300 dark:border-slate-600 border-t-blue-600 rounded-full animate-spin"></div>
+              <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Cargando objetivos...</p>
             </div>
           }
 
           <!-- Empty State -->
           @if (!isLoading() && filteredGoals().length === 0) {
-            <div class="empty-state">
-              <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-              </svg>
-              <h3 class="empty-state-title">
+            <div class="flex flex-col items-center justify-center h-full text-center">
+              <div class="p-4 bg-slate-200 dark:bg-slate-700 rounded-full mb-4">
+                <svg class="w-16 h-16 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">
                 {{ viewOnly ? 'No hay objetivos' : 'No se encontraron objetivos' }}
               </h3>
-              <p class="empty-state-description">
+              <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md">
                 {{ viewOnly ? 'Este plan no tiene objetivos asociados aún.' : 'Intenta ajustar los filtros o agrega un nuevo objetivo.' }}
               </p>
               @if (!viewOnly) {
-                <button
-                  (click)="openAddModal()"
-                  class="btn-empty-action">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                  </svg>
-                  Agregar primer objetivo
-                </button>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                  Haz clic en "Agregar" en cualquier objetivo para añadirlo a esta planificación
+                </p>
               }
             </div>
           }
 
           <!-- Goals Grid/List -->
           @if (!isLoading() && filteredGoals().length > 0) {
-            <div [class]="filterState().viewMode === 'grid' ? 'goals-grid' : 'goals-list'">
+            <div [class]="filterState().viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4' : 'flex flex-col gap-3'">
               @for (goal of filteredGoals(); track goal.id) {
                 <app-goal-card
                   [goal]="goal"
                   [isSelected]="isGoalSelected(goal.id)"
                   [viewMode]="filterState().viewMode"
                   [viewOnly]="viewOnly"
-                  (add)="addGoalToPlan($event)"
+                  (add)="openAddExistingGoalModal($event)"
                   (remove)="removeGoalFromPlan($event)"
                   (edit)="openEditModal($event)">
                 </app-goal-card>
@@ -139,6 +130,49 @@
             </div>
           }
         </main>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Create Objective Form Modal -->
+@if (showCreateForm()) {
+  <div class="fixed inset-0 z-60 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" (click)="closeCreateForm()">
+    <div 
+      class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-scale-up"
+      (click)="$event.stopPropagation()">
+      
+      <!-- Form Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Crear Nuevo Objetivo</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Define un nuevo objetivo de entrenamiento</p>
+          </div>
+        </div>
+        <button 
+          (click)="closeCreateForm()" 
+          class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
+          <svg class="w-6 h-6 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Form Content -->
+      <div class="overflow-y-auto max-h-[calc(90vh-140px)] p-6">
+        <app-dynamic-form
+          [isOpen]="true"
+          [config]="createFormFields()"
+          [title]="'Crear Objetivo'"
+          (formSubmit)="handleCreateFormSubmit($event)"
+          (cancel)="closeCreateForm()">
+        </app-dynamic-form>
       </div>
     </div>
   </div>
@@ -155,25 +189,37 @@
 
 <!-- Delete Confirmation Dialog -->
 @if (goalToDelete()) {
-  <div class="confirmation-overlay" (click)="cancelDelete()">
-    <div class="confirmation-dialog" (click)="$event.stopPropagation()">
-      <div class="confirmation-icon-container">
-        <svg class="confirmation-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
+  <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in" (click)="cancelDelete()">
+    <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-slide-up" (click)="$event.stopPropagation()">
+      
+      <!-- Warning Icon -->
+      <div class="flex justify-center mb-4">
+        <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+          <svg class="w-12 h-12 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
       </div>
 
-      <h3 class="confirmation-title">Eliminar objetivo</h3>
-      <p class="confirmation-message">
-        ¿Estás seguro de que deseas eliminar <strong>{{ goalToDelete()?.name }}</strong> del plan?
+      <!-- Content -->
+      <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">
+        Eliminar objetivo
+      </h3>
+      <p class="text-center text-slate-600 dark:text-slate-400 mb-6">
+        ¿Estás seguro de que deseas eliminar <strong class="text-slate-900 dark:text-white">{{ goalToDelete()?.name }}</strong> del plan?
         Esta acción no se puede deshacer.
       </p>
 
-      <div class="confirmation-actions">
-        <button (click)="cancelDelete()" class="btn-confirmation-cancel">
+      <!-- Actions -->
+      <div class="flex gap-3 justify-center">
+        <button 
+          (click)="cancelDelete()" 
+          class="px-6 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-lg transition-colors">
           Cancelar
         </button>
-        <button (click)="confirmDelete()" class="btn-confirmation-confirm">
+        <button 
+          (click)="confirmDelete()" 
+          class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors shadow-sm hover:shadow-md">
           Eliminar
         </button>
       </div>

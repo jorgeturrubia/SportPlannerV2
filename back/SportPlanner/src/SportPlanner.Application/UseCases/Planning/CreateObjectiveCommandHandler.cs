@@ -54,14 +54,15 @@ public class CreateObjectiveCommandHandler : IRequestHandler<CreateObjectiveComm
             throw new InvalidOperationException($"Subcategory with ID {dto.ObjectiveSubcategoryId} does not exist");
         }
 
-        // Create objective
+        // Create objective (include Level)
         var objective = new Objective(
             subscription.Id,
             dto.Sport,
             dto.Name,
             dto.Description,
             dto.ObjectiveCategoryId,
-            dto.ObjectiveSubcategoryId);
+            dto.ObjectiveSubcategoryId,
+            dto.Level);
 
         // Add techniques
         foreach (var technique in dto.Techniques.OrderBy(t => t.Order))

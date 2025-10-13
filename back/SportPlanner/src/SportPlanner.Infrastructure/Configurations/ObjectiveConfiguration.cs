@@ -45,7 +45,10 @@ public class ObjectiveConfiguration : IEntityTypeConfiguration<Objective>
         // Audit properties
         builder.Property(o => o.CreatedAt)
             .IsRequired();
-
+            // Level property (progression)
+            builder.Property(o => o.Level)
+                .IsRequired()
+                .HasDefaultValue(1);
         builder.Property(o => o.CreatedBy)
             .HasMaxLength(255)
             .IsRequired();
