@@ -308,6 +308,121 @@ export const TRAINING_ROUTES: Route[] = [
 
 ## 🎨 Tailwind CSS Styling
 
+### ⚠️ CRITICAL: Tailwind CSS v4 Best Practices
+
+**This project uses Tailwind CSS v4** - The approach is different from v3!
+
+#### ❌ **WRONG: What NOT to do**
+
+```css
+/* ❌ DON'T: Import Tailwind in component CSS files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ❌ DON'T: Use @apply extensively in component files */
+.my-component {
+  @apply bg-white rounded-lg shadow-md p-4 flex items-center;
+}
+```
+
+**Problems:**
+- Imports entire Tailwind (~85KB) into each component CSS file
+- Causes bundle size budget errors
+- Slow compilation
+- Not the idiomatic v4 way
+
+#### ✅ **CORRECT: Tailwind v4 Approach**
+
+**1. Global Styles (`src/styles.css`) - ONCE ONLY:**
+```css
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Global utilities or theme overrides here */
+```
+
+**2. Component CSS Files - MINIMAL:**
+```css
+/* ✅ ONLY animations and pseudo-elements that Tailwind can't style */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-container {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* ✅ Pseudo-elements (can't be done with Tailwind) */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: rgb(37 99 235);
+  border-radius: 9999px;
+  cursor: pointer;
+}
+```
+
+**3. Component Templates - USE TAILWIND CLASSES:**
+```html
+<!-- ✅ CORRECT: Tailwind classes directly in HTML -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-7xl p-6">
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+      Component Title
+    </h2>
+    <p class="text-slate-600 dark:text-slate-400">
+      Use Tailwind classes directly in the template!
+    </p>
+  </div>
+</div>
+```
+
+#### 🎯 **Golden Rules for Tailwind v4**
+
+1. **One global import**: `@import "tailwindcss"` ONLY in `src/styles.css`
+2. **Component CSS = Animations only**: Only `@keyframes` and pseudo-elements
+3. **Classes in HTML, not CSS**: Use Tailwind utilities directly in templates
+4. **For reusability**: Create Angular components, NOT CSS classes
+
+#### 📊 **Component CSS File Size Guide**
+
+- ✅ **Good**: 0.5-2 KB (animations only)
+- ⚠️ **Warning**: 5-10 KB (review if necessary)
+- ❌ **Error**: >20 KB (likely misusing `@apply` or `@import`)
+
+#### 🔄 **Migration from v3 to v4 Pattern**
+
+```typescript
+// Before (v3 with @apply):
+// my-component.css
+@tailwind utilities;
+.card {
+  @apply bg-white rounded-lg p-4 shadow-md;
+}
+
+// After (v4 - direct classes):
+// my-component.html
+<div class="bg-white rounded-lg p-4 shadow-md">
+
+// my-component.css (minimal)
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.card { animation: fadeIn 0.3s; }
+```
+
 ### Tailwind CSS v4 Configuration
 
 **Theme Configuration**
@@ -318,13 +433,13 @@ export const TRAINING_ROUTES: Route[] = [
   --color-primary-50: #eff6ff;
   --color-primary-500: #3b82f6;
   --color-primary-900: #1e3a8a;
-  
+
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;
   --spacing-lg: 2rem;
-  
+
   /* Semantic Colors */
   --color-success: #10b981;
   --color-warning: #f59e0b;
@@ -374,17 +489,71 @@ export const TRAINING_ROUTES: Route[] = [
 ```
 
 ### Component Styles Best Practices
-- **Primary approach**: Tailwind utilities in templates
-- **Component CSS**: Only for complex animations or highly reusable patterns
-- **No Angular Material**: Build everything with Tailwind
-- **Animations**: Use Tailwind transition utilities (transition, duration, ease, animate-*)
 
+**PRIMARY APPROACH: Tailwind classes in HTML templates**
+
+#### ✅ Recommended Structure
+
+**Component Template (training-card.component.html):**
+```html
+<div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6
+            hover:shadow-lg transition-shadow duration-200
+            border border-slate-200 dark:border-slate-700">
+  <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+    {{ training.name }}
+  </h3>
+  <p class="text-slate-600 dark:text-slate-400 mt-2">
+    {{ training.description }}
+  </p>
+</div>
+```
+
+**Component CSS (training-card.component.css) - MINIMAL:**
 ```css
-/* Component-specific (solo si es necesario) */
-.training-card {
-  @apply bg-white rounded-lg shadow-md p-6
-         hover:shadow-lg transition-shadow duration-200;
+/* ✅ ONLY animations that can't be done with Tailwind */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
+.training-card {
+  animation: slideIn 0.3s ease-out;
+}
+```
+
+#### 🎯 When to Use Component CSS
+
+**✅ USE component CSS for:**
+- Custom `@keyframes` animations
+- Pseudo-elements (`::-webkit-scrollbar`, `::-webkit-slider-thumb`)
+- Browser-specific styling that needs vendor prefixes
+- Complex animation sequences
+
+**❌ DON'T use component CSS for:**
+- Colors, spacing, typography (use Tailwind classes)
+- Hover/focus states (use Tailwind `hover:`, `focus:`)
+- Responsive design (use Tailwind breakpoints `md:`, `lg:`)
+- Layout (use Tailwind flex, grid utilities)
+
+#### 📏 File Size Benchmarks
+
+```bash
+# ✅ Good Example (minimal CSS)
+training-card.component.css: 0.8 KB
+- Only @keyframes animations
+- Build output: ~0.8 KB
+
+# ❌ Bad Example (too much CSS)
+training-card.component.css: 85 KB
+- Contains @import "tailwindcss"
+- Uses @apply extensively
+- Build FAILS with budget error
 ```
 
 ### SportPlanner-Specific Patterns
@@ -1194,20 +1363,27 @@ Before committing code, verify:
 
 ## 🚫 Common Mistakes to Avoid
 
-❌ Using NgModules (declarations, imports in @NgModule)  
-❌ Constructor injection instead of `inject()`  
-❌ BehaviorSubject/Subject for primary state (use Signals)  
-❌ **Importing ANY Angular Material module** (MatCardModule, MatButtonModule, etc.)  
-❌ **Using Material Icons** (use Heroicons or Lucide)  
-❌ Hardcoded API URLs (use environment)  
-❌ Inline styles instead of Tailwind utilities  
-❌ Direct DOM manipulation (use Angular directives)  
-❌ Mutable state operations (use `.set()` or `.update()`)  
-❌ Custom CSS when Tailwind utilities exist  
-❌ Committing `environment.ts` with real secrets  
-❌ Missing error handling in async operations  
-❌ Not using try/catch with async/await  
-❌ Missing loading states in components  
+### Angular & Architecture
+❌ Using NgModules (declarations, imports in @NgModule)
+❌ Constructor injection instead of `inject()`
+❌ BehaviorSubject/Subject for primary state (use Signals)
+❌ **Importing ANY Angular Material module** (MatCardModule, MatButtonModule, etc.)
+❌ **Using Material Icons** (use Heroicons or Lucide)
+❌ Hardcoded API URLs (use environment)
+❌ Direct DOM manipulation (use Angular directives)
+❌ Mutable state operations (use `.set()` or `.update()`)
+❌ Missing error handling in async operations
+❌ Not using try/catch with async/await
+❌ Missing loading states in components
+
+### Tailwind CSS v4 Specific
+❌ **Importing `@import "tailwindcss"` in component CSS** (only in `src/styles.css`)
+❌ **Using `@tailwind` directives** (use `@import "tailwindcss"` instead)
+❌ **Extensive use of `@apply` in components** (use classes in HTML)
+❌ **Creating CSS classes for reusable styles** (create Angular components instead)
+❌ Inline styles instead of Tailwind utilities
+❌ Custom CSS when Tailwind utilities exist
+❌ Component CSS files >20KB (should be <2KB for animations only)  
 
 ---
 
@@ -1219,10 +1395,10 @@ Before committing code, verify:
 - **Auth Service**: `src/app/core/auth/auth.service.ts`
 - **Notification Service**: `src/app/shared/notifications/notification.service.ts`
 - **Environment**: `src/environments/environment.ts` (DO NOT COMMIT WITH SECRETS)
-- **General Agent**: `../agent.md` (cross-cutting concerns, security, naming)
-- **Backend Agent**: `../back/agent.md` (API contracts, data models)
+- **General Agent**: `../AGENTS.md` (cross-cutting concerns, security, naming)
+- **Backend Agent**: `../back/AGENTS.md` (API contracts, data models)
 
 ---
 
-**Last Updated**: 2025-10-06  
-**Version**: 2.0 (Self-contained, no external dependencies)
+**Last Updated**: 2025-10-13
+**Version**: 2.1 (Added Tailwind CSS v4 best practices)

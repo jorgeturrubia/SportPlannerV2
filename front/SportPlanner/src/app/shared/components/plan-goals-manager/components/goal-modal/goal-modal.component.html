@@ -1,0 +1,157 @@
+@if (isOpen) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">
+            {{ isEditMode() ? 'Editar objetivo' : 'Agregar objetivo' }}
+          </h2>
+          <p class="modal-subtitle">
+            {{ isEditMode() ? 'Modifica la configuración del objetivo' : 'Selecciona un objetivo y configura sus parámetros' }}
+          </p>
+        </div>
+        <button (click)="onClose()" class="modal-close-btn" title="Cerrar">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Goal Selection (only in add mode) -->
+        @if (!isEditMode()) {
+          <div class="form-group">
+            <label class="form-label">
+              Objetivo *
+            </label>
+            <select
+              [value]="selectedGoalId() || ''"
+              (change)="onGoalSelect($any($event.target).value)"
+              class="form-select"
+              required>
+              <option value="">-- Selecciona un objetivo --</option>
+              @for (g of availableGoals; track g.id) {
+                <option [value]="g.id">
+                  {{ g.name }}
+                </option>
+              }
+            </select>
+            @if (selectedGoal()) {
+              <p class="form-help-text">
+                {{ selectedGoal()?.description }}
+              </p>
+            }
+          </div>
+        }
+
+        <!-- Goal Info (in edit mode) -->
+        @if (isEditMode() && goal) {
+          <div class="goal-info-card">
+            <div class="goal-info-header">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <h3 class="goal-info-title">{{ goal.name }}</h3>
+            </div>
+            @if (goal.description) {
+              <p class="goal-info-description">
+                {{ goal.description }}
+              </p>
+            }
+          </div>
+        }
+
+        <!-- Priority Selector -->
+        <div class="form-group">
+          <label class="form-label">
+            Prioridad
+            <span [class]="getPriorityColor(priority())" class="ml-2 font-semibold">
+              {{ getPriorityLabel(priority()) }}
+            </span>
+          </label>
+
+          <div class="priority-slider-container">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              [value]="priority()"
+              (input)="onPriorityChange(+$any($event.target).value)"
+              class="priority-slider" />
+
+            <div class="priority-scale">
+              <span class="priority-tick">1</span>
+              <span class="priority-tick">5</span>
+              <span class="priority-tick">10</span>
+            </div>
+          </div>
+
+          <p class="form-help-text">
+            Define la importancia de este objetivo (1 = Baja, 10 = Crítica)
+          </p>
+        </div>
+
+        <!-- Target Sessions -->
+        <div class="form-group">
+          <label class="form-label" for="targetSessions">
+            Sesiones objetivo
+          </label>
+          <input
+            id="targetSessions"
+            type="number"
+            min="0"
+            [value]="targetSessions()"
+            (input)="onTargetSessionsChange(+$any($event.target).value)"
+            class="form-input"
+            placeholder="0" />
+          <p class="form-help-text">
+            Número de sesiones dedicadas a este objetivo (0 = sin límite)
+          </p>
+        </div>
+
+        <!-- Summary Card -->
+        @if (selectedGoal()) {
+          <div class="summary-card">
+            <h4 class="summary-title">Resumen</h4>
+            <div class="summary-items">
+              <div class="summary-item">
+                <span class="summary-label">Objetivo:</span>
+                <span class="summary-value">{{ selectedGoal()?.name }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Prioridad:</span>
+                <span [class]="getPriorityColor(priority())" class="summary-value font-semibold">
+                  {{ getPriorityLabel(priority()) }}
+                </span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Sesiones:</span>
+                <span class="summary-value">
+                  {{ targetSessions() > 0 ? targetSessions() + ' sesiones' : 'Sin límite' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button (click)="onClose()" class="btn-secondary">
+          Cancelar
+        </button>
+        <button
+          (click)="onSave()"
+          [disabled]="!canSave()"
+          class="btn-primary">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          {{ isEditMode() ? 'Guardar cambios' : 'Agregar objetivo' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

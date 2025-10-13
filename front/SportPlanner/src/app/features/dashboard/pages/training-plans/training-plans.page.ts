@@ -2,7 +2,7 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
-import { AddObjectivesModalComponent } from '../../../../shared/components/add-objectives-modal/add-objectives-modal.component';
+import { PlanGoalsManagerComponent } from '../../../../shared/components/plan-goals-manager/plan-goals-manager.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { TrainingPlansService, TrainingPlanDto } from '../../services/training-plans.service';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
@@ -10,7 +10,7 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 @Component({
   selector: 'app-training-plans-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, AddObjectivesModalComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, PlanGoalsManagerComponent],
   templateUrl: './training-plans.page.html'
 })
 export class TrainingPlansPage implements OnInit {

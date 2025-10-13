@@ -1,0 +1,182 @@
+@if (isOpen) {
+  <div class="goals-manager-overlay" (click)="onClose()">
+    <div
+      [class.maximized]="isMaximized()"
+      class="goals-manager-container"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="goals-manager-header">
+        <div class="flex items-center justify-between flex-1">
+          <div>
+            <h2 class="goals-manager-title">
+              <svg class="w-6 h-6 mr-2 inline text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+              {{ viewOnly ? 'Objetivos del Plan' : 'Gestión de Objetivos' }}
+            </h2>
+            <p class="goals-manager-subtitle">
+              {{ viewOnly ? 'Vista de objetivos asociados' : 'Agrega, edita y elimina objetivos del plan de entrenamiento' }}
+            </p>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-container">
+            <div class="stat-item">
+              <div class="stat-value">{{ stats().total }}</div>
+              <div class="stat-label">Objetivos</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ stats().categories }}</div>
+              <div class="stat-label">Categorías</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          @if (!viewOnly) {
+            <button
+              (click)="openAddModal()"
+              class="btn-header-action btn-primary-action"
+              title="Agregar objetivo">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span class="hidden sm:inline">Agregar</span>
+            </button>
+          }
+
+          <button
+            (click)="toggleMaximize()"
+            class="btn-header-action"
+            title="Maximizar/Restaurar">
+            @if (!isMaximized()) {
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+              </svg>
+            } @else {
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            }
+          </button>
+
+          <button
+            (click)="onClose()"
+            class="btn-header-action"
+            title="Cerrar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="goals-manager-body">
+        <!-- Sidebar with Filters -->
+        <aside class="goals-sidebar">
+          <app-goal-filters
+            [categories]="categories()"
+            [subcategories]="subcategories()"
+            [filters]="filterState()"
+            [totalResults]="filteredGoals().length"
+            (filtersChange)="onFiltersChange($event)"
+            (categoryChange)="onCategoryChange($event)">
+          </app-goal-filters>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="goals-content">
+          <!-- Loading State -->
+          @if (isLoading()) {
+            <div class="loading-state">
+              <div class="loading-spinner"></div>
+              <p class="loading-text">Cargando objetivos...</p>
+            </div>
+          }
+
+          <!-- Empty State -->
+          @if (!isLoading() && filteredGoals().length === 0) {
+            <div class="empty-state">
+              <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <h3 class="empty-state-title">
+                {{ viewOnly ? 'No hay objetivos' : 'No se encontraron objetivos' }}
+              </h3>
+              <p class="empty-state-description">
+                {{ viewOnly ? 'Este plan no tiene objetivos asociados aún.' : 'Intenta ajustar los filtros o agrega un nuevo objetivo.' }}
+              </p>
+              @if (!viewOnly) {
+                <button
+                  (click)="openAddModal()"
+                  class="btn-empty-action">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  Agregar primer objetivo
+                </button>
+              }
+            </div>
+          }
+
+          <!-- Goals Grid/List -->
+          @if (!isLoading() && filteredGoals().length > 0) {
+            <div [class]="filterState().viewMode === 'grid' ? 'goals-grid' : 'goals-list'">
+              @for (goal of filteredGoals(); track goal.id) {
+                <app-goal-card
+                  [goal]="goal"
+                  [isSelected]="isGoalSelected(goal.id)"
+                  [viewMode]="filterState().viewMode"
+                  [viewOnly]="viewOnly"
+                  (add)="addGoalToPlan($event)"
+                  (remove)="removeGoalFromPlan($event)"
+                  (edit)="openEditModal($event)">
+                </app-goal-card>
+              }
+            </div>
+          }
+        </main>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Goal Modal -->
+<app-goal-modal
+  [isOpen]="isModalOpen()"
+  [goal]="selectedGoal()"
+  [availableGoals]="allObjectives()"
+  (close)="closeModal()"
+  (save)="handleModalSave($event)">
+</app-goal-modal>
+
+<!-- Delete Confirmation Dialog -->
+@if (goalToDelete()) {
+  <div class="confirmation-overlay" (click)="cancelDelete()">
+    <div class="confirmation-dialog" (click)="$event.stopPropagation()">
+      <div class="confirmation-icon-container">
+        <svg class="confirmation-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+      </div>
+
+      <h3 class="confirmation-title">Eliminar objetivo</h3>
+      <p class="confirmation-message">
+        ¿Estás seguro de que deseas eliminar <strong>{{ goalToDelete()?.name }}</strong> del plan?
+        Esta acción no se puede deshacer.
+      </p>
+
+      <div class="confirmation-actions">
+        <button (click)="cancelDelete()" class="btn-confirmation-cancel">
+          Cancelar
+        </button>
+        <button (click)="confirmDelete()" class="btn-confirmation-confirm">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,47 @@
+/* Animations only - use Tailwind classes in HTML */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.goals-manager-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.goals-manager-container {
+  animation: slideUp 0.3s ease-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+.confirmation-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.confirmation-dialog {
+  animation: slideUp 0.3s ease-out;
+}

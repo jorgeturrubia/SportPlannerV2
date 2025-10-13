@@ -8,21 +8,21 @@ El proyecto tiene **instrucciones en capas** para guiar el desarrollo:
 
 ```
 src/
-├── agent.md                          # ✅ Instrucciones GLOBALES (todo el proyecto)
+├── AGENTS.md                          # ✅ Instrucciones GLOBALES (todo el proyecto)
 │   ├── Principios arquitectónicos
 │   ├── Estándares de seguridad
 │   ├── Convenciones de nombres
 │   ├── Quality gate checklist
 │   └── Referencias a ADRs
 │
-├── front/SportPlanner/agent.md       # 🎨 Instrucciones FRONTEND (solo Angular/Tailwind)
+├── front/SportPlanner/AGENTS.md       # 🎨 Instrucciones FRONTEND (solo Angular/Tailwind)
 │   ├── Angular 20 standalone components
 │   ├── Signals & reactive state
-│   ├── Tailwind CSS (NO Angular Material)
+│   ├── Tailwind CSS v4 (NO Angular Material)
 │   ├── Supabase auth frontend
 │   └── Testing con Jasmine/Karma
 │
-└── back/SportPlanner/agent.md        # ⚙️ Instrucciones BACKEND (solo .NET/EF Core)
+└── back/SportPlanner/AGENTS.md        # ⚙️ Instrucciones BACKEND (solo .NET/EF Core)
     ├── Clean Architecture (.NET 8)
     ├── MediatR CQRS pattern
     ├── Entity Framework Core
@@ -34,24 +34,24 @@ src/
 
 ## 🎯 Cómo Usar Estas Instrucciones
 
-### 1. **Siempre Empieza por `agent.md` (Global)**
-   - Lee primero **[agent.md](agent.md)** para entender:
+### 1. **Siempre Empieza por `AGENTS.md` (Global)**
+   - Lee primero **[AGENTS.md](AGENTS.md)** para entender:
      - Arquitectura general del proyecto
      - Estándares de seguridad (JWT, secrets, HTTPS)
      - Convenciones de nombres (archivos, clases, variables)
      - Quality gate checklist (MANDATORY antes de codificar)
 
-### 2. **Frontend → Lee `front/SportPlanner/agent.md`**
-   - Si trabajas en **Angular/TypeScript**, lee **[front/SportPlanner/agent.md](front/SportPlanner/agent.md)**
+### 2. **Frontend → Lee `front/SportPlanner/AGENTS.md`**
+   - Si trabajas en **Angular/TypeScript**, lee **[front/SportPlanner/AGENTS.md](front/SportPlanner/AGENTS.md)**
    - Contiene:
      - Patrones de componentes standalone
      - Uso de Signals (NO BehaviorSubject para estado primario)
-     - Librería de componentes Tailwind (NO Angular Material)
+     - **Tailwind CSS v4** (NO Angular Material, NO @apply)
      - Autenticación con Supabase cliente
      - Testing frontend específico
 
-### 3. **Backend → Lee `back/SportPlanner/agent.md`**
-   - Si trabajas en **.NET/C#**, lee **[back/SportPlanner/agent.md](back/SportPlanner/agent.md)**
+### 3. **Backend → Lee `back/SportPlanner/AGENTS.md`**
+   - Si trabajas en **.NET/C#**, lee **[back/SportPlanner/AGENTS.md](back/SportPlanner/AGENTS.md)**
    - Contiene:
      - Clean Architecture (Domain → Application → Infrastructure → API)
      - MediatR Commands/Queries (CQRS)
@@ -70,12 +70,12 @@ src/
 ```mermaid
 graph TD
     A[Nueva tarea] --> B{¿Qué tipo de trabajo?}
-    B -->|Frontend| C[Lee agent.md global]
-    B -->|Backend| D[Lee agent.md global]
-    B -->|Full-stack| E[Lee agent.md global]
+    B -->|Frontend| C[Lee AGENTS.md global]
+    B -->|Backend| D[Lee AGENTS.md global]
+    B -->|Full-stack| E[Lee AGENTS.md global]
 
-    C --> F[Lee front/SportPlanner/agent.md]
-    D --> G[Lee back/SportPlanner/agent.md]
+    C --> F[Lee front/SportPlanner/AGENTS.md]
+    D --> G[Lee back/SportPlanner/AGENTS.md]
     E --> H[Lee AMBOS: front/ y back/]
 
     F --> I[Completa Quality Gate Checklist]
@@ -95,15 +95,15 @@ graph TD
 ## 🚨 Reglas Críticas
 
 ### **ANTES de escribir código:**
-1. ✅ Lee **[agent.md](agent.md)** (instrucciones globales)
+1. ✅ Lee **[AGENTS.md](AGENTS.md)** (instrucciones globales)
 2. ✅ Lee el archivo específico:
-   - Frontend: **[front/SportPlanner/agent.md](front/SportPlanner/agent.md)**
-   - Backend: **[back/SportPlanner/agent.md](back/SportPlanner/agent.md)**
-3. ✅ Completa el **Quality Gate Checklist** de [agent.md](agent.md)
+   - Frontend: **[front/SportPlanner/AGENTS.md](front/SportPlanner/AGENTS.md)**
+   - Backend: **[back/SportPlanner/AGENTS.md](back/SportPlanner/AGENTS.md)**
+3. ✅ Completa el **Quality Gate Checklist** de [AGENTS.md](AGENTS.md)
 4. ✅ Revisa `docs/adr/` si afecta arquitectura
 
 ### **NO toques sin aprobación:**
-- ❌ `agent.md`, `front/agent.md`, `back/agent.md` (reglas de calidad)
+- ❌ `AGENTS.md`, `front/AGENTS.md`, `back/AGENTS.md` (reglas de calidad)
 - ❌ `docs/adr/**` (decisiones arquitectónicas)
 - ❌ `.husky/**` (git hooks)
 - ❌ `.github/workflows/**` (CI/CD)
@@ -113,7 +113,7 @@ graph TD
 ## 📋 Checklist Rápido
 
 **Para cualquier cambio:**
-- [ ] Leí **[agent.md](agent.md)** (global)
+- [ ] Leí **[AGENTS.md](AGENTS.md)** (global)
 - [ ] Leí archivo específico (front o back según corresponda)
 - [ ] Completé Quality Gate Checklist
 - [ ] Revisé ADRs relacionados
@@ -161,9 +161,9 @@ graph TD
 
 | Archivo | Ubicación | Cuándo Usar |
 |---------|-----------|-------------|
-| **Global** | [agent.md](agent.md) | SIEMPRE (antes de cualquier cambio) |
-| **Frontend** | [front/SportPlanner/agent.md](front/SportPlanner/agent.md) | Trabajando en Angular/Tailwind |
-| **Backend** | [back/SportPlanner/agent.md](back/SportPlanner/agent.md) | Trabajando en .NET/EF Core |
+| **Global** | [AGENTS.md](AGENTS.md) | SIEMPRE (antes de cualquier cambio) |
+| **Frontend** | [front/SportPlanner/AGENTS.md](front/SportPlanner/AGENTS.md) | Trabajando en Angular/Tailwind v4 |
+| **Backend** | [back/SportPlanner/AGENTS.md](back/SportPlanner/AGENTS.md) | Trabajando en .NET/EF Core |
 | **ADRs** | [docs/adr/](docs/adr/) | Decisiones arquitectónicas |
 | **Scripts** | [scripts/](scripts/) | Automatización (restart-services) |
 
@@ -173,11 +173,11 @@ graph TD
 
 **Escenario: Crear nueva feature de "Training Plans"**
 
-1. **Lee [agent.md](agent.md)** → Entiendes arquitectura, seguridad, naming
+1. **Lee [AGENTS.md](AGENTS.md)** → Entiendes arquitectura, seguridad, naming
 2. **¿Frontend o Backend?** → Ambos
-3. **Lee [front/SportPlanner/agent.md](front/SportPlanner/agent.md)** → Patrones Angular, Signals, Tailwind
-4. **Lee [back/SportPlanner/agent.md](back/SportPlanner/agent.md)** → Clean Architecture, MediatR, EF Core
-5. **Completa Quality Gate** → Checklist de [agent.md](agent.md)
+3. **Lee [front/SportPlanner/AGENTS.md](front/SportPlanner/AGENTS.md)** → Patrones Angular, Signals, Tailwind v4
+4. **Lee [back/SportPlanner/AGENTS.md](back/SportPlanner/AGENTS.md)** → Clean Architecture, MediatR, EF Core
+5. **Completa Quality Gate** → Checklist de [AGENTS.md](AGENTS.md)
 6. **¿Necesita ADR?** → Sí (nueva feature importante) → Crea `docs/adr/ADR-XXX-training-plans.md`
 7. **Implementa** siguiendo las 3 guías
 8. **Tests + Build** → Commit
@@ -187,8 +187,8 @@ graph TD
 ## 🛠️ Mantenimiento
 
 - **Actualizar instrucciones**: Solo con aprobación del equipo
-- **Versión actual**: 2.0 (Consolidado, auto-contenido)
-- **Última actualización**: 2025-10-06
+- **Versión actual**: 2.1 (Actualizado con referencias AGENTS.md y Tailwind v4)
+- **Última actualización**: 2025-10-13
 
 ---
 

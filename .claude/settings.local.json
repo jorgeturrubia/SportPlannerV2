@@ -22,7 +22,10 @@
       "Bash(powershell.exe:*)",
       "Bash(Select-String -Pattern \"MarketplaceController|ItineraryController|ExerciseCategoriesController\" -Context 2,0)",
       "Bash(dotnet ef migrations add:*)",
-      "Bash(dotnet ef database update:*)"
+      "Bash(dotnet ef database update:*)",
+      "Bash(dir:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

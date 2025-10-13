@@ -1,0 +1,164 @@
+<div class="goal-filters">
+  <!-- Filters Header -->
+  <div class="filters-header">
+    <div class="flex items-center justify-between">
+      <h3 class="filters-title">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+        </svg>
+        Filtros
+      </h3>
+
+      <button
+        (click)="toggleExpanded()"
+        class="lg:hidden p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+        title="Toggle filters">
+        <svg class="w-5 h-5" [class.rotate-180]="!isExpanded()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Results count -->
+    <div class="filters-results">
+      {{ totalResults }} objetivo{{ totalResults !== 1 ? 's' : '' }} encontrado{{ totalResults !== 1 ? 's' : '' }}
+    </div>
+  </div>
+
+  <!-- Filters Body -->
+  @if (isExpanded()) {
+    <div class="filters-body">
+      <!-- Search -->
+      <div class="filter-group">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          Buscar
+        </label>
+        <div class="relative">
+          <input
+            type="text"
+            [value]="filters.search"
+            (input)="onSearchChange($any($event.target).value)"
+            placeholder="Buscar por nombre o descripción..."
+            class="filter-input pr-8" />
+          @if (filters.search) {
+            <button
+              (click)="onSearchChange('')"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              title="Limpiar búsqueda">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="filter-group">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          Categoría
+        </label>
+        <select
+          [value]="filters.categoryId || ''"
+          (change)="onCategoryChange($any($event.target).value)"
+          class="filter-select">
+          <option value="">Todas las categorías</option>
+          @for (cat of categories; track cat.id) {
+            <option [value]="cat.id">
+              {{ cat.name }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Subcategory -->
+      @if (filters.categoryId && subcategories.length > 0) {
+        <div class="filter-group">
+          <label class="filter-label">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            Subcategoría
+          </label>
+          <select
+            [value]="filters.subcategoryId || ''"
+            (change)="onSubcategoryChange($any($event.target).value)"
+            class="filter-select">
+            <option value="">Todas las subcategorías</option>
+            @for (sub of subcategories; track sub.id) {
+              <option [value]="sub.id">
+                {{ sub.name }}
+              </option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Sort -->
+      <div class="filter-group">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+          </svg>
+          Ordenar por
+        </label>
+        <select
+          [value]="filters.sortBy"
+          (change)="onSortChange($any($event.target).value)"
+          class="filter-select">
+          <option value="name">Nombre (A-Z)</option>
+          <option value="dateAdded">Fecha de agregado</option>
+          <option value="priority">Prioridad</option>
+        </select>
+      </div>
+
+      <!-- View Mode Toggle -->
+      <div class="filter-group">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+          </svg>
+          Vista
+        </label>
+        <div class="view-mode-toggle">
+          <button
+            (click)="onViewModeChange('grid')"
+            [class.active]="filters.viewMode === 'grid'"
+            class="view-mode-btn"
+            title="Vista en grilla">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+            </svg>
+          </button>
+          <button
+            (click)="onViewModeChange('list')"
+            [class.active]="filters.viewMode === 'list'"
+            class="view-mode-btn"
+            title="Vista en lista">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Clear Filters -->
+      @if (hasActiveFilters()) {
+        <button
+          (click)="clearFilters()"
+          class="clear-filters-btn">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          Limpiar filtros
+        </button>
+      }
+    </div>
+  }
+</div>
