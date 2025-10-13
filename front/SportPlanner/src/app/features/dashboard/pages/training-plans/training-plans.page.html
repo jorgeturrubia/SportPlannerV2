@@ -37,3 +37,11 @@
   (formSubmit)="handleFormSubmit($event)"
   (cancel)="closeForm()">
 </app-dynamic-form>
+
+<app-add-objectives-modal
+  [isOpen]="isAddObjectivesOpen()"
+  [planId]="currentPlanId()"
+  [viewOnly]="isViewingPlan()"
+  (close)="closeObjectivesModal()"
+  (added)="onObjectivesAdded($event)">
+</app-add-objectives-modal>

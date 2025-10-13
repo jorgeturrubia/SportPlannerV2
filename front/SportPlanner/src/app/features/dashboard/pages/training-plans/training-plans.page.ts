@@ -2,6 +2,7 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
+import { AddObjectivesModalComponent } from '../../../../shared/components/add-objectives-modal/add-objectives-modal.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { TrainingPlansService, TrainingPlanDto } from '../../services/training-plans.service';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
@@ -9,7 +10,7 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 @Component({
   selector: 'app-training-plans-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, AddObjectivesModalComponent],
   templateUrl: './training-plans.page.html'
 })
 export class TrainingPlansPage implements OnInit {
@@ -24,6 +25,11 @@ export class TrainingPlansPage implements OnInit {
   isFormOpen = signal(false);
   selectedPlan = signal<TrainingPlanDto | null>(null);
   formTitle = 'Add Training Plan';
+
+  // Add objectives modal state
+  isAddObjectivesOpen = signal(false);
+  planForAddObjectives = signal<TrainingPlanDto | null>(null);
+  isViewingPlan = signal(false);
 
   // Confirmation dialog state
   isConfirmDialogOpen = signal(false);
@@ -73,6 +79,14 @@ export class TrainingPlansPage implements OnInit {
       color: 'green',
       handler: (row) => this.openEditForm(row)
     }
+    ,
+    {
+      icon: 'M16 7l-8 8m0-8l8 8',
+      label: 'Agregar Objetivos',
+      color: 'yellow',
+      handler: (row) => { this.planForAddObjectives.set(row); this.isAddObjectivesOpen.set(true); },
+      showLabel: true
+    }
   ];
 
   formConfig: FormField[] = [
@@ -98,7 +112,7 @@ export class TrainingPlansPage implements OnInit {
     await this.loadPlans();
   }
 
-  private async loadPlans(): Promise<void> {
+  async loadPlans(): Promise<void> {
     try {
       this.isLoading.set(true);
       this.error.set(null);
@@ -113,6 +127,26 @@ export class TrainingPlansPage implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  // Handler invoked when modal reports objectives were added
+  onObjectivesAdded(ids: string[]): void {
+    if (ids && ids.length) {
+      this.ns.success('Objetivos añadidos al plan', 'Planes');
+      this.loadPlans();
+    }
+  }
+
+  // Helper to provide plan id safely to template
+  currentPlanId(): string | null {
+    const p = this.planForAddObjectives();
+    return p ? p.id : null;
+  }
+
+  closeObjectivesModal(): void {
+    this.isAddObjectivesOpen.set(false);
+    this.isViewingPlan.set(false);
+    this.planForAddObjectives.set(null);
   }
 
   openAddForm(): void {
@@ -136,8 +170,11 @@ export class TrainingPlansPage implements OnInit {
   }
 
   viewPlan(plan: TrainingPlanDto): void {
-    // TODO: Navigate to plan details
-    this.ns.info(`Ver detalles del plan: ${plan.name}`, 'Planes de Entrenamiento');
+    // Open modal in view-only mode showing the plan's objectives
+    this.planForAddObjectives.set(plan);
+    this.isViewingPlan.set(true);
+    this.isAddObjectivesOpen.set(true);
+    // set view mode by passing viewOnly to modal via template binding (handled there)
   }
 
   async handleFormSubmit(formData: any): Promise<void> {

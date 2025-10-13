@@ -1,0 +1,35 @@
+<div class="objective-suggester">
+  <div class="flex items-center gap-3">
+    <input
+      type="text"
+      class="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+      placeholder="Buscar objetivos... (ej: pase espaldas)"
+      [value]="query()"
+      (input)="onQueryChange($any($event.target).value)"
+      [disabled]="isLoading() || viewOnly"
+    />
+    @if (isLoading()) {
+      <div class="text-sm text-slate-500">Cargando...</div>
+    }
+  </div>
+
+    <div class="mt-3">
+    @if (suggestions().length === 0) {
+      <div class="text-sm text-slate-500">No hay resultados</div>
+    }
+    <ul class="space-y-2 max-h-64 overflow-auto">
+      @for (obj of suggestions(); track obj.id) {
+        <li class="p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 flex items-start gap-3">
+          @if (!viewOnly) {
+            <input type="checkbox" [checked]="isSelected(obj.id)" (change)="toggleSelect(obj)" class="mt-1" />
+          }
+          <div class="flex-1">
+            <div class="font-semibold text-slate-900 dark:text-white">{{ obj.name }}</div>
+            <div class="text-sm text-slate-600 dark:text-slate-400">{{ obj.description }}</div>
+            <div class="text-xs text-slate-500 mt-1">Categoría: {{ obj.objectiveCategoryId }} · Sub: {{ obj.objectiveSubcategoryId || '—' }}</div>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+  <div [class.w-full]="maximize()" [class.max-w-3xl]="!maximize()" class="bg-white dark:bg-slate-900 rounded-lg shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="flex justify-between items-center p-4" [class.bg-slate-800]="true" style="color: white;">
+      <div>
+        <h3 class="text-lg font-semibold">{{ viewOnly ? 'Objetivos del plan' : 'Agregar objetivos al plan' }}</h3>
+  <div *ngIf="planHeader" class="text-sm opacity-80">{{ planHeader.name }} • {{ planHeader.startDate }} - {{ planHeader.endDate }}</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button (click)="toggleMaximize()" class="px-2 py-1 border rounded bg-white/10 text-white">{{ maximize() ? 'Restaurar' : 'Maximizar' }}</button>
+        <button (click)="onClose()" class="px-2 py-1 border rounded bg-white/10 text-white">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- Filters (hidden in viewOnly mode) -->
+    <div *ngIf="!viewOnly" class="p-4 border-b border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div>
+        <label class="block text-xs text-slate-600">Buscar</label>
+        <input type="text" [value]="searchTerm()" (input)="searchTerm.set($any($event.target).value); loadObjectives()"
+               class="w-full px-3 py-2 border rounded" placeholder="Nombre o descripción" />
+      </div>
+
+      <div>
+        <label class="block text-xs text-slate-600">Categoría</label>
+        <select [value]="selectedCategory() || ''" (change)="onCategoryChange($any($event.target).value || null)"
+                class="w-full px-3 py-2 border rounded">
+          <option value="">Todas</option>
+          <option *ngFor="let c of categories()" [value]="c.id">{{ c.name }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs text-slate-600">Subcategoría</label>
+        <select [value]="selectedSubcategory() || ''" (change)="onSubcategoryChange($any($event.target).value || null)"
+                class="w-full px-3 py-2 border rounded">
+          <option value="">Todas</option>
+          <option *ngFor="let s of subcategories()" [value]="s.id">{{ s.name }}</option>
+        </select>
+      </div>
+    </div>
+
+  <!-- Objectives list -->
+  <div class="p-4 max-h-96 overflow-auto modal-body-dark">
+      <div *ngIf="isLoading()" class="p-4 text-center">Cargando...</div>
+      <div *ngIf="!isLoading()">
+        <div *ngFor="let o of objectives()" class="flex items-start gap-3 p-2 border-b">
+          <input *ngIf="!viewOnly" type="checkbox" [checked]="selected()[o.id] || false" (change)="toggleSelect(o.id)" />
+          <div class="flex-1">
+            <div class="flex justify-between items-center">
+              <div class="font-medium">{{ o.name }}</div>
+              <div class="text-xs text-slate-500">{{ o.objectiveCategoryId }} / {{ o.objectiveSubcategoryId || '-' }}</div>
+            </div>
+            <div class="text-sm text-slate-600">{{ o.description }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+      <button (click)="onClose()" class="px-4 py-2 border rounded">{{ viewOnly ? 'Cerrar' : 'Cancelar' }}</button>
+      <button *ngIf="!viewOnly" (click)="addSelected()" class="px-4 py-2 bg-blue-600 text-white rounded">Agregar seleccionados</button>
+    </div>
+  </div>
+</div>

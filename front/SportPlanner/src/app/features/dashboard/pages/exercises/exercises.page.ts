@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
+import { ObjectiveSuggesterComponent } from '../../../../shared/components/objective-suggester/objective-suggester.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ExercisesService, ExerciseDto } from '../../services/exercises.service';
 import { ExerciseCategoriesService } from '../../services/exercise-categories.service';
@@ -13,7 +14,7 @@ import { ContentOwnership } from '../../services/objectives.service';
 @Component({
   selector: 'app-exercises-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent, ObjectiveSuggesterComponent],
   templateUrl: './exercises.page.html'
 })
 export class ExercisesPage implements OnInit {
@@ -31,6 +32,8 @@ export class ExercisesPage implements OnInit {
   selectedExercise = signal<ExerciseDto | null>(null);
   formTitle = 'Add Exercise';
   isConfirmDialogOpen = signal(false);
+  // objectives selection for the create/edit form
+  selectedObjectiveIds = signal<string[]>([]);
 
   columns = computed<TableColumn[]>(() => [
     { key: 'name', label: 'Nombre', sortable: true },
@@ -157,10 +160,13 @@ export class ExercisesPage implements OnInit {
     const selected = this.selectedExercise();
     try {
       if (selected) {
-        await this.exercisesService.updateExercise(selected.id, { ...formData, id: selected.id });
+        // include selected objectives ids in the payload if any
+        const payload = { ...formData, id: selected.id, objectiveIds: this.selectedObjectiveIds() };
+        await this.exercisesService.updateExercise(selected.id, payload as any);
         this.ns.success('Ejercicio actualizado', 'Ejercicios');
       } else {
-        await this.exercisesService.createExercise(formData);
+        const payload = { ...formData, objectiveIds: this.selectedObjectiveIds() };
+        await this.exercisesService.createExercise(payload as any);
         this.ns.success('Ejercicio creado', 'Ejercicios');
       }
       await this.loadExercises();

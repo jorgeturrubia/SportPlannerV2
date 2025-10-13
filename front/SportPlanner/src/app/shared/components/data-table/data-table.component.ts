@@ -19,6 +19,8 @@ export interface TableAction {
   label: string;
   color: 'blue' | 'green' | 'red' | 'yellow';
   handler: (row: any) => void;
+  // If true, show the label text next to the icon (useful for important actions)
+  showLabel?: boolean;
 }
 
 @Component({

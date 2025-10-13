@@ -1,0 +1,14 @@
+/* Minimal styles for modal */
+:host { display: block; }
+
+/* Ensure maximize uses full width/height */
+.w-full { width: 100%; }
+.max-w-3xl { max-width: 64rem; }
+
+/* Dark header and readable body */
+.dark-header { background: #1f2937; color: #fff; }
+.modal-body { background: #fff; color: #111827; }
+.modal-body-dark { background: #0f172a; color: #e6eef8; }
+
+/* basic scrollbar */
+.p-4 .max-h-96 { max-height: 24rem; }

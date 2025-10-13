@@ -33,6 +33,8 @@
   [initialData]="selectedExercise()"
   (formSubmit)="handleFormSubmit($event)"
   (cancel)="closeForm()">
+  <!-- Project objective suggester into the form -->
+  <app-objective-suggester [initialSelected]="selectedObjectiveIds()" (selectionChange)="selectedObjectiveIds.set($event)"></app-objective-suggester>
 </app-dynamic-form>
 
 <app-confirmation-dialog
