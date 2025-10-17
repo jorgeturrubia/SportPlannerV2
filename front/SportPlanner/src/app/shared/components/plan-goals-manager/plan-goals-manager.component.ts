@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, Sport } from '../../../features/dashboard/services/objectives.service';
+import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, Sport, ObjectiveLevel } from '../../../features/dashboard/services/objectives.service';
 import { ObjectiveCategoriesService } from '../../../features/dashboard/services/objective-categories.service';
 import { ObjectiveSubcategoriesService } from '../../../features/dashboard/services/objective-subcategories.service';
 import { TrainingPlansService } from '../../../features/dashboard/services/training-plans.service';
@@ -72,6 +72,12 @@ export class PlanGoalsManagerComponent implements OnInit {
   isCreatingObjective = signal(false);
   createFormFields = signal<FormField[]>([]);
 
+  // Batch Save State
+  isSaving = signal(false);
+  selectedObjectiveIds = signal<string[]>([]);
+  selectedObjectivesCount = computed(() => this.selectedObjectiveIds().length);
+  initialPlanObjectiveIds = signal<string[]>([]);
+
   // Filters
   filterState = signal<FilterState>({
     search: '',
@@ -114,7 +120,11 @@ export class PlanGoalsManagerComponent implements OnInit {
 
   // Expose simple getters for template binding
   availableObjectives = this.allObjectives;
-  isEditing = computed(() => this.isEditingValue);
+  isEditing = computed(() => {
+    const editing = this.isEditingValue;
+    console.log('📋 isEditing computed:', editing, '| viewOnly:', this.viewOnly, '| planId:', this.planId);
+    return editing;
+  });
 
   selectedGoalIds = computed(() => {
     return new Set(this.planObjectives().map(g => g.id));
@@ -144,6 +154,8 @@ export class PlanGoalsManagerComponent implements OnInit {
       if (this.planId) {
         await this.loadPlanObjectives();
       }
+      // Reset pending selections anytime we reload data
+      this.selectedObjectiveIds.set([]);
     } catch (err) {
       console.error('Failed to load data:', err);
     } finally {
@@ -165,6 +177,7 @@ export class PlanGoalsManagerComponent implements OnInit {
         };
       });
       this.planObjectives.set(planGoals);
+      this.initialPlanObjectiveIds.set(planGoals.map(goal => goal.id));
     } catch (err) {
       console.error('Failed to load plan objectives:', err);
     }
@@ -221,6 +234,7 @@ export class PlanGoalsManagerComponent implements OnInit {
             addedDate: new Date().toISOString()
           };
           this.planObjectives.update(list => [...list, newEntry]);
+          this.markObjectiveForSave(goal.id);
           // ensure child components see the updated reference asap
           queueMicrotask(() => this.changed.emit());
         }
@@ -256,6 +270,7 @@ export class PlanGoalsManagerComponent implements OnInit {
     // If we're editing (working in-memory), remove immediately from the list
     if (this.isEditingValue) {
       this.planObjectives.update(list => list.filter(p => p.id !== obj.id));
+      this.unmarkObjectiveForSave(obj.id);
       this.changed.emit();
       return;
     }
@@ -331,13 +346,17 @@ export class PlanGoalsManagerComponent implements OnInit {
         type: 'select',
         required: false,
         options: this.subcategories().map(s => ({ value: s.id, label: s.name }))
-      }
-      ,
+      },
       {
         key: 'level',
         label: 'Nivel',
-        type: 'number',
-        required: false
+        type: 'select',
+        required: false,
+        options: [
+          { value: String(ObjectiveLevel.Beginner), label: 'Principiante' },
+          { value: String(ObjectiveLevel.Intermediate), label: 'Intermedio' },
+          { value: String(ObjectiveLevel.Advanced), label: 'Avanzado' }
+        ]
       }
     ]);
     
@@ -367,6 +386,79 @@ export class PlanGoalsManagerComponent implements OnInit {
   async handleModalSave(goal: ObjectiveDto): Promise<void> {
     await this.addGoalToPlan(goal);
     this.closeModal();
+  }
+
+  async saveSelectedObjectives(): Promise<void> {
+    if (!this.planId || this.viewOnly || this.selectedObjectiveIds().length === 0) return;
+
+    this.isSaving.set(true);
+    try {
+      // Objectives that were already persisted when we loaded the plan
+      const existingIds = new Set(this.initialPlanObjectiveIds());
+      
+      // Filter to only new objectives
+      const newObjectiveIds = this.selectedObjectiveIds().filter(
+        id => !existingIds.has(id)
+      );
+
+      if (newObjectiveIds.length === 0) {
+        this.ns.info('No hay nuevos objetivos para guardar', 'Información');
+        return;
+      }
+
+      // Prepare batch request
+      const objectives = newObjectiveIds.map(id => ({
+        objectiveId: id,
+        priority: 3, // Default priority
+        targetSessions: 10 // Default sessions
+      }));
+
+      // Call batch API
+      await this.plansService.addObjectivesToPlan(this.planId, objectives);
+
+      // Reload plan objectives
+      await this.loadPlanObjectives();
+      
+      // Clear selections
+  this.selectedObjectiveIds.set([]);
+      this.initialPlanObjectiveIds.set([
+        ...Array.from(existingIds),
+        ...newObjectiveIds
+      ]);
+
+      this.ns.success(`${newObjectiveIds.length} objetivo(s) añadido(s) correctamente`, 'Éxito');
+      this.changed.emit();
+    } catch (err: any) {
+      console.error('Failed to save objectives:', err);
+      this.ns.error(err?.message ?? 'No se pudieron guardar los objetivos', 'Error');
+    } finally {
+      this.isSaving.set(false);
+    }
+  }
+
+  private markObjectiveForSave(objectiveId: string): void {
+    const alreadyPersisted = this.initialPlanObjectiveIds().includes(objectiveId);
+    if (alreadyPersisted) {
+      return;
+    }
+
+    this.selectedObjectiveIds.update(currentList => (
+      currentList.includes(objectiveId)
+        ? currentList
+        : [...currentList, objectiveId]
+    ));
+  }
+
+  private unmarkObjectiveForSave(objectiveId: string): void {
+    this.selectedObjectiveIds.update(currentList =>
+      currentList.filter(id => id !== objectiveId)
+    );
+  }
+
+  isObjectiveSelected(objectiveId: string): boolean {
+    const pendingSelection = this.selectedObjectiveIds().includes(objectiveId);
+    const alreadyInPlan = this.planObjectives().some(goal => goal.id === objectiveId);
+    return pendingSelection || alreadyInPlan;
   }
 
   onClose(): void {
@@ -400,7 +492,7 @@ export class PlanGoalsManagerComponent implements OnInit {
         description: formData.description,
         objectiveCategoryId: formData.objectiveCategoryId,
         objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
-        level: formData.level ?? 1,
+        level: formData.level ? (parseInt(formData.level, 10) as ObjectiveLevel) : ObjectiveLevel.Intermediate,
         techniques: []
       };
 

@@ -85,6 +85,26 @@ public class TrainingPlansController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Add multiple objectives to a training plan in a single batch transaction
+    /// </summary>
+    [HttpPost("{id:guid}/objectives/batch")]
+    public async Task<ActionResult> AddObjectivesBatch(
+        [FromRoute] Guid id,
+        [FromBody] AddMultipleObjectivesToPlanRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (request?.Objectives == null || request.Objectives.Count == 0)
+        {
+            return BadRequest(new { message = "At least one objective is required" });
+        }
+
+        var command = new AddMultipleObjectivesToPlanCommand(id, request.Objectives);
+        await _mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
 }
 
 public class AddObjectiveToPlanRequest
@@ -92,4 +112,12 @@ public class AddObjectiveToPlanRequest
     public Guid ObjectiveId { get; set; }
     public int Priority { get; set; }
     public int TargetSessions { get; set; }
+}
+
+/// <summary>
+/// Request to add multiple objectives to a training plan
+/// </summary>
+public class AddMultipleObjectivesToPlanRequest
+{
+    public List<AddObjectiveBatchItem> Objectives { get; set; } = new();
 }

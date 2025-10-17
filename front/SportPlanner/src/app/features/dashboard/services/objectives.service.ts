@@ -14,6 +14,12 @@ export enum Sport {
   Handball = 2
 }
 
+export enum ObjectiveLevel {
+  Beginner = 1,
+  Intermediate = 2,
+  Advanced = 3
+}
+
 export interface ObjectiveTechniqueDto {
   description: string;
   order: number;
@@ -28,7 +34,7 @@ export interface ObjectiveDto {
   description: string;
   objectiveCategoryId: string;
   objectiveSubcategoryId?: string;
-  level: number;
+  level: ObjectiveLevel;
   isActive: boolean;
   sourceMarketplaceItemId?: string;
   techniques: ObjectiveTechniqueDto[];
@@ -46,7 +52,7 @@ export interface CreateObjectiveDto {
   description: string;
   objectiveCategoryId: string;
   objectiveSubcategoryId?: string;
-  level?: number;
+  level?: ObjectiveLevel;
   techniques: ObjectiveTechniqueDto[];
 }
 
@@ -56,7 +62,7 @@ export interface UpdateObjectiveDto {
   description: string;
   objectiveCategoryId: string;
   objectiveSubcategoryId?: string;
-  level?: number | null;
+  level?: ObjectiveLevel | null;
   techniques: ObjectiveTechniqueDto[];
 }
 

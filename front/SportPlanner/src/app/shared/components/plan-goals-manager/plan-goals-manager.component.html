@@ -121,11 +121,12 @@
                 <app-goal-card
                   *ngFor="let g of filteredGoals()"
                   [goal]="g"
-                  [isSelected]="isGoalSelected(g.id)"
+                  [isSelected]="isObjectiveSelected(g.id)"
                   [viewMode]="filterState().viewMode"
                   [viewOnly]="viewOnly"
                   (add)="addGoalToPlan($event)"
-                  (remove)="removeGoalFromPlan($event)">
+                  (remove)="removeGoalFromPlan($event)"
+                  >
                 </app-goal-card>
               </div>
 
@@ -183,7 +184,7 @@
                     <app-objective-tree
                       [objectives]="planObjectives()"
                       [selectedIds]="selectedIdsArray"
-                      [addingMode]="isEditingValue"
+                      [addingMode]="isEditing()"
                       (add)="addGoalToPlan($event)"
                       (remove)="removeGoalFromPlan($event)">
                     </app-objective-tree>
@@ -194,6 +195,40 @@
           }
         </main>
       </div>
+
+      <!-- Footer - Fixed (only when not viewing objectives and in edit mode) -->
+      @if (!viewOnly && isEditing()) {
+        <div class="flex-shrink-0 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">
+              {{ selectedObjectivesCount() }} objetivo(s) seleccionado(s)
+            </span>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <button
+              (click)="onClose()"
+              [disabled]="isSaving()"
+              class="px-6 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Cancelar
+            </button>
+            <button
+              (click)="saveSelectedObjectives()"
+              [disabled]="selectedObjectivesCount() === 0 || isSaving()"
+              class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+              @if (isSaving()) {
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Guardando...</span>
+              } @else {
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Guardar Cambios</span>
+              }
+            </button>
+          </div>
+        </div>
+      }
     </div>
   </div>
 }

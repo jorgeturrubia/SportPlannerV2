@@ -85,6 +85,11 @@ export class TrainingPlansService {
     await this.http.post<void>(`${this.apiUrl}/${planId}/objectives`, dto).toPromise();
   }
 
+  async addObjectivesToPlan(planId: string, objectives: AddObjectiveToPlanDto[]): Promise<void> {
+    const request = { objectives };
+    await this.http.post<void>(`${this.apiUrl}/${planId}/objectives/batch`, request).toPromise();
+  }
+
   async removeObjectiveFromPlan(planId: string, objectiveId: string): Promise<void> {
     await this.http.delete<void>(`${this.apiUrl}/${planId}/objectives/${objectiveId}`).toPromise();
   }

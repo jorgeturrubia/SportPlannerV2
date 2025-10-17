@@ -108,6 +108,14 @@ public class TrainingPlan : Entity, IAuditable
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Checks if an objective is already added to this plan.
+    /// </summary>
+    public bool HasObjective(Guid objectiveId)
+    {
+        return _objectives.Any(po => po.ObjectiveId == objectiveId);
+    }
+
     public void RemoveObjective(Guid objectiveId)
     {
         var planObjective = _objectives.FirstOrDefault(po => po.ObjectiveId == objectiveId);

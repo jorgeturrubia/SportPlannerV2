@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
-import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, UpdateObjectiveDto, Sport, ContentOwnership } from '../../services/objectives.service';
+import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, UpdateObjectiveDto, Sport, ContentOwnership, ObjectiveLevel } from '../../services/objectives.service';
 import { ObjectiveCategoriesService } from '../../services/objective-categories.service';
 import { ObjectiveSubcategoriesService } from '../../services/objective-subcategories.service';
 import { SubscriptionContextService } from '../../../../core/subscription/services/subscription-context.service';
@@ -106,10 +106,13 @@ export class ObjectivesPage implements OnInit {
     {
       key: 'level',
       label: 'Level',
-      type: 'number',
+      type: 'select',
       required: false,
-      min: 1,
-      max: 5
+      options: [
+        { value: String(ObjectiveLevel.Beginner), label: 'Beginner' },
+        { value: String(ObjectiveLevel.Intermediate), label: 'Intermediate' },
+        { value: String(ObjectiveLevel.Advanced), label: 'Advanced' }
+      ]
     }
   ]);
 
@@ -244,7 +247,7 @@ export class ObjectivesPage implements OnInit {
           description: formData.description,
           objectiveCategoryId: formData.objectiveCategoryId,
             objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
-            level: formData.level ?? undefined,
+            level: formData.level ? (parseInt(formData.level, 10) as ObjectiveLevel) : undefined,
           techniques: []
         };
 
@@ -259,7 +262,7 @@ export class ObjectivesPage implements OnInit {
           description: formData.description,
           objectiveCategoryId: formData.objectiveCategoryId,
           objectiveSubcategoryId: formData.objectiveSubcategoryId || undefined,
-            level: formData.level ?? 1,
+            level: formData.level ? (parseInt(formData.level, 10) as ObjectiveLevel) : ObjectiveLevel.Intermediate,
             techniques: []
         };
 
