@@ -12,6 +12,9 @@ public class ObjectiveDto
     public string Description { get; set; }
     public Guid ObjectiveCategoryId { get; set; }
     public Guid? ObjectiveSubcategoryId { get; set; }
+    // Human-readable names (populated by handlers/controllers)
+    public string? ObjectiveCategoryName { get; set; }
+    public string? ObjectiveSubcategoryName { get; set; }
     public int Level { get; set; }
     public bool IsActive { get; set; }
     public Guid? SourceMarketplaceItemId { get; set; }

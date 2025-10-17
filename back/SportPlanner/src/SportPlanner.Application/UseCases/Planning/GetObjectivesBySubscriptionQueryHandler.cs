@@ -9,15 +9,21 @@ public class GetObjectivesBySubscriptionQueryHandler : IRequestHandler<GetObject
     private readonly IObjectiveRepository _objectiveRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IObjectiveCategoryRepository _categoryRepository;
+    private readonly IObjectiveSubcategoryRepository _subcategoryRepository;
 
     public GetObjectivesBySubscriptionQueryHandler(
         IObjectiveRepository objectiveRepository,
         ISubscriptionRepository subscriptionRepository,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IObjectiveCategoryRepository categoryRepository,
+        IObjectiveSubcategoryRepository subcategoryRepository)
     {
         _objectiveRepository = objectiveRepository;
         _subscriptionRepository = subscriptionRepository;
         _currentUserService = currentUserService;
+        _categoryRepository = categoryRepository;
+        _subcategoryRepository = subcategoryRepository;
     }
 
     public async Task<List<ObjectiveDto>> Handle(GetObjectivesBySubscriptionQuery request, CancellationToken cancellationToken)
@@ -34,6 +40,13 @@ public class GetObjectivesBySubscriptionQueryHandler : IRequestHandler<GetObject
             request.IncludeInactive,
             cancellationToken);
 
+        // Load categories and subcategories to resolve names
+        var allCategories = await _categoryRepository.GetAllAsync(cancellationToken);
+        var categoryMap = allCategories.ToDictionary(c => c.Id, c => c.Name);
+
+        var allSubcategories = await _subcategoryRepository.GetAllAsync(cancellationToken);
+        var subcategoryMap = allSubcategories.ToDictionary(s => s.Id, s => s.Name);
+
         // Map to DTOs
         return objectives.Select(o => new ObjectiveDto
         {
@@ -45,6 +58,8 @@ public class GetObjectivesBySubscriptionQueryHandler : IRequestHandler<GetObject
             Description = o.Description,
             ObjectiveCategoryId = o.ObjectiveCategoryId,
             ObjectiveSubcategoryId = o.ObjectiveSubcategoryId,
+            ObjectiveCategoryName = categoryMap.TryGetValue(o.ObjectiveCategoryId, out var cn) ? cn : null,
+            ObjectiveSubcategoryName = o.ObjectiveSubcategoryId.HasValue && subcategoryMap.TryGetValue(o.ObjectiveSubcategoryId.Value, out var scn) ? scn : null,
             Level = o.Level,
             IsActive = o.IsActive,
             SourceMarketplaceItemId = o.SourceMarketplaceItemId,

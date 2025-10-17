@@ -11,6 +11,7 @@ import { DynamicFormComponent, FormField } from '../dynamic-form/dynamic-form.co
 import { GoalCardComponent } from './components/goal-card/goal-card.component';
 import { GoalFiltersComponent } from './components/goal-filters/goal-filters.component';
 import { GoalModalComponent } from './components/goal-modal/goal-modal.component';
+import { ObjectiveTreeComponent } from '../objective-tree/objective-tree.component';
 
 export interface PlanObjective extends ObjectiveDto {
   priority?: number;
@@ -36,6 +37,7 @@ export interface FilterState {
     GoalCardComponent,
     GoalFiltersComponent,
     GoalModalComponent
+    ,ObjectiveTreeComponent
   ],
   templateUrl: './plan-goals-manager.component.html',
   styleUrls: ['./plan-goals-manager.component.css']
@@ -109,6 +111,10 @@ export class PlanGoalsManagerComponent implements OnInit {
     // Sort
     return this.sortGoals(goals, filters.sortBy);
   });
+
+  // Expose simple getters for template binding
+  availableObjectives = this.allObjectives;
+  isEditing = computed(() => this.isEditingValue);
 
   selectedGoalIds = computed(() => {
     return new Set(this.planObjectives().map(g => g.id));
@@ -201,24 +207,82 @@ export class PlanGoalsManagerComponent implements OnInit {
   async addGoalToPlan(goal: ObjectiveDto): Promise<void> {
     if (!this.planId || this.viewOnly) return;
 
-    try {
-      await this.plansService.addObjectiveToPlan(this.planId, {
-        objectiveId: goal.id,
-        priority: 0,
-        targetSessions: 0
-      });
+    // If we're in editing mode, only add to the in-memory planObjectives list
+    if (!this.viewOnly && this.planId) {
+      const editing = this.isEditingValue;
+      if (editing) {
+        // Avoid duplicates
+        const exists = this.planObjectives().some(p => p.id === goal.id);
+        if (!exists) {
+          const newEntry: PlanObjective = {
+            ...goal,
+            priority: 0,
+            targetSessions: 0,
+            addedDate: new Date().toISOString()
+          };
+          this.planObjectives.update(list => [...list, newEntry]);
+          // ensure child components see the updated reference asap
+          queueMicrotask(() => this.changed.emit());
+        }
+        return;
+      }
 
-      await this.loadPlanObjectives();
-      this.changed.emit();
-    } catch (err) {
-      console.error('Failed to add goal to plan:', err);
+      // Fallback: persist immediately if not editing (legacy behavior)
+      try {
+        await this.plansService.addObjectiveToPlan(this.planId, {
+          objectiveId: goal.id,
+          priority: 0,
+          targetSessions: 0
+        });
+
+        await this.loadPlanObjectives();
+        this.changed.emit();
+      } catch (err) {
+        console.error('Failed to add goal to plan:', err);
+      }
     }
   }
 
-  async removeGoalFromPlan(goal: PlanObjective): Promise<void> {
+  async removeGoalFromPlan(obj: ObjectiveDto): Promise<void> {
     if (!this.planId || this.viewOnly) return;
 
-    this.goalToDelete.set(goal);
+    // find matching plan objective by id
+    const planGoal = this.planObjectives().find(p => p.id === obj.id);
+    if (!planGoal) {
+      // nothing to remove
+      return;
+    }
+
+    // If we're editing (working in-memory), remove immediately from the list
+    if (this.isEditingValue) {
+      this.planObjectives.update(list => list.filter(p => p.id !== obj.id));
+      this.changed.emit();
+      return;
+    }
+
+    // Otherwise, ask for confirmation and persist removal
+    this.goalToDelete.set(planGoal);
+  }
+
+  // Helpers exposed to template
+  get viewMode(): string {
+    return this.filterState().viewMode;
+  }
+
+  get availableObjectivesValue(): ObjectiveDto[] {
+    return this.filteredGoals();
+  }
+
+  get isEditingValue(): boolean {
+    return !this.viewOnly && !!this.planId;
+  }
+
+  get selectedIdsArray(): string[] {
+    return this.planObjectives().map(p => p.id);
+  }
+
+  get goalsList(): PlanObjective[] {
+    return this.filteredGoals();
   }
 
   async confirmDelete(): Promise<void> {

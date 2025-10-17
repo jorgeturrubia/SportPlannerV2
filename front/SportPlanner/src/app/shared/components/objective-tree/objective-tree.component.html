@@ -1,0 +1,78 @@
+<div class="objective-tree">
+  <!-- DEBUG: Show current state -->
+  <div style="display: none;">
+    DEBUG: expandedCategories = {{ expandedCategories() | json }}
+    DEBUG: expandedSubcategories = {{ expandedSubcategories() | json }}
+  </div>
+
+  <ng-container *ngIf="groupedPairs() as pairs">
+    <div *ngFor="let pair of pairs" class="category">
+      <!-- Category Header -->
+      <button 
+        (click)="toggleCategory(pair[0])" 
+        class="category-header"
+        [class.expanded]="expandedCategories()[pair[0]]">
+        <span class="chev" [class.rotated]="expandedCategories()[pair[0]]">▾</span>
+        <span class="cat-name">{{ pair[0] }}</span>
+        <span class="cat-count">({{ subMapTotal(pair[1]) }})</span>
+      </button>
+
+      <!-- Category Body -->
+      <div 
+        *ngIf="expandedCategories()[pair[0]]" 
+        class="category-body">
+        <ng-container *ngFor="let subEntry of pair[1] | keyvalue">
+          <div class="subcategory">
+            <!-- Subcategory Header -->
+            <button 
+              (click)="toggleSubcategory(pair[0], subEntry.key)" 
+              class="subcategory-header"
+              [class.expanded]="expandedSubcategories()[pair[0] + '::' + subEntry.key]">
+              <span class="chev" [class.rotated]="expandedSubcategories()[pair[0] + '::' + subEntry.key]">▸</span>
+              <span class="sub-name">{{ subEntry.key }}</span>
+              <span class="sub-count">({{ subEntry.value.length }})</span>
+            </button>
+
+            <!-- Subcategory Body -->
+            <div 
+              *ngIf="expandedSubcategories()[pair[0] + '::' + subEntry.key]" 
+              class="subcategory-body">
+              <ul class="objective-list">
+                <li 
+                  *ngFor="let o of subEntry.value" 
+                  class="objective-item" 
+                  [class.selected]="isSelected(o.id)">
+                  <div class="objective-left">
+                    <div class="objective-name-row">
+                      <div class="objective-name" [class.selected]="isSelected(o.id)">
+                        {{ o.name }}
+                      </div>
+                      <span *ngIf="isSelected(o.id)" class="added-badge">Añadido</span>
+                    </div>
+                    <div class="objective-meta">Nivel: {{ o.level || 1 }}</div>
+                  </div>
+                  <div class="objective-actions">
+                    <button 
+                      *ngIf="!addingMode" 
+                      (click)="onAdd(o)" 
+                      class="btn-add"
+                      title="Agregar objetivo">
+                      +
+                    </button>
+                    <button 
+                      *ngIf="addingMode" 
+                      (click)="onRemove(o)" 
+                      class="btn-remove"
+                      title="Quitar objetivo">
+                      −
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+</div>

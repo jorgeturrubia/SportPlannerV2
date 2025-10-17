@@ -69,7 +69,10 @@ public class PublishToMarketplaceCommandHandlerTests
         var ownerSubscriptionId = Guid.NewGuid();
         _currentUserServiceMock.Setup(s => s.GetSubscriptionId()).Returns(userSubscriptionId);
 
-    var trainingPlan = new TrainingPlan(ownerSubscriptionId, "Other User's Plan", DateTime.Now, DateTime.Now.AddDays(7), new TrainingSchedule(new[] { DayOfWeek.Monday }, new System.Collections.Generic.Dictionary<DayOfWeek,int> { { DayOfWeek.Monday, 1 } }, 1));
+    var startDate = DateTime.UtcNow.Date;
+    var endDate = startDate.AddDays(14);
+    var totalWeeks = (int)Math.Ceiling((endDate - startDate).TotalDays / 7);
+    var trainingPlan = new TrainingPlan(ownerSubscriptionId, "Other User's Plan", startDate, endDate, new TrainingSchedule(new[] { DayOfWeek.Monday }, new System.Collections.Generic.Dictionary<DayOfWeek,int> { { DayOfWeek.Monday, 1 } }, totalWeeks));
         _trainingPlanRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(trainingPlan);
 
         var command = new PublishToMarketplaceCommand(MarketplaceItemType.TrainingPlan, trainingPlan.Id);
@@ -87,7 +90,10 @@ public class PublishToMarketplaceCommandHandlerTests
         _currentUserServiceMock.Setup(s => s.GetSubscriptionId()).Returns(subscriptionId);
         _currentUserServiceMock.Setup(s => s.GetUserId()).Returns(userId);
 
-    var trainingPlan = new TrainingPlan(subscriptionId, "My Plan", DateTime.Now, DateTime.Now.AddDays(7), new TrainingSchedule(new[] { DayOfWeek.Monday }, new System.Collections.Generic.Dictionary<DayOfWeek,int> { { DayOfWeek.Monday, 1 } }, 1));
+    var startDate2 = DateTime.UtcNow.Date;
+    var endDate2 = startDate2.AddDays(14);
+    var totalWeeks2 = (int)Math.Ceiling((endDate2 - startDate2).TotalDays / 7);
+    var trainingPlan = new TrainingPlan(subscriptionId, "My Plan", startDate2, endDate2, new TrainingSchedule(new[] { DayOfWeek.Monday }, new System.Collections.Generic.Dictionary<DayOfWeek,int> { { DayOfWeek.Monday, 1 } }, totalWeeks2));
         _trainingPlanRepositoryMock.Setup(r => r.GetByIdAsync(trainingPlan.Id, It.IsAny<CancellationToken>())).ReturnsAsync(trainingPlan);
 
         var command = new PublishToMarketplaceCommand(MarketplaceItemType.TrainingPlan, trainingPlan.Id);
