@@ -40,15 +40,29 @@ export class DynamicFormComponent {
   cancel = output<void>();
 
   form: FormGroup;
+  currentConfig: FormField[] = [];
 
   constructor() {
     this.form = this.fb.group({});
 
-    // React to config or initialData changes
+    // React to config changes - only rebuild when structure changes
     effect(() => {
-      const currentConfig = this.config();
+      const newConfig = this.config();
+      if (this.shouldRebuildForm(newConfig)) {
+        this.currentConfig = [...newConfig];
+        this.buildForm(newConfig, this.initialData());
+      } else {
+        // Just update options if only options changed
+        this.updateFormOptions(newConfig);
+      }
+    });
+    
+    // React to initialData changes
+    effect(() => {
       const currentData = this.initialData();
-      this.buildForm(currentConfig, currentData);
+      if (currentData && this.form) {
+        this.form.patchValue(currentData);
+      }
     });
 
     // Reset form when dialog opens with null data
@@ -61,6 +75,32 @@ export class DynamicFormComponent {
         this.form.reset();
       }
     });
+  }
+
+  private shouldRebuildForm(newConfig: FormField[]): boolean {
+    // Rebuild if config length changed or if field keys changed
+    if (newConfig.length !== this.currentConfig.length) {
+      return true;
+    }
+
+    // Check if field keys changed
+    const currentKeys = this.currentConfig.map(f => f.key).sort();
+    const newKeys = newConfig.map(f => f.key).sort();
+    
+    return JSON.stringify(currentKeys) !== JSON.stringify(newKeys);
+  }
+
+  private updateFormOptions(newConfig: FormField[]): void {
+    // Update options for existing fields without rebuilding the form
+    for (const newField of newConfig) {
+      const existingField = this.currentConfig.find(f => f.key === newField.key);
+      if (existingField) {
+        // Create new arrays to trigger Angular change detection
+        existingField.options = [...(newField.options || [])];
+        existingField.disabled = newField.disabled;
+      }
+    }
+    this.currentConfig = [...newConfig];
   }
 
   private buildForm(config: FormField[], initialData: any): void {

@@ -95,7 +95,8 @@ export class ObjectivesPage implements OnInit {
     fields: []  // Will be populated by computed
   };
 
-  objectiveFormConfig = computed<FormField[]>(() => [
+  // Static form config - options will be updated dynamically
+  objectiveFormConfig: FormField[] = [
     // Row 1: Name (full width)
     { key: 'name', label: 'Name', type: 'text', required: true, colspan: 3 },
 
@@ -105,7 +106,7 @@ export class ObjectivesPage implements OnInit {
       label: 'Category',
       type: 'select',
       required: true,
-      options: this.categories().map(c => ({ value: c.id, label: c.name })),
+      options: [], // Will be set dynamically
       colspan: 1,
       onChange: (value: string) => this.onCategoryChange(value)
     },
@@ -114,8 +115,8 @@ export class ObjectivesPage implements OnInit {
       label: 'Subcategory',
       type: 'select',
       required: false,
-      options: this.filteredSubcategories().map(s => ({ value: s.id, label: s.name })),
-      disabled: !this.isSubcategoryEnabled(),
+      options: [], // Will be set dynamically
+      disabled: true, // Initially disabled
       colspan: 1
     },
     {
@@ -133,7 +134,7 @@ export class ObjectivesPage implements OnInit {
 
     // Row 3: Description (full width)
     { key: 'description', label: 'Description', type: 'textarea', required: true, colspan: 3 }
-  ]);
+  ];
 
   async ngOnInit(): Promise<void> {
     await this.subscriptionContext.loadSubscription();
@@ -164,6 +165,9 @@ export class ObjectivesPage implements OnInit {
       this.filteredSubcategories.set([]);
     }
     
+    // Update form options dynamically
+    this.updateFormOptions();
+    
     console.log('🔒 Subcategory enabled:', this.isSubcategoryEnabled());
     console.log('📊 Filtered subcategories count:', this.filteredSubcategories().length);
   }
@@ -181,10 +185,40 @@ export class ObjectivesPage implements OnInit {
 
       this.categories.set(categories);
       this.subcategories.set(subcategories);
+      
+      // Update form options dynamically
+      this.updateFormOptions();
     } catch (err: any) {
       console.error('Failed to load master data:', err);
       this.ns.error(err?.message ?? 'Error al cargar datos maestros', 'Error');
     }
+  }
+
+  // Update form options dynamically without recreating the form
+  private updateFormOptions(): void {
+    // Update category options
+    const categoryField = this.objectiveFormConfig.find(f => f.key === 'objectiveCategoryId');
+    if (categoryField) {
+      categoryField.options = this.categories().map(c => ({ value: c.id, label: c.name }));
+    }
+
+    // Update subcategory options
+    const subcategoryField = this.objectiveFormConfig.find(f => f.key === 'objectiveSubcategoryId');
+    if (subcategoryField) {
+      if (!this.isSubcategoryEnabled() || !this.selectedCategoryId()) {
+        subcategoryField.options = [{ value: '', label: 'Primero selecciona una categoría' }];
+        subcategoryField.disabled = true;
+      } else {
+        subcategoryField.options = this.filteredSubcategories().map(s => ({ value: s.id, label: s.name }));
+        subcategoryField.disabled = false;
+      }
+    }
+
+    console.log('🔄 Form options updated:', {
+      categories: categoryField?.options?.length,
+      subcategories: subcategoryField?.options?.length,
+      subcategoryDisabled: subcategoryField?.disabled
+    });
   }
 
   private parseSportToEnum(sportStr: string): Sport {
@@ -272,6 +306,9 @@ export class ObjectivesPage implements OnInit {
     this.isSubcategoryEnabled.set(false);
     this.filteredSubcategories.set([]);
     
+    // Update form options
+    this.updateFormOptions();
+    
     console.log('🔄 Form state reset - Subcategory enabled:', this.isSubcategoryEnabled());
     this.isFormOpen.set(true);
   }
@@ -296,6 +333,9 @@ export class ObjectivesPage implements OnInit {
       this.isSubcategoryEnabled.set(false);
       this.filteredSubcategories.set([]);
     }
+    
+    // Update form options
+    this.updateFormOptions();
     
     console.log('🔄 Edit form state - Subcategory enabled:', this.isSubcategoryEnabled());
     this.isFormOpen.set(true);

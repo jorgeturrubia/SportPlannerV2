@@ -13,7 +13,7 @@
         <!-- Dynamic Fields (Scrollable) -->
         <div class="overflow-y-auto overflow-x-hidden flex-1 min-h-0 px-6 py-4">
           <div [ngClass]="'grid gap-4 ' + getGridClass()">
-            @for (field of config(); track field.key) {
+            @for (field of currentConfig; track field.key) {
               <div [ngClass]="getColSpanClass(field.colspan || 1)" class="flex flex-col">
                 <label [for]="field.key" class="mb-2 font-semibold text-slate-700 dark:text-slate-300">{{ field.label }}</label>
                 @switch (field.type) {
