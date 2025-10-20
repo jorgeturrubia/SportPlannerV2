@@ -18,19 +18,19 @@
                 <label [for]="field.key" class="mb-2 font-semibold text-slate-700 dark:text-slate-300">{{ field.label }}</label>
                 @switch (field.type) {
                   @case ('text') {
-                    <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                    <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed">
                   }
                   @case ('number') {
-                    <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                    <input [type]="field.type" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed">
                   }
                   @case ('date') {
-                    <input type="date" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                    <input type="date" [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed">
                   }
                   @case ('textarea') {
-                    <textarea [id]="field.key" [formControlName]="field.key" rows="4" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition resize-none"></textarea>
+                    <textarea [id]="field.key" [formControlName]="field.key" rows="4" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition resize-none disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed"></textarea>
                   }
                   @case ('select') {
-                    <select [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition">
+                    <select [id]="field.key" [formControlName]="field.key" class="px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 transition disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed">
                       <option value="" disabled selected>Select {{ field.label }}</option>
                       @for (opt of field.options; track opt.value) {
                         <option [value]="opt.value">{{ opt.label }}</option>
@@ -39,7 +39,7 @@
                   }
                   @case ('checkbox') {
                     <div class="flex items-center gap-3 px-4 py-3">
-                      <input type="checkbox" [id]="field.key" [formControlName]="field.key" class="w-5 h-5 text-purple-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-purple-500 transition cursor-pointer">
+                      <input type="checkbox" [id]="field.key" [formControlName]="field.key" class="w-5 h-5 text-purple-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-purple-500 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
                       <span class="text-sm text-slate-600 dark:text-slate-400">Marcar como activo</span>
                     </div>
                   }

@@ -40,6 +40,10 @@ export class DashboardSidebar {
     this.router.navigate(['/dashboard/objectives']);
   }
 
+  goToPlans() {
+    this.router.navigate(['/dashboard/training-plans']);
+  }
+
   goToMessages() {
     this.router.navigate(['/dashboard/messages']);
   }

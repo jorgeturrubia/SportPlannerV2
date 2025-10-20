@@ -136,40 +136,68 @@ export class ObjectivesPage implements OnInit {
     { key: 'description', label: 'Description', type: 'textarea', required: true, colspan: 3 }
   ];
 
+  // Computed form config that updates reactively
+  currentFormConfig = computed(() => {
+    // Create a deep copy of the entire configuration to avoid mutation issues
+    const baseConfig = this.objectiveFormConfig.map(field => ({
+      ...field,
+      options: field.options ? [...field.options] : [],
+      onChange: field.onChange // Preserve the onChange function reference
+    }));
+
+    const categories = this.categories();
+    const isSubcategoryEnabled = this.isSubcategoryEnabled();
+    const selectedCategoryId = this.selectedCategoryId();
+    const filteredSubcategories = this.filteredSubcategories();
+
+    // Update category options with fresh object
+    const categoryIndex = baseConfig.findIndex(f => f.key === 'objectiveCategoryId');
+    if (categoryIndex !== -1) {
+      baseConfig[categoryIndex] = {
+        ...baseConfig[categoryIndex],
+        options: categories.map(c => ({ value: c.id, label: c.name }))
+      };
+    }
+
+    // Update subcategory options and disabled state with fresh object
+    const subcategoryIndex = baseConfig.findIndex(f => f.key === 'objectiveSubcategoryId');
+    if (subcategoryIndex !== -1) {
+      const subcategoryField = baseConfig[subcategoryIndex];
+      let newOptions: { value: any; label: string }[];
+      let disabled: boolean;
+
+      if (!isSubcategoryEnabled || !selectedCategoryId) {
+        newOptions = [{ value: '', label: 'Primero selecciona una categoría' }];
+        disabled = true;
+      } else {
+        newOptions = filteredSubcategories.map(s => ({ value: s.id, label: s.name }));
+        disabled = false;
+      }
+
+      baseConfig[subcategoryIndex] = {
+        ...subcategoryField,
+        options: newOptions,
+        disabled: disabled
+      };
+    }
+
+    console.log('🔄 Computed form config updated:', {
+      categories: categories.length,
+      subcategories: filteredSubcategories.length,
+      subcategoryDisabled: !isSubcategoryEnabled || !selectedCategoryId,
+      isSubcategoryEnabled: isSubcategoryEnabled,
+      selectedCategoryId: selectedCategoryId
+    });
+
+    return baseConfig;
+  });
+
   async ngOnInit(): Promise<void> {
     await this.subscriptionContext.loadSubscription();
     await Promise.all([
       this.loadObjectives(),
       this.loadMasterData()
     ]);
-  }
-
-  // Handle category selection change
-  onCategoryChange(categoryId: string): void {
-    console.log('🎯 Category changed:', categoryId);
-    
-    if (categoryId) {
-      this.selectedCategoryId.set(categoryId);
-      this.isSubcategoryEnabled.set(true);
-      
-      // Filter subcategories by selected category
-      const filtered = this.subcategories().filter(sub => 
-        sub.objectiveCategoryId === categoryId
-      );
-      
-      console.log('📋 Filtered subcategories:', filtered);
-      this.filteredSubcategories.set(filtered);
-    } else {
-      this.selectedCategoryId.set(null);
-      this.isSubcategoryEnabled.set(false);
-      this.filteredSubcategories.set([]);
-    }
-    
-    // Update form options dynamically
-    this.updateFormOptions();
-    
-    console.log('🔒 Subcategory enabled:', this.isSubcategoryEnabled());
-    console.log('📊 Filtered subcategories count:', this.filteredSubcategories().length);
   }
 
   private async loadMasterData(): Promise<void> {
@@ -186,40 +214,14 @@ export class ObjectivesPage implements OnInit {
       this.categories.set(categories);
       this.subcategories.set(subcategories);
       
-      // Update form options dynamically
-      this.updateFormOptions();
+      // Form config will update automatically via computed signal
     } catch (err: any) {
       console.error('Failed to load master data:', err);
       this.ns.error(err?.message ?? 'Error al cargar datos maestros', 'Error');
     }
   }
 
-  // Update form options dynamically without recreating the form
-  private updateFormOptions(): void {
-    // Update category options
-    const categoryField = this.objectiveFormConfig.find(f => f.key === 'objectiveCategoryId');
-    if (categoryField) {
-      categoryField.options = this.categories().map(c => ({ value: c.id, label: c.name }));
-    }
 
-    // Update subcategory options
-    const subcategoryField = this.objectiveFormConfig.find(f => f.key === 'objectiveSubcategoryId');
-    if (subcategoryField) {
-      if (!this.isSubcategoryEnabled() || !this.selectedCategoryId()) {
-        subcategoryField.options = [{ value: '', label: 'Primero selecciona una categoría' }];
-        subcategoryField.disabled = true;
-      } else {
-        subcategoryField.options = this.filteredSubcategories().map(s => ({ value: s.id, label: s.name }));
-        subcategoryField.disabled = false;
-      }
-    }
-
-    console.log('🔄 Form options updated:', {
-      categories: categoryField?.options?.length,
-      subcategories: subcategoryField?.options?.length,
-      subcategoryDisabled: subcategoryField?.disabled
-    });
-  }
 
   private parseSportToEnum(sportStr: string): Sport {
     switch (sportStr) {
@@ -306,8 +308,7 @@ export class ObjectivesPage implements OnInit {
     this.isSubcategoryEnabled.set(false);
     this.filteredSubcategories.set([]);
     
-    // Update form options
-    this.updateFormOptions();
+    // Form config will update automatically via computed signal
     
     console.log('🔄 Form state reset - Subcategory enabled:', this.isSubcategoryEnabled());
     this.isFormOpen.set(true);
@@ -334,8 +335,7 @@ export class ObjectivesPage implements OnInit {
       this.filteredSubcategories.set([]);
     }
     
-    // Update form options
-    this.updateFormOptions();
+    // Form config will update automatically via computed signal
     
     console.log('🔄 Edit form state - Subcategory enabled:', this.isSubcategoryEnabled());
     this.isFormOpen.set(true);
@@ -412,5 +412,32 @@ export class ObjectivesPage implements OnInit {
     this.filteredSubcategories.set([]);
     
     console.log('🔄 Form state reset on close');
+  }
+
+  // Handle category selection change
+  onCategoryChange(categoryId: string): void {
+    console.log('🎯 Category changed:', categoryId);
+    
+    if (categoryId) {
+      this.selectedCategoryId.set(categoryId);
+      this.isSubcategoryEnabled.set(true);
+      
+      // Filter subcategories by selected category
+      const filtered = this.subcategories().filter(sub => 
+        sub.objectiveCategoryId === categoryId
+      );
+      
+      console.log('📋 Filtered subcategories:', filtered);
+      this.filteredSubcategories.set(filtered);
+    } else {
+      this.selectedCategoryId.set(null);
+      this.isSubcategoryEnabled.set(false);
+      this.filteredSubcategories.set([]);
+    }
+    
+    // Form config will update automatically via computed signal
+    
+    console.log('🔒 Subcategory enabled:', this.isSubcategoryEnabled());
+    console.log('📊 Filtered subcategories count:', this.filteredSubcategories().length);
   }
 }

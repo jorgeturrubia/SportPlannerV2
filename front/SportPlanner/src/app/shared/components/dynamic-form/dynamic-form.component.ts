@@ -92,15 +92,38 @@ export class DynamicFormComponent {
 
   private updateFormOptions(newConfig: FormField[]): void {
     // Update options for existing fields without rebuilding the form
+    let hasChanges = false;
+
     for (const newField of newConfig) {
       const existingField = this.currentConfig.find(f => f.key === newField.key);
       if (existingField) {
-        // Create new arrays to trigger Angular change detection
-        existingField.options = [...(newField.options || [])];
-        existingField.disabled = newField.disabled;
+        // Check if options actually changed
+        const optionsChanged = JSON.stringify(existingField.options) !== JSON.stringify(newField.options);
+        const disabledChanged = existingField.disabled !== newField.disabled;
+
+        if (optionsChanged || disabledChanged) {
+          hasChanges = true;
+          // Create new arrays to trigger Angular change detection
+          existingField.options = [...(newField.options || [])];
+          existingField.disabled = newField.disabled;
+
+          // Update FormControl disabled state
+          const control = this.form.get(newField.key);
+          if (control) {
+            if (newField.disabled) {
+              control.disable({ emitEvent: false });
+            } else {
+              control.enable({ emitEvent: false });
+            }
+          }
+        }
       }
     }
-    this.currentConfig = [...newConfig];
+
+    // Only update currentConfig if there were actual changes
+    if (hasChanges) {
+      this.currentConfig = [...newConfig];
+    }
   }
 
   private buildForm(config: FormField[], initialData: any): void {
