@@ -264,13 +264,12 @@
 
       <!-- Form Content -->
       <div class="overflow-y-auto max-h-[calc(90vh-140px)] p-6">
-        <app-dynamic-form
-          [isOpen]="true"
-          [config]="createFormFields()"
-          [title]="'Crear Objetivo'"
+        <app-create-objective-form
+          [categories]="categories()"
+          [isSubmitting]="isCreatingObjective()"
           (formSubmit)="handleCreateFormSubmit($event)"
           (cancel)="closeCreateForm()">
-        </app-dynamic-form>
+        </app-create-objective-form>
       </div>
     </div>
   </div>

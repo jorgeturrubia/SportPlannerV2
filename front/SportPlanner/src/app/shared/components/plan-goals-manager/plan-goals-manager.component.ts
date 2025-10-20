@@ -7,11 +7,11 @@ import { ObjectiveSubcategoriesService } from '../../../features/dashboard/servi
 import { TrainingPlansService } from '../../../features/dashboard/services/training-plans.service';
 import { SubscriptionContextService } from '../../../core/subscription/services/subscription-context.service';
 import { NotificationService } from '../../notifications/notification.service';
-import { DynamicFormComponent, FormField } from '../dynamic-form/dynamic-form.component';
 import { GoalCardComponent } from './components/goal-card/goal-card.component';
 import { GoalFiltersComponent } from './components/goal-filters/goal-filters.component';
 import { GoalModalComponent } from './components/goal-modal/goal-modal.component';
 import { ObjectiveTreeComponent } from '../objective-tree/objective-tree.component';
+import { CreateObjectiveFormComponent } from './components/create-objective-form/create-objective-form.component';
 
 export interface PlanObjective extends ObjectiveDto {
   priority?: number;
@@ -33,11 +33,11 @@ export interface FilterState {
   imports: [
     CommonModule,
     FormsModule,
-    DynamicFormComponent,
     GoalCardComponent,
     GoalFiltersComponent,
-    GoalModalComponent
-    ,ObjectiveTreeComponent
+    GoalModalComponent,
+    ObjectiveTreeComponent,
+    CreateObjectiveFormComponent
   ],
   templateUrl: './plan-goals-manager.component.html',
   styleUrls: ['./plan-goals-manager.component.css']
@@ -70,7 +70,6 @@ export class PlanGoalsManagerComponent implements OnInit {
   // Create Form State
   showCreateForm = signal(false);
   isCreatingObjective = signal(false);
-  createFormFields = signal<FormField[]>([]);
 
   // Batch Save State
   isSaving = signal(false);
@@ -143,13 +142,21 @@ export class PlanGoalsManagerComponent implements OnInit {
   async loadData(): Promise<void> {
     this.isLoading.set(true);
     try {
+      // Get sport from subscription context
+      const subscription = this.subscriptionContext.subscription();
+      const sport = subscription ? this.parseSportToEnum(subscription.sport) : undefined;
+
+      // Load objectives and categories - passing sport to filter by sport
       const [objectives, categories] = await Promise.all([
         this.objectivesService.getObjectives(),
-        this.categoriesService.getCategories()
+        this.categoriesService.getCategories(sport)
       ]);
 
       this.allObjectives.set(objectives || []);
-      this.categories.set(categories || []);
+      
+      // Deduplicate categories by id (in case API returns duplicates)
+      const uniqueCategories = this.deduplicateById(categories || []);
+      this.categories.set(uniqueCategories);
 
       if (this.planId) {
         await this.loadPlanObjectives();
@@ -188,7 +195,9 @@ export class PlanGoalsManagerComponent implements OnInit {
 
     if (categoryId) {
       const subs = await this.subcategoriesService.getSubcategories(categoryId);
-      this.subcategories.set(subs || []);
+      // Deduplicate subcategories by id (in case API returns duplicates)
+      const uniqueSubcategories = this.deduplicateById(subs || []);
+      this.subcategories.set(uniqueSubcategories);
     } else {
       this.subcategories.set([]);
     }
@@ -319,48 +328,11 @@ export class PlanGoalsManagerComponent implements OnInit {
   }
 
   openCreateNewObjectiveModal(): void {
-    // Preparar los campos del formulario
-    this.createFormFields.set([
-      {
-        key: 'name',
-        label: 'Nombre',
-        type: 'text',
-        required: true
-      },
-      {
-        key: 'description',
-        label: 'Descripción',
-        type: 'textarea',
-        required: false
-      },
-      {
-        key: 'objectiveCategoryId',
-        label: 'Categoría',
-        type: 'select',
-        required: true,
-        options: this.categories().map(c => ({ value: c.id, label: c.name }))
-      },
-      {
-        key: 'objectiveSubcategoryId',
-        label: 'Subcategoría',
-        type: 'select',
-        required: false,
-        options: this.subcategories().map(s => ({ value: s.id, label: s.name }))
-      },
-      {
-        key: 'level',
-        label: 'Nivel',
-        type: 'select',
-        required: false,
-        options: [
-          { value: String(ObjectiveLevel.Beginner), label: 'Principiante' },
-          { value: String(ObjectiveLevel.Intermediate), label: 'Intermedio' },
-          { value: String(ObjectiveLevel.Advanced), label: 'Avanzado' }
-        ]
-      }
-    ]);
-    
+    // Debug: log when we open the create form so we can trace lifecycle
+    console.log('PlanGoalsManager: openCreateNewObjectiveModal called, showCreateForm before=', this.showCreateForm());
+    // Just open the create form - the form component will handle category/subcategory reactivity
     this.showCreateForm.set(true);
+    console.log('PlanGoalsManager: showCreateForm after=', this.showCreateForm());
   }
 
   openAddExistingGoalModal(goal?: ObjectiveDto): void {
@@ -521,7 +493,6 @@ export class PlanGoalsManagerComponent implements OnInit {
 
   closeCreateForm(): void {
     this.showCreateForm.set(false);
-    this.createFormFields.set([]);
   }
 
   private parseSportToEnum(sportString: string): Sport {
@@ -531,5 +502,19 @@ export class PlanGoalsManagerComponent implements OnInit {
       'Handball': Sport.Handball
     };
     return sportMap[sportString] || Sport.Basketball;
+  }
+
+  private deduplicateById<T extends { id: string }>(items: T[]): T[] {
+    const seen = new Set<string>();
+    const result: T[] = [];
+    
+    for (const item of items) {
+      if (!seen.has(item.id)) {
+        seen.add(item.id);
+        result.push(item);
+      }
+    }
+    
+    return result;
   }
 }

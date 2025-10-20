@@ -2,7 +2,7 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
+import { DynamicFormComponent, FormField, FormLayout } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
 import { ObjectivesService, ObjectiveDto, CreateObjectiveDto, UpdateObjectiveDto, Sport, ContentOwnership, ObjectiveLevel } from '../../services/objectives.service';
 import { ObjectiveCategoriesService } from '../../services/objective-categories.service';
@@ -31,6 +31,11 @@ export class ObjectivesPage implements OnInit {
   // Master data
   categories = signal<any[]>([]);
   subcategories = signal<any[]>([]);
+  
+  // Form state for dynamic behavior
+  selectedCategoryId = signal<string | null>(null);
+  isSubcategoryEnabled = signal(false);
+  filteredSubcategories = signal<any[]>([]);
 
   // Dialog and Form state
   isConfirmDialogOpen = signal(false);
@@ -85,24 +90,34 @@ export class ObjectivesPage implements OnInit {
     }
   ]);
 
+  objectiveFormLayout: FormLayout = {
+    columns: 3, // 3 columns grid for wider layout
+    fields: []  // Will be populated by computed
+  };
+
   objectiveFormConfig = computed<FormField[]>(() => [
-    { key: 'name', label: 'Name', type: 'text', required: true },
-    { key: 'description', label: 'Description', type: 'textarea', required: true },
+    // Row 1: Name (full width)
+    { key: 'name', label: 'Name', type: 'text', required: true, colspan: 3 },
+
+    // Row 2: Category, Subcategory, Level (one each)
     {
       key: 'objectiveCategoryId',
       label: 'Category',
       type: 'select',
       required: true,
-      options: this.categories().map(c => ({ value: c.id, label: c.name }))
+      options: this.categories().map(c => ({ value: c.id, label: c.name })),
+      colspan: 1,
+      onChange: (value: string) => this.onCategoryChange(value)
     },
     {
       key: 'objectiveSubcategoryId',
       label: 'Subcategory',
       type: 'select',
       required: false,
-      options: this.subcategories().map(s => ({ value: s.id, label: s.name }))
-    }
-    ,
+      options: this.filteredSubcategories().map(s => ({ value: s.id, label: s.name })),
+      disabled: !this.isSubcategoryEnabled(),
+      colspan: 1
+    },
     {
       key: 'level',
       label: 'Level',
@@ -112,8 +127,12 @@ export class ObjectivesPage implements OnInit {
         { value: String(ObjectiveLevel.Beginner), label: 'Beginner' },
         { value: String(ObjectiveLevel.Intermediate), label: 'Intermediate' },
         { value: String(ObjectiveLevel.Advanced), label: 'Advanced' }
-      ]
-    }
+      ],
+      colspan: 1
+    },
+
+    // Row 3: Description (full width)
+    { key: 'description', label: 'Description', type: 'textarea', required: true, colspan: 3 }
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -122,6 +141,31 @@ export class ObjectivesPage implements OnInit {
       this.loadObjectives(),
       this.loadMasterData()
     ]);
+  }
+
+  // Handle category selection change
+  onCategoryChange(categoryId: string): void {
+    console.log('🎯 Category changed:', categoryId);
+    
+    if (categoryId) {
+      this.selectedCategoryId.set(categoryId);
+      this.isSubcategoryEnabled.set(true);
+      
+      // Filter subcategories by selected category
+      const filtered = this.subcategories().filter(sub => 
+        sub.objectiveCategoryId === categoryId
+      );
+      
+      console.log('📋 Filtered subcategories:', filtered);
+      this.filteredSubcategories.set(filtered);
+    } else {
+      this.selectedCategoryId.set(null);
+      this.isSubcategoryEnabled.set(false);
+      this.filteredSubcategories.set([]);
+    }
+    
+    console.log('🔒 Subcategory enabled:', this.isSubcategoryEnabled());
+    console.log('📊 Filtered subcategories count:', this.filteredSubcategories().length);
   }
 
   private async loadMasterData(): Promise<void> {
@@ -219,14 +263,41 @@ export class ObjectivesPage implements OnInit {
 
   // Add/Edit Logic
   openAddForm(): void {
+    console.log('📝 Opening ADD form');
     this.selectedObjective.set(null);
     this.formTitle = 'Add New Objective';
+    
+    // Reset form state
+    this.selectedCategoryId.set(null);
+    this.isSubcategoryEnabled.set(false);
+    this.filteredSubcategories.set([]);
+    
+    console.log('🔄 Form state reset - Subcategory enabled:', this.isSubcategoryEnabled());
     this.isFormOpen.set(true);
   }
 
   openEditForm(objective: ObjectiveDto): void {
+    console.log('✏️ Opening EDIT form for:', objective.name);
     this.selectedObjective.set(objective);
     this.formTitle = `Edit ${objective.name}`;
+    
+    // Set form state based on existing objective
+    if (objective.objectiveCategoryId) {
+      this.selectedCategoryId.set(objective.objectiveCategoryId);
+      this.isSubcategoryEnabled.set(true);
+      
+      // Filter subcategories for the existing category
+      const filtered = this.subcategories().filter(sub => 
+        sub.objectiveCategoryId === objective.objectiveCategoryId
+      );
+      this.filteredSubcategories.set(filtered);
+    } else {
+      this.selectedCategoryId.set(null);
+      this.isSubcategoryEnabled.set(false);
+      this.filteredSubcategories.set([]);
+    }
+    
+    console.log('🔄 Edit form state - Subcategory enabled:', this.isSubcategoryEnabled());
     this.isFormOpen.set(true);
   }
 
@@ -291,7 +362,15 @@ export class ObjectivesPage implements OnInit {
   }
 
   closeForm(): void {
+    console.log('❌ Closing form');
     this.isFormOpen.set(false);
     this.selectedObjective.set(null);
+    
+    // Reset form state
+    this.selectedCategoryId.set(null);
+    this.isSubcategoryEnabled.set(false);
+    this.filteredSubcategories.set([]);
+    
+    console.log('🔄 Form state reset on close');
   }
 }

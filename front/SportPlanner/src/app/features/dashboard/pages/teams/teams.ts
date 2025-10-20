@@ -5,7 +5,7 @@ import { EntityPageLayoutComponent } from '../../../../shared/components/entity-
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CardCarouselComponent } from '../../../../shared/components/card-carousel/card-carousel.component';
-import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
+import { DynamicFormComponent, FormField, FormLayout } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { TeamsService } from '../../services/teams.service';
 import { SubscriptionContextService } from '../../../../core/subscription/services/subscription-context.service';
 import { MasterDataService } from '../../services/master-data.service';
@@ -126,31 +126,39 @@ export class TeamsPage implements OnInit {
   selectedTeam = signal<TeamResponse | null>(null);
   formTitle = 'Add New Team';
 
+  teamFormLayout: FormLayout = {
+    columns: 2, // 2 columns grid
+    fields: []  // Will be populated by computed
+  };
+
   teamFormConfig = computed<FormField[]>(() => [
-    { key: 'name', label: 'Team Name', type: 'text', required: true },
-    { key: 'color', label: 'Color', type: 'select', required: true, options: this.getColorOptions() },
+    { key: 'name', label: 'Team Name', type: 'text', required: true, colspan: 2 },
+    { key: 'color', label: 'Color', type: 'select', required: true, options: this.getColorOptions(), colspan: 1 },
     {
       key: 'teamCategoryId',
       label: 'Category',
       type: 'select',
       required: true,
-      options: this.teamCategories().map(c => ({ value: c.id, label: c.name }))
+      options: this.teamCategories().map(c => ({ value: c.id, label: c.name })),
+      colspan: 1
     },
     {
       key: 'genderId',
       label: 'Gender',
       type: 'select',
       required: true,
-      options: this.genders().map(g => ({ value: g.id, label: g.name }))
+      options: this.genders().map(g => ({ value: g.id, label: g.name })),
+      colspan: 1
     },
     {
       key: 'ageGroupId',
       label: 'Age Group',
       type: 'select',
       required: true,
-      options: this.ageGroups().map(a => ({ value: a.id, label: a.name }))
+      options: this.ageGroups().map(a => ({ value: a.id, label: a.name })),
+      colspan: 1
     },
-    { key: 'description', label: 'Description', type: 'textarea' }
+    { key: 'description', label: 'Description', type: 'textarea', colspan: 2 }
   ]);
 
   async ngOnInit(): Promise<void> {

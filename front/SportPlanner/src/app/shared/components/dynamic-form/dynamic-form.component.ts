@@ -8,6 +8,14 @@ export interface FormField {
   type: 'text' | 'number' | 'textarea' | 'select' | 'checkbox' | 'date';
   required?: boolean;
   options?: { label: string; value: any }[];
+  colspan?: number; // Number of columns to span (default: 1)
+  disabled?: boolean; // Whether the field is disabled
+  onChange?: (value: any) => void; // Callback when field value changes
+}
+
+export interface FormLayout {
+  columns: number; // Total columns in the grid (e.g., 2, 3, 4)
+  fields: FormField[]; // Array of fields in order
 }
 
 @Component({
@@ -23,6 +31,7 @@ export class DynamicFormComponent {
   // Input signals
   isOpen = input<boolean>(false);
   config = input<FormField[]>([]);
+  layout = input<FormLayout | null>(null); // Optional layout config
   initialData = input<any>(null);
   title = input<string>('Form');
 
@@ -65,7 +74,14 @@ export class DynamicFormComponent {
       if (value === undefined || value === null) {
         value = field.type === 'checkbox' ? false : '';
       }
-      this.form.addControl(field.key, this.fb.control(value, validators));
+      
+      const control = this.fb.control({ value, disabled: field.disabled }, validators);
+      this.form.addControl(field.key, control);
+      
+      // Add change listener if onChange is provided
+      if (field.onChange) {
+        this.form.get(field.key)?.valueChanges.subscribe(field.onChange);
+      }
     }
   }
 
@@ -77,5 +93,24 @@ export class DynamicFormComponent {
 
   onCancel(): void {
     this.cancel.emit();
+  }
+
+  getGridClass(): string {
+    const l = this.layout();
+    if (!l) {
+      return 'grid-cols-2';
+    }
+    return `grid-cols-${l.columns}`;
+  }
+
+  getColSpanClass(colspan: number): string {
+    const l = this.layout();
+    const totalCols = l?.columns || 2;
+
+    if (colspan === totalCols) {
+      return 'col-span-full';
+    }
+
+    return `col-span-${colspan}`;
   }
 }
