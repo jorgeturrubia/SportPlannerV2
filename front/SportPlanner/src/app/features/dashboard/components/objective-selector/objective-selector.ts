@@ -55,7 +55,7 @@ export class ObjectiveSelectorComponent implements OnInit {
   private viewOnlySignal = signal(false);
 
   @Output() close = new EventEmitter<void>();
-  @Output() objectivesChanged = new EventEmitter<{ added: string[]; removed: string[] }>();
+  @Output() objectivesChanged = new EventEmitter<string[]>();
 
   isLoading = signal(false);
   isSaving = signal(false);
@@ -278,15 +278,15 @@ export class ObjectiveSelectorComponent implements OnInit {
 
     this.isSaving.set(true);
     try {
-      // Get current and original IDs
-      const currentIds = new Set(this.selectedObjectives().map(o => o.id));
-      const originalIds = new Set(this.originalSelectedObjectives().map(o => o.id));
+      // Get ALL selected objective IDs (complete final list)
+      const allSelectedIds = this.selectedObjectives().map(o => o.id);
 
-      // Calculate new objectives: those in current but not in original
-      const newObjectiveIds = Array.from(currentIds).filter(id => !originalIds.has(id));
+      console.log('📊 Final objective list for plan:');
+      console.log('   Total selected:', allSelectedIds.length);
+      console.log('   Objective IDs:', allSelectedIds);
 
-      // Only emit the NEW objectives (those that weren't in the plan before)
-      this.objectivesChanged.emit(newObjectiveIds);
+      // Emit the COMPLETE list of objectives to keep in the plan
+      this.objectivesChanged.emit(allSelectedIds);
       this.closeModal();
     } finally {
       this.isSaving.set(false);

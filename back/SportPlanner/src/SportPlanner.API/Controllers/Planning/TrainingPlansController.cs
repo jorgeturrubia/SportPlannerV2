@@ -105,6 +105,27 @@ public class TrainingPlansController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Replace/update all objectives for a training plan
+    /// Removes objectives not in the new list and adds new ones
+    /// </summary>
+    [HttpPut("{id:guid}/objectives")]
+    public async Task<ActionResult> UpdatePlanObjectives(
+        [FromRoute] Guid id,
+        [FromBody] AddMultipleObjectivesToPlanRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (request?.Objectives == null)
+        {
+            return BadRequest(new { message = "Objectives list is required" });
+        }
+
+        var command = new UpdatePlanObjectivesCommand(id, request.Objectives);
+        await _mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
 }
 
 public class AddObjectiveToPlanRequest

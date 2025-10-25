@@ -108,6 +108,12 @@ export class TrainingPlansService {
     await this.http.post<void>(`${this.apiUrl}/${planId}/objectives/batch`, request).toPromise();
   }
 
+  async updatePlanObjectives(planId: string, objectives: AddObjectiveToPlanDto[]): Promise<void> {
+    // PUT to replace entire objectives collection
+    const request = { objectives };
+    await this.http.put<void>(`${this.apiUrl}/${planId}/objectives`, request).toPromise();
+  }
+
   async removeObjectiveFromPlan(planId: string, objectiveId: string): Promise<void> {
     await this.http.delete<void>(`${this.apiUrl}/${planId}/objectives/${objectiveId}`).toPromise();
   }

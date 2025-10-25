@@ -129,35 +129,38 @@ export class TrainingPlansPage implements OnInit {
     }
   }
 
-  // Handler invoked when modal reports objectives were added
-  async onObjectivesAdded(ids: string[]): Promise<void> {
+  // Handler invoked when modal reports final objectives list
+  async onObjectivesAdded(objectiveIds: string[]): Promise<void> {
     const plan = this.planForAddObjectives();
-    if (!plan || !ids || ids.length === 0) {
+    if (!plan) {
       return;
     }
 
     try {
       this.isLoading.set(true);
 
-      // Convert objective IDs to AddObjectiveToPlanDto with default priority/targetSessions
-      const objectives = ids.map(objectiveId => ({
+      console.log('📋 onObjectivesAdded - Final objective IDs to update:', objectiveIds);
+
+      // Convert objective IDs to AddObjectiveBatchItem with default priority/targetSessions
+      const objectives = objectiveIds.map(objectiveId => ({
         objectiveId,
         priority: 3, // Default priority (1-5, 3 = medium)
         targetSessions: 5 // Default target sessions
       }));
 
-      // Call backend API to add objectives to plan
-      await this.plansService.addObjectivesToPlan(plan.id, objectives);
+      // Call backend API to UPDATE the plan with new objective list
+      // This replaces the entire objectives collection, not adds to it
+      await this.plansService.updatePlanObjectives(plan.id, objectives);
 
-      this.ns.success(`${ids.length} objetivo(s) añadido(s) al plan`, 'Éxito');
+      this.ns.success(`Plan actualizado con ${objectiveIds.length} objetivo(s)`, 'Éxito');
       this.closeObjectivesModal();
       
       // Reload plans to show updated objectives
       await this.loadPlans();
     } catch (err: any) {
-      console.error('Failed to add objectives to plan:', err);
+      console.error('Failed to update plan objectives:', err);
       this.ns.error(
-        err?.error?.message || 'Error al añadir objetivos',
+        err?.error?.message || 'Error al actualizar objetivos',
         'Error'
       );
     } finally {
