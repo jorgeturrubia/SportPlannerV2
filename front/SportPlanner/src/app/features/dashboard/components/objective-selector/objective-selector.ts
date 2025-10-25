@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, Signal, computed, inject, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, Signal, computed, inject, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ObjectivesService, ObjectiveDto } from '../../services/objectives.service';
@@ -42,6 +42,12 @@ export class ObjectiveSelectorComponent implements OnInit {
 
   @Input() planId: string | null = null;
 
+  @Input() set initialObjectives(value: any[]) {
+    console.log('🔄 initialObjectives setter called with:', value?.length ?? 0, 'items');
+    this.initialObjectivesSignal.set(value || []);
+  }
+  private initialObjectivesSignal = signal<any[]>([]);
+
   @Input() set viewOnly(value: boolean | Signal<boolean>) {
     const val = typeof value === 'boolean' ? value : value();
     this.viewOnlySignal.set(val);
@@ -49,13 +55,14 @@ export class ObjectiveSelectorComponent implements OnInit {
   private viewOnlySignal = signal(false);
 
   @Output() close = new EventEmitter<void>();
-  @Output() objectivesChanged = new EventEmitter<string[]>();
+  @Output() objectivesChanged = new EventEmitter<{ added: string[]; removed: string[] }>();
 
   isLoading = signal(false);
   isSaving = signal(false);
   
   allObjectives = signal<ObjectiveDto[]>([]);
   selectedObjectives = signal<ObjectiveDto[]>([]);
+  originalSelectedObjectives = signal<ObjectiveDto[]>([]); // Track original selection
 
   // Filtrado dinámico
   filterLevel = signal<FilterLevel>('categories');
@@ -65,6 +72,31 @@ export class ObjectiveSelectorComponent implements OnInit {
   // Expose signals for template
   isOpenTemplate = this.isOpenSignal;
   viewOnlyTemplate = this.viewOnlySignal;
+
+  // Effect: when initialObjectives changes AND allObjectives loaded, map them
+  private initObjectivesEffect = effect(() => {
+    const initialObjs = this.initialObjectivesSignal();
+    const allObjs = this.allObjectives();
+
+    console.log('🔄 Effect triggered: initialObjectivesSignal.length =', initialObjs.length, 'allObjectives.length =', allObjs.length);
+
+    if (initialObjs.length > 0 && allObjs.length > 0) {
+      console.log('✅ Effect: Processing initialObjectives with loaded allObjectives');
+      
+      const selected = initialObjs
+        .map((po: any) => {
+          console.log('🔍 Looking for objective ID:', po.objectiveId);
+          const found = allObjs.find(o => o.id === po.objectiveId);
+          console.log('   Found:', found?.name ?? 'NOT FOUND', 'ID:', po.objectiveId);
+          return found;
+        })
+        .filter((o): o is ObjectiveDto => o !== undefined);
+      
+      console.log('✅ Selected objectives after effect:', selected.length);
+      this.selectedObjectives.set(selected);
+      this.originalSelectedObjectives.set(selected);
+    }
+  });
 
   // Obtener todas las categorías únicas
   allCategories = computed(() => {
@@ -170,18 +202,14 @@ export class ObjectiveSelectorComponent implements OnInit {
   private async loadData(): Promise<void> {
     this.isLoading.set(true);
     try {
+      // Load objectives first
       const objectives = await this.objectivesService.getObjectives();
       this.allObjectives.set(objectives || []);
+      console.log('✅ Objectives loaded:', objectives?.length ?? 0);
 
-      if (this.planId && !this.viewOnlySignal()) {
-        const plan = await this.trainingPlansService.getPlan(this.planId);
-        if (plan?.objectives) {
-          const selected = plan.objectives
-            .map(po => this.allObjectives().find(o => o.id === po.objectiveId))
-            .filter((o): o is ObjectiveDto => o !== undefined);
-          this.selectedObjectives.set(selected);
-        }
-      }
+      // NOTE: Processing of initialObjectives is now handled by the effect
+      // when both initialObjectivesSignal and allObjectives are ready
+      
     } catch (err) {
       console.error('Failed to load objectives:', err);
     } finally {
@@ -228,6 +256,20 @@ export class ObjectiveSelectorComponent implements OnInit {
     return this.selectedObjectives().some(o => o.id === objective.id);
   }
 
+  getSelectedCategoryName(): string {
+    const categoryId = this.selectedCategoryId();
+    if (!categoryId) return '';
+    const category = this.allCategories().find(c => c.id === categoryId);
+    return category?.name || '';
+  }
+
+  getSelectedSubcategoryName(): string {
+    const subcategoryId = this.selectedSubcategoryId();
+    if (!subcategoryId) return '';
+    const subcategory = this.subcategoriesForSelectedCategory().find(s => s.id === subcategoryId);
+    return subcategory?.name || '';
+  }
+
   async saveObjectives(): Promise<void> {
     if (this.viewOnlySignal()) {
       this.closeModal();
@@ -236,8 +278,15 @@ export class ObjectiveSelectorComponent implements OnInit {
 
     this.isSaving.set(true);
     try {
-      const objectiveIds = this.selectedObjectives().map(o => o.id);
-      this.objectivesChanged.emit(objectiveIds);
+      // Get current and original IDs
+      const currentIds = new Set(this.selectedObjectives().map(o => o.id));
+      const originalIds = new Set(this.originalSelectedObjectives().map(o => o.id));
+
+      // Calculate new objectives: those in current but not in original
+      const newObjectiveIds = Array.from(currentIds).filter(id => !originalIds.has(id));
+
+      // Only emit the NEW objectives (those that weren't in the plan before)
+      this.objectivesChanged.emit(newObjectiveIds);
       this.closeModal();
     } finally {
       this.isSaving.set(false);

@@ -63,7 +63,11 @@ public class GetTrainingPlanByIdQueryHandler : IRequestHandler<GetTrainingPlanBy
                 TargetSessions = po.TargetSessions,
                 ObjectiveName = po.Objective?.Name ?? "",
                 ObjectiveDescription = po.Objective?.Description ?? "",
-                Level = po.Objective?.Level ?? 1
+                Level = po.Objective?.Level ?? 1,
+                ObjectiveCategoryId = po.Objective?.ObjectiveCategoryId ?? Guid.Empty,
+                ObjectiveCategoryName = po.Objective?.Category?.Name ?? "",
+                ObjectiveSubcategoryId = po.Objective?.ObjectiveSubcategoryId,
+                ObjectiveSubcategoryName = po.Objective?.Subcategory?.Name
             }).ToList(),
             CreatedAt = tp.CreatedAt,
             UpdatedAt = tp.UpdatedAt,

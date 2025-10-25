@@ -43,7 +43,9 @@ public class AddMultipleObjectivesToPlanCommandHandler : IRequestHandler<AddMult
             throw new UnauthorizedAccessException("Cannot modify training plan from another subscription");
         }
 
-        // Validate all objectives exist and are not already in the plan
+        // Validate all objectives exist and collect only those not already in the plan
+        var objectivesToAdd = new List<(Guid ObjectiveId, int Priority, int TargetSessions)>();
+
         foreach (var item in request.Objectives)
         {
             if (!await _objectiveRepository.ExistsAsync(item.ObjectiveId, cancellationToken))
@@ -51,17 +53,17 @@ public class AddMultipleObjectivesToPlanCommandHandler : IRequestHandler<AddMult
                 throw new InvalidOperationException($"Objective with ID {item.ObjectiveId} does not exist");
             }
 
-            // Check if already exists in plan
-            if (trainingPlan.HasObjective(item.ObjectiveId))
+            // Skip objectives that are already in the plan (idempotent operation)
+            if (!trainingPlan.HasObjective(item.ObjectiveId))
             {
-                throw new InvalidOperationException($"Objective {item.ObjectiveId} is already in this plan");
+                objectivesToAdd.Add((item.ObjectiveId, item.Priority, item.TargetSessions));
             }
         }
 
-        // Add all objectives to the plan
-        foreach (var item in request.Objectives)
+        // Add only the new objectives to the plan
+        foreach (var (objectiveId, priority, targetSessions) in objectivesToAdd)
         {
-            trainingPlan.AddObjective(item.ObjectiveId, item.Priority, item.TargetSessions);
+            trainingPlan.AddObjective(objectiveId, priority, targetSessions);
         }
 
         // Save the plan with all new objectives (single transaction)

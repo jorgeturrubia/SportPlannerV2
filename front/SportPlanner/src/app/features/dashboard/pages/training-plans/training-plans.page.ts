@@ -84,7 +84,7 @@ export class TrainingPlansPage implements OnInit {
       icon: 'M16 7l-8 8m0-8l8 8',
       label: 'Agregar Objetivos',
       color: 'yellow',
-      handler: (row) => { this.planForAddObjectives.set(row); this.isAddObjectivesOpen.set(true); },
+      handler: async (row) => await this.openManageObjectives(row),
       showLabel: true
     }
   ];
@@ -228,6 +228,25 @@ export class TrainingPlansPage implements OnInit {
     this.isViewingPlan.set(true);
     this.isAddObjectivesOpen.set(true);
     // set view mode by passing viewOnly to modal via template binding (handled there)
+  }
+
+  async openManageObjectives(plan: TrainingPlanDto): Promise<void> {
+    try {
+      console.log('📋 openManageObjectives - Loading plan ID:', plan.id);
+      
+      // Load fresh plan data with ALL objectives and category info
+      const freshPlan = await this.plansService.getPlan(plan.id);
+      console.log('📋 openManageObjectives - Fresh plan loaded:', freshPlan);
+      console.log('📋 openManageObjectives - Objectives in plan:', freshPlan?.objectives?.length ?? 0);
+      
+      // Set the plan with complete data (including objectives)
+      this.planForAddObjectives.set(freshPlan);
+      this.isViewingPlan.set(false); // Not view-only, user can add/edit
+      this.isAddObjectivesOpen.set(true);
+    } catch (error) {
+      console.error('❌ Error loading plan for managing objectives:', error);
+      this.ns.error('Error al cargar el plan', 'Error');
+    }
   }
 
   async handleFormSubmit(formData: any): Promise<void> {

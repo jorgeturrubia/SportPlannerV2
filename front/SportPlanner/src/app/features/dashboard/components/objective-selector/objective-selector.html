@@ -1,157 +1,252 @@
-@if (isOpenTemplate()) {
-  <!-- Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 z-40" (click)="closeModal()"></div>
-  
-  <!-- Modal - Full Screen -->
-  <div class="fixed inset-0 z-50 flex items-center justify-center">
-    <div class="bg-white dark:bg-slate-900 shadow-2xl w-full h-full flex flex-col">
-      <!-- Header -->
-      <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
-        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">
-          {{ viewOnlyTemplate() ? 'Ver Objetivos del Plan' : 'Seleccionar Objetivos' }}
-        </h2>
-        <button 
-          type="button"
-          (click)="closeModal()" 
-          class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
+<!-- Backdrop -->
+<div
+  *ngIf="isOpenTemplate()"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
+  (click)="closeModal()">
+</div>
 
-      <!-- Body - Two Column Layout -->
-      <div class="flex-grow p-6 grid grid-cols-2 gap-6 overflow-hidden">
-        <!-- Loading State -->
-        @if (isLoading()) {
-          <div class="col-span-2 flex items-center justify-center">
-            <div class="text-center">
-              <div class="w-12 h-12 border-4 border-slate-300 dark:border-slate-600 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
-              <p class="text-slate-600 dark:text-slate-400">Cargando objetivos...</p>
+<!-- Modal -->
+<div
+  *ngIf="isOpenTemplate()"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div
+    class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">
+        {{ viewOnlyTemplate() ? 'Objetivos del Plan' : 'Añadir Objetivos' }}
+      </h2>
+      <button
+        type="button"
+        (click)="closeModal()"
+        class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body: 2 Columns Layout -->
+    <div class="flex-1 overflow-hidden flex flex-row">
+      
+      <!-- LEFT COLUMN: Filters + Objectives (50%) -->
+      <div class="w-1/2 flex flex-col overflow-hidden border-r border-slate-200 dark:border-slate-700">
+        
+        <!-- Loading state -->
+        <div *ngIf="isLoading()" class="flex items-center justify-center flex-1">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-slate-600 dark:text-slate-400">Cargando objetivos...</p>
+          </div>
+        </div>
+
+        <!-- Content Area -->
+        <div *ngIf="!isLoading()" class="flex-1 flex flex-col overflow-hidden p-6 gap-6">
+
+          <!-- === FILTER SECTION === -->
+          <div class="space-y-3">
+            <!-- Back button (only on subcategories view) -->
+            <div *ngIf="filterLevel() === 'subcategories'" class="mb-2">
+              <button
+                type="button"
+                (click)="backToCategories()"
+                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded
+                  bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100
+                  hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                ← Volver
+              </button>
+            </div>
+
+            <!-- Category Chips (Always visible on first level) -->
+            <div *ngIf="filterLevel() === 'categories'">
+              <div class="text-xs font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                Selecciona categoría
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  *ngFor="let cat of allCategories()"
+                  type="button"
+                  (click)="selectCategory(cat.id)"
+                  class="px-3 py-1.5 text-sm rounded-full font-medium transition-all
+                    border border-slate-300 dark:border-slate-600
+                    bg-white dark:bg-slate-700
+                    text-slate-900 dark:text-slate-100
+                    hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20
+                    cursor-pointer">
+                  {{ cat.name }}
+                  <span class="ml-1 text-xs opacity-60">({{ cat.objectiveCount }})</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Subcategory Chips (Only on second level) -->
+            <div *ngIf="filterLevel() === 'subcategories' && selectedCategoryId()">
+              <div class="text-xs font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                {{ getSelectedCategoryName() }} → Selecciona subcategoría
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  *ngFor="let sub of subcategoriesForSelectedCategory()"
+                  type="button"
+                  (click)="selectSubcategory(sub.id)"
+                  [class.bg-blue-600]="selectedSubcategoryId() === sub.id"
+                  [class.text-white]="selectedSubcategoryId() === sub.id"
+                  [class.border-blue-600]="selectedSubcategoryId() === sub.id"
+                  class="px-3 py-1.5 text-sm rounded-full font-medium transition-all
+                    border border-slate-300 dark:border-slate-600
+                    bg-white dark:bg-slate-700
+                    text-slate-900 dark:text-slate-100
+                    hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20
+                    cursor-pointer">
+                  {{ sub.name }}
+                  <span class="ml-1 text-xs opacity-60">({{ sub.objectiveCount }})</span>
+                </button>
+              </div>
             </div>
           </div>
-        }
 
-        @if (!isLoading()) {
-        <!-- Available Objectives -->
-        <div class="flex flex-col overflow-hidden">
-          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex-shrink-0">Objetivos Disponibles</h3>
-          <div class="relative mb-4 flex-shrink-0">
-            <input type="text" placeholder="Buscar objetivo..." class="w-full px-4 py-2 pl-10 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" [disabled]="viewOnlyTemplate()" [(ngModel)]="searchTerm">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-          </div>
-          <div class="flex-grow border border-slate-200 dark:border-slate-700 rounded-lg overflow-y-auto bg-slate-50 dark:bg-slate-800/50">
-            <ul class="divide-y divide-slate-200 dark:divide-slate-700">
-              @if (availableObjectives().length === 0) {
-                <li class="p-6 text-center text-slate-500 dark:text-slate-400">
-                  <p>No hay objetivos disponibles</p>
-                </li>
-              } @else {
-                @for (objective of availableObjectives(); track objective.id) {
-                  <li 
-                    class="p-4 flex justify-between items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors border-l-4 border-transparent hover:border-blue-500"
-                    (click)="selectObjective(objective)">
-                    <div class="flex-grow">
-                      <p class="font-medium text-slate-900 dark:text-slate-100">{{ objective.name }}</p>
-                      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ objective.description || 'Sin descripción' }}</p>
-                    </div>
-                    <button 
-                      type="button"
-                      class="ml-4 p-2 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex-shrink-0"
-                      [class.text-green-500]="isSelected(objective)"
-                      [class.dark:text-green-400]="isSelected(objective)"
-                      [class.bg-green-50]="isSelected(objective)"
-                      [class.dark:bg-green-900/20]="isSelected(objective)"
-                      (click)="selectObjective(objective); $event.stopPropagation()">
-                      <svg class="w-6 h-6" fill="currentColor" stroke="none" viewBox="0 0 24 24">
-                        @if (isSelected(objective)) {
-                          <path d="M10 15.172l9.192-9.193a1 1 0 111.415 1.414l-10.606 10.606a1 1 0 01-1.414 0l-4.242-4.242a1 1 0 111.414-1.414l3.035 3.029z"/>
-                        } @else {
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        }
-                      </svg>
-                    </button>
-                  </li>
-                }
-              }
-            </ul>
-          </div>
-        </div>
+          <!-- === OBJECTIVES GRID === -->
+          <div class="flex-1 flex flex-col overflow-hidden min-h-0">
+            <div class="text-xs font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+              Objetivos disponibles
+              <span *ngIf="availableObjectives().length > 0" class="ml-1 opacity-60">({{ availableObjectives().length }})</span>
+            </div>
+            
+            <!-- Grid de objetivos con scroll -->
+            <div class="flex-1 overflow-y-auto pr-2 space-y-2">
+              <button
+                *ngFor="let obj of availableObjectives()"
+                type="button"
+                (click)="selectObjective(obj)"
+                [class.ring-2]="isSelected(obj)"
+                [class.ring-green-500]="isSelected(obj)"
+                [class.bg-green-50]="isSelected(obj)"
+                [class.dark:bg-green-900/20]="isSelected(obj)"
+                class="w-full p-1.5 text-left text-xs rounded-md border-1.5 transition-all
+                  border-slate-300 dark:border-slate-600
+                  bg-white dark:bg-slate-700
+                  text-slate-900 dark:text-slate-100
+                  hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20
+                  cursor-pointer group">
+                <div class="font-medium text-xs">{{ obj.name }}</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 leading-tight">
+                  {{ obj.objectiveCategoryName }}
+                  <span *ngIf="obj.objectiveSubcategoryName" class="ml-0.5">
+                    • {{ obj.objectiveSubcategoryName }}
+                  </span>
+                </div>
+              </button>
 
-        <!-- Selected Objectives -->
-        <div class="flex flex-col overflow-hidden">
-          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex-shrink-0">Objetivos Seleccionados ({{ selectedObjectives().length }})</h3>
-          <div class="flex-grow border border-slate-200 dark:border-slate-700 rounded-lg p-4 overflow-y-auto bg-slate-50 dark:bg-slate-800/50">
-            @if (selectedObjectives().length === 0) {
-              <div class="flex items-center justify-center h-full">
-                <p class="text-slate-500 dark:text-slate-400 text-center">Los objetivos seleccionados aparecerán aquí agrupados por categoría</p>
+              <!-- Empty state -->
+              <div *ngIf="availableObjectives().length === 0" class="flex items-center justify-center h-16 text-slate-500 dark:text-slate-400">
+                <p class="text-xs">Sin objetivos disponibles</p>
               </div>
-            } @else {
-              <ul class="space-y-3">
-                @for (node of selectedObjectivesTree(); track node.name) {
-                  <li class="border-l-4 border-blue-500 pl-4">
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wide">{{ node.name }}</span>
-                    @if (node.children && node.children.length > 0) {
-                      <ul class="mt-2 space-y-2 ml-2">
-                        @for (child of node.children; track child.name) {
-                          <li>
-                            <span class="font-semibold text-slate-700 dark:text-slate-300 text-sm">{{ child.name }}</span>
-                            @if (child.children && child.children.length > 0) {
-                              <ul class="mt-2 space-y-1 ml-3">
-                                @for (grandchild of child.children; track grandchild.name) {
-                                  <li class="flex items-center justify-between bg-white dark:bg-slate-900 p-3 rounded-md border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
-                                    <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">{{ grandchild.name }}</span>
-                                    @if (!viewOnlyTemplate() && grandchild.objective) {
-                                      <button 
-                                        type="button"
-                                        (click)="selectObjective(grandchild.objective)" 
-                                        class="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                      </button>
-                                    }
-                                  </li>
-                                }
-                              </ul>
-                            }
-                          </li>
-                        }
-                      </ul>
-                    }
-                  </li>
-                }
-              </ul>
-            }
+            </div>
           </div>
+
         </div>
-      }
+
       </div>
 
-      <!-- Footer -->
-      <div class="p-4 border-t border-slate-200 dark:border-slate-700">
-              <!-- Footer -->
-      <div class="flex-shrink-0 px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-end gap-4">
-        <button 
+      <!-- RIGHT COLUMN: Selected Tree (50%) -->
+      <div class="w-1/2 bg-slate-50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
+        
+        <!-- Header -->
+        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            Seleccionados
+            <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+              {{ selectedObjectives().length }}
+            </span>
+          </h3>
+        </div>
+
+        <!-- Tree content with scroll -->
+        <div class="flex-1 overflow-y-auto">
+          <!-- Tree View -->
+          <div *ngIf="selectedObjectives().length > 0" class="px-3 py-2 space-y-1">
+            <div *ngFor="let category of selectedObjectivesTree()" class="space-y-0.5">
+              <!-- Category Header -->
+              <div class="px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30">
+                <div class="text-xs font-semibold text-blue-900 dark:text-blue-300 truncate">
+                  {{ category.name }}
+                </div>
+              </div>
+
+              <!-- Subcategories -->
+              <div class="space-y-0.5 ml-1.5 text-xs">
+                <div *ngFor="let subcategory of category.children" class="space-y-0.5">
+                  <div class="px-1.5 py-0.5 rounded text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50 truncate">
+                    {{ subcategory.name }}
+                  </div>
+
+                  <!-- Objectives in Subcategory -->
+                  <div class="space-y-0.5 ml-1.5 text-xs">
+                    <div *ngFor="let item of subcategory.children" class="flex items-center justify-between gap-1 px-1.5 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700/30 group transition">
+                      <span class="text-xs text-slate-600 dark:text-slate-400 flex-1 truncate">
+                        • {{ item.name }}
+                      </span>
+                      <button
+                        *ngIf="!viewOnlyTemplate()"
+                        type="button"
+                        (click)="selectObjective(item.objective!)"
+                        class="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 text-red-500 hover:text-red-700 p-0.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="selectedObjectives().length === 0" class="flex items-center justify-center h-full text-slate-500 dark:text-slate-400">
+            <p class="text-xs text-center px-3">Haz clic en los objetivos para seleccionar</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">
+        {{ selectedObjectives().length }} objetivo(s) seleccionado(s)
+      </span>
+
+      <div class="flex gap-3">
+        <button
           type="button"
-          (click)="close.emit()" 
-          class="px-6 py-2 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 font-medium transition-colors">
+          (click)="closeModal()"
+          class="px-4 py-2 text-sm font-medium rounded-lg border border-slate-300 dark:border-slate-600
+            text-slate-900 dark:text-slate-100
+            hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
           Cancelar
         </button>
-        @if (!viewOnlyTemplate()) {
-          <button 
-            type="button"
-            (click)="saveObjectives()" 
-            [disabled]="isSaving()"
-            class="px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors flex items-center gap-2">
-            @if (isSaving()) {
-              <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-              Guardando...
-            } @else {
-              Guardar
-            }
-          </button>
-        }
-      </div>
+        <button
+          type="button"
+          (click)="saveObjectives()"
+          [disabled]="isSaving()"
+          class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white
+            hover:bg-blue-700 active:bg-blue-800
+            disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors
+            flex items-center gap-2">
+          <span *ngIf="!isSaving()">
+            {{ viewOnlyTemplate() ? 'Cerrar' : 'Guardar' }}
+          </span>
+          <span *ngIf="isSaving()" class="flex items-center gap-2">
+            <span class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></span>
+            Guardando...
+          </span>
+        </button>
       </div>
     </div>
+
   </div>
-}
+</div>

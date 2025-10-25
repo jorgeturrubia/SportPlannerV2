@@ -25,6 +25,10 @@ public class TrainingPlanRepository : ITrainingPlanRepository
         return await _context.TrainingPlans
             .Include(tp => tp.Objectives)
                 .ThenInclude(po => po.Objective)
+                    .ThenInclude(o => o.Category)
+            .Include(tp => tp.Objectives)
+                .ThenInclude(po => po.Objective)
+                    .ThenInclude(o => o.Subcategory)
             .FirstOrDefaultAsync(tp => tp.Id == id, cancellationToken);
     }
 

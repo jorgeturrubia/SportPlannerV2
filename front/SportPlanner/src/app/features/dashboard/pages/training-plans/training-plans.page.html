@@ -41,6 +41,7 @@
 <app-objective-selector
   [isOpen]="isAddObjectivesOpen()"
   [planId]="planForAddObjectives()?.id || null"
+  [initialObjectives]="planForAddObjectives()?.objectives || []"
   [viewOnly]="isViewingPlan()"
   (close)="closeObjectivesModal()"
   (objectivesChanged)="onObjectivesAdded($event)">

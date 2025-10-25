@@ -11,4 +11,10 @@ public class PlanObjectiveDto
     public string? ObjectiveDescription { get; set; }
     // Objective level (1-5)
     public int Level { get; set; } = 1;
+    
+    // Include category info for hierarchical display
+    public Guid ObjectiveCategoryId { get; set; }
+    public string? ObjectiveCategoryName { get; set; }
+    public Guid? ObjectiveSubcategoryId { get; set; }
+    public string? ObjectiveSubcategoryName { get; set; }
 }
