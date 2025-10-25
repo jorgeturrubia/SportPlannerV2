@@ -2,7 +2,7 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
-import { PlanGoalsManagerComponent } from '../../../../shared/components/plan-goals-manager/plan-goals-manager.component';
+import { ObjectiveSelectorComponent } from '../../components/objective-selector/objective-selector';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { TrainingPlansService, TrainingPlanDto } from '../../services/training-plans.service';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
@@ -10,7 +10,7 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 @Component({
   selector: 'app-training-plans-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, PlanGoalsManagerComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ObjectiveSelectorComponent],
   templateUrl: './training-plans.page.html'
 })
 export class TrainingPlansPage implements OnInit {
@@ -130,10 +130,38 @@ export class TrainingPlansPage implements OnInit {
   }
 
   // Handler invoked when modal reports objectives were added
-  onObjectivesAdded(ids: string[]): void {
-    if (ids && ids.length) {
-      this.ns.success('Objetivos añadidos al plan', 'Planes');
-      this.loadPlans();
+  async onObjectivesAdded(ids: string[]): Promise<void> {
+    const plan = this.planForAddObjectives();
+    if (!plan || !ids || ids.length === 0) {
+      return;
+    }
+
+    try {
+      this.isLoading.set(true);
+
+      // Convert objective IDs to AddObjectiveToPlanDto with default priority/targetSessions
+      const objectives = ids.map(objectiveId => ({
+        objectiveId,
+        priority: 3, // Default priority (1-5, 3 = medium)
+        targetSessions: 5 // Default target sessions
+      }));
+
+      // Call backend API to add objectives to plan
+      await this.plansService.addObjectivesToPlan(plan.id, objectives);
+
+      this.ns.success(`${ids.length} objetivo(s) añadido(s) al plan`, 'Éxito');
+      this.closeObjectivesModal();
+      
+      // Reload plans to show updated objectives
+      await this.loadPlans();
+    } catch (err: any) {
+      console.error('Failed to add objectives to plan:', err);
+      this.ns.error(
+        err?.error?.message || 'Error al añadir objetivos',
+        'Error'
+      );
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -300,3 +328,4 @@ export class TrainingPlansPage implements OnInit {
     this.selectedPlan.set(null);
   }
 }
+

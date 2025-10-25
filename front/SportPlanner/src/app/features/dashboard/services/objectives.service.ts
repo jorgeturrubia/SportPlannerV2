@@ -33,7 +33,9 @@ export interface ObjectiveDto {
   name: string;
   description: string;
   objectiveCategoryId: string;
+  objectiveCategoryName?: string | null;  // Nombre de la categoría (puede ser null del backend)
   objectiveSubcategoryId?: string;
+  objectiveSubcategoryName?: string | null;  // Nombre de la subcategoría (puede ser null del backend)
   level: ObjectiveLevel;
   isActive: boolean;
   sourceMarketplaceItemId?: string;

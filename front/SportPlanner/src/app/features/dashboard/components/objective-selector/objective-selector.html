@@ -1,0 +1,157 @@
+@if (isOpenTemplate()) {
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 z-40" (click)="closeModal()"></div>
+  
+  <!-- Modal - Full Screen -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 shadow-2xl w-full h-full flex flex-col">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">
+          {{ viewOnlyTemplate() ? 'Ver Objetivos del Plan' : 'Seleccionar Objetivos' }}
+        </h2>
+        <button 
+          type="button"
+          (click)="closeModal()" 
+          class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body - Two Column Layout -->
+      <div class="flex-grow p-6 grid grid-cols-2 gap-6 overflow-hidden">
+        <!-- Loading State -->
+        @if (isLoading()) {
+          <div class="col-span-2 flex items-center justify-center">
+            <div class="text-center">
+              <div class="w-12 h-12 border-4 border-slate-300 dark:border-slate-600 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+              <p class="text-slate-600 dark:text-slate-400">Cargando objetivos...</p>
+            </div>
+          </div>
+        }
+
+        @if (!isLoading()) {
+        <!-- Available Objectives -->
+        <div class="flex flex-col overflow-hidden">
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex-shrink-0">Objetivos Disponibles</h3>
+          <div class="relative mb-4 flex-shrink-0">
+            <input type="text" placeholder="Buscar objetivo..." class="w-full px-4 py-2 pl-10 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" [disabled]="viewOnlyTemplate()" [(ngModel)]="searchTerm">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </div>
+          <div class="flex-grow border border-slate-200 dark:border-slate-700 rounded-lg overflow-y-auto bg-slate-50 dark:bg-slate-800/50">
+            <ul class="divide-y divide-slate-200 dark:divide-slate-700">
+              @if (availableObjectives().length === 0) {
+                <li class="p-6 text-center text-slate-500 dark:text-slate-400">
+                  <p>No hay objetivos disponibles</p>
+                </li>
+              } @else {
+                @for (objective of availableObjectives(); track objective.id) {
+                  <li 
+                    class="p-4 flex justify-between items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors border-l-4 border-transparent hover:border-blue-500"
+                    (click)="selectObjective(objective)">
+                    <div class="flex-grow">
+                      <p class="font-medium text-slate-900 dark:text-slate-100">{{ objective.name }}</p>
+                      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ objective.description || 'Sin descripción' }}</p>
+                    </div>
+                    <button 
+                      type="button"
+                      class="ml-4 p-2 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex-shrink-0"
+                      [class.text-green-500]="isSelected(objective)"
+                      [class.dark:text-green-400]="isSelected(objective)"
+                      [class.bg-green-50]="isSelected(objective)"
+                      [class.dark:bg-green-900/20]="isSelected(objective)"
+                      (click)="selectObjective(objective); $event.stopPropagation()">
+                      <svg class="w-6 h-6" fill="currentColor" stroke="none" viewBox="0 0 24 24">
+                        @if (isSelected(objective)) {
+                          <path d="M10 15.172l9.192-9.193a1 1 0 111.415 1.414l-10.606 10.606a1 1 0 01-1.414 0l-4.242-4.242a1 1 0 111.414-1.414l3.035 3.029z"/>
+                        } @else {
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        }
+                      </svg>
+                    </button>
+                  </li>
+                }
+              }
+            </ul>
+          </div>
+        </div>
+
+        <!-- Selected Objectives -->
+        <div class="flex flex-col overflow-hidden">
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex-shrink-0">Objetivos Seleccionados ({{ selectedObjectives().length }})</h3>
+          <div class="flex-grow border border-slate-200 dark:border-slate-700 rounded-lg p-4 overflow-y-auto bg-slate-50 dark:bg-slate-800/50">
+            @if (selectedObjectives().length === 0) {
+              <div class="flex items-center justify-center h-full">
+                <p class="text-slate-500 dark:text-slate-400 text-center">Los objetivos seleccionados aparecerán aquí agrupados por categoría</p>
+              </div>
+            } @else {
+              <ul class="space-y-3">
+                @for (node of selectedObjectivesTree(); track node.name) {
+                  <li class="border-l-4 border-blue-500 pl-4">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wide">{{ node.name }}</span>
+                    @if (node.children && node.children.length > 0) {
+                      <ul class="mt-2 space-y-2 ml-2">
+                        @for (child of node.children; track child.name) {
+                          <li>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300 text-sm">{{ child.name }}</span>
+                            @if (child.children && child.children.length > 0) {
+                              <ul class="mt-2 space-y-1 ml-3">
+                                @for (grandchild of child.children; track grandchild.name) {
+                                  <li class="flex items-center justify-between bg-white dark:bg-slate-900 p-3 rounded-md border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">{{ grandchild.name }}</span>
+                                    @if (!viewOnlyTemplate() && grandchild.objective) {
+                                      <button 
+                                        type="button"
+                                        (click)="selectObjective(grandchild.objective)" 
+                                        class="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                      </button>
+                                    }
+                                  </li>
+                                }
+                              </ul>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+      }
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 border-t border-slate-200 dark:border-slate-700">
+              <!-- Footer -->
+      <div class="flex-shrink-0 px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-end gap-4">
+        <button 
+          type="button"
+          (click)="close.emit()" 
+          class="px-6 py-2 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 font-medium transition-colors">
+          Cancelar
+        </button>
+        @if (!viewOnlyTemplate()) {
+          <button 
+            type="button"
+            (click)="saveObjectives()" 
+            [disabled]="isSaving()"
+            class="px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors flex items-center gap-2">
+            @if (isSaving()) {
+              <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              Guardando...
+            } @else {
+              Guardar
+            }
+          </button>
+        }
+      </div>
+      </div>
+    </div>
+  </div>
+}

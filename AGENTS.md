@@ -4,6 +4,24 @@
 
 ---
 
+## 📋 POLÍTICA DE DOCUMENTACIÓN - PROHIBIDO AUTO-GENERAR .MD
+
+**⛔ REGLA OBLIGATORIA**: 
+- ❌ **NO crear archivos `.md` automáticamente** al finalizar tareas
+- ❌ **NO escribir documentos de resumen** a menos que sea explícitamente solicitado
+- ✅ **SOLO crear `.md`** si el usuario dice: "documenta esto", "escribe un resumen", "crea documentación", etc.
+
+**Excepciones permitidas** (crear .md sin pedirlo):
+- ADRs en `docs/adr/` (si la tarea requiere decisión arquitectónica)
+- Archivos de instrucciones (AGENTS.md)
+- Cambios críticos a este mismo archivo (AGENTS.md)
+
+**Conducta esperada**:
+- Ejecuta la tarea → Informa qué hizo → Espera siguiente instrucción
+- Si el usuario quiere documentación, lo dirá explícitamente
+
+---
+
 ## 🎯 Quick Start
 
 **Before making ANY changes:**

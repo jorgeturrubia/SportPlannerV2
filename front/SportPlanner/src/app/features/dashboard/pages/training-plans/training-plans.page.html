@@ -38,10 +38,10 @@
   (cancel)="closeForm()">
 </app-dynamic-form>
 
-<app-plan-goals-manager
+<app-objective-selector
   [isOpen]="isAddObjectivesOpen()"
-  [planId]="currentPlanId()"
+  [planId]="planForAddObjectives()?.id || null"
   [viewOnly]="isViewingPlan()"
   (close)="closeObjectivesModal()"
-  (changed)="onObjectivesAdded([])">
-</app-plan-goals-manager>
+  (objectivesChanged)="onObjectivesAdded($event)">
+</app-objective-selector>
