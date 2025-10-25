@@ -70,15 +70,33 @@ export class TrainingPlansService {
   }
 
   async getPlan(id: string): Promise<TrainingPlanDto> {
-    return await this.http.get<TrainingPlanDto>(`${this.apiUrl}/${id}`).toPromise() as TrainingPlanDto;
+    console.log('📡 TrainingPlansService.getPlan - Requesting plan with ID:', id);
+    const plan = await this.http.get<TrainingPlanDto>(`${this.apiUrl}/${id}`).toPromise() as TrainingPlanDto;
+    console.log('📥 TrainingPlansService.getPlan - Received plan:', plan);
+    console.log('📥 startDate type:', typeof plan.startDate, 'value:', plan.startDate);
+    console.log('📥 endDate type:', typeof plan.endDate, 'value:', plan.endDate);
+    return plan;
   }
 
   async createPlan(dto: CreateTrainingPlanDto): Promise<{ id: string }> {
-    return await this.http.post<{ id: string }>(this.apiUrl, dto).toPromise() as { id: string };
+    console.log('📤 TrainingPlansService.createPlan - Sending DTO:', dto);
+    console.log('📤 startDate type:', typeof dto.startDate, 'value:', dto.startDate);
+    console.log('📤 endDate type:', typeof dto.endDate, 'value:', dto.endDate);
+
+    const result = await this.http.post<{ id: string }>(this.apiUrl, dto).toPromise() as { id: string };
+
+    console.log('📥 TrainingPlansService.createPlan - Response:', result);
+    return result;
   }
 
   async updatePlan(id: string, dto: UpdateTrainingPlanDto): Promise<void> {
+    console.log('📤 TrainingPlansService.updatePlan - ID:', id, 'DTO:', dto);
+    console.log('📤 startDate type:', typeof dto.startDate, 'value:', dto.startDate);
+    console.log('📤 endDate type:', typeof dto.endDate, 'value:', dto.endDate);
+
     await this.http.put<void>(`${this.apiUrl}/${id}`, dto).toPromise();
+
+    console.log('📥 TrainingPlansService.updatePlan - Success for ID:', id);
   }
 
   async addObjectiveToPlan(planId: string, dto: AddObjectiveToPlanDto): Promise<void> {

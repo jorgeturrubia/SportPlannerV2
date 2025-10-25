@@ -1,4 +1,5 @@
 using MediatR;
+using SportPlanner.Application.Common;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Domain.ValueObjects;
 
@@ -24,6 +25,15 @@ public class UpdateTrainingPlanCommandHandler : IRequestHandler<UpdateTrainingPl
     {
         var userId = _currentUserService.GetUserId();
         var dto = request.TrainingPlan;
+
+        // 🔍 LOGGING: Debug incoming data
+        Console.WriteLine($"🔍 UpdateTrainingPlanCommandHandler - DTO received:");
+        Console.WriteLine($"🔍 Id: {dto.Id}");
+        Console.WriteLine($"🔍 Name: {dto.Name}");
+        Console.WriteLine($"🔍 StartDate: {dto.StartDate} (Type: {dto.StartDate.GetType()})");
+        Console.WriteLine($"🔍 EndDate: {dto.EndDate} (Type: {dto.EndDate.GetType()})");
+        Console.WriteLine($"🔍 StartDate.Kind: {dto.StartDate.Kind}");
+        Console.WriteLine($"🔍 EndDate.Kind: {dto.EndDate.Kind}");
 
         // Get user's subscription
         var subscription = await _subscriptionRepository.GetByOwnerIdAsync(userId, cancellationToken)
@@ -53,8 +63,14 @@ public class UpdateTrainingPlanCommandHandler : IRequestHandler<UpdateTrainingPl
             hoursPerDay,
             dto.Schedule.TotalWeeks);
 
+        // Ensure dates are UTC (Postgres timestamptz requires UTC or DateTimeOffset)
+
+        var startDateUtc = dto.StartDate.ToUtcKind();
+        var endDateUtc = dto.EndDate.ToUtcKind();
+
+
         // Update training plan
-        trainingPlan.Update(dto.Name, dto.StartDate, dto.EndDate, schedule);
+        trainingPlan.Update(dto.Name, startDateUtc, endDateUtc, schedule);
 
         await _trainingPlanRepository.UpdateAsync(trainingPlan, cancellationToken);
 

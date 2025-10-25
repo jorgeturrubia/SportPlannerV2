@@ -77,7 +77,7 @@ export class TrainingPlansPage implements OnInit {
       icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
       label: 'Editar',
       color: 'green',
-      handler: (row) => this.openEditForm(row)
+      handler: async (row) => await this.openEditForm(row)
     }
     ,
     {
@@ -155,18 +155,43 @@ export class TrainingPlansPage implements OnInit {
     this.isFormOpen.set(true);
   }
 
-  openEditForm(plan: TrainingPlanDto): void {
-    // Map the plan data to form structure
-    const formData = {
-      ...plan,
-      sessionsPerWeek: plan.schedule?.totalSessions ? Math.round(plan.schedule.totalSessions / plan.schedule.totalWeeks) : 0,
-      hoursPerSession: plan.schedule?.totalHours && plan.schedule?.totalSessions
-        ? Math.round(plan.schedule.totalHours / plan.schedule.totalSessions)
-        : 0
-    };
-    this.selectedPlan.set(formData as any);
-    this.formTitle = `Edit ${plan.name}`;
-    this.isFormOpen.set(true);
+  async openEditForm(plan: TrainingPlanDto): Promise<void> {
+    try {
+      console.log('📝 openEditForm - Loading fresh data for plan ID:', plan.id);
+
+      // Load fresh data from backend instead of using list data
+      const freshPlan = await this.plansService.getPlan(plan.id);
+      console.log('📝 openEditForm - Fresh plan data loaded:', freshPlan);
+
+      console.log('📝 startDate from backend:', freshPlan.startDate, 'type:', typeof freshPlan.startDate);
+      console.log('📝 endDate from backend:', freshPlan.endDate, 'type:', typeof freshPlan.endDate);
+
+      // Convert dates from ISO strings to YYYY-MM-DD format for HTML date inputs
+      const startDateFormatted = freshPlan.startDate ? new Date(freshPlan.startDate).toISOString().split('T')[0] : '';
+      const endDateFormatted = freshPlan.endDate ? new Date(freshPlan.endDate).toISOString().split('T')[0] : '';
+
+      console.log('📝 Converted startDate for form:', startDateFormatted);
+      console.log('📝 Converted endDate for form:', endDateFormatted);
+
+      // Map the plan data to form structure
+      const formData = {
+        ...freshPlan,
+        startDate: startDateFormatted,
+        endDate: endDateFormatted,
+        sessionsPerWeek: freshPlan.schedule?.totalSessions ? Math.round(freshPlan.schedule.totalSessions / freshPlan.schedule.totalWeeks) : 0,
+        hoursPerSession: freshPlan.schedule?.totalHours && freshPlan.schedule?.totalSessions
+          ? Math.round(freshPlan.schedule.totalHours / freshPlan.schedule.totalSessions)
+          : 0
+      };
+
+      console.log('📝 Final formData for editing:', formData);
+      this.selectedPlan.set(formData as any);
+      this.formTitle = `Edit ${freshPlan.name}`;
+      this.isFormOpen.set(true);
+    } catch (error) {
+      console.error('❌ Error loading plan for editing:', error);
+      // TODO: Show error notification to user
+    }
   }
 
   viewPlan(plan: TrainingPlanDto): void {
@@ -181,11 +206,21 @@ export class TrainingPlansPage implements OnInit {
     const selected = this.selectedPlan();
 
     try {
+      console.log('🔍 Form data received:', formData);
+      console.log('🔍 startDate type:', typeof formData.startDate, 'value:', formData.startDate);
+      console.log('🔍 endDate type:', typeof formData.endDate, 'value:', formData.endDate);
+
       // Calculate training schedule based on form data
       const startDate = new Date(formData.startDate);
       const endDate = new Date(formData.endDate);
+
+      console.log('🔍 Parsed startDate:', startDate, 'isValid:', !isNaN(startDate.getTime()));
+      console.log('🔍 Parsed endDate:', endDate, 'isValid:', !isNaN(endDate.getTime()));
+
       const durationDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
       const totalWeeks = Math.ceil(durationDays / 7);
+
+      console.log('🔍 Calculated durationDays:', durationDays, 'totalWeeks:', totalWeeks);
 
       // Generate training days based on sessions per week
       const sessionsPerWeek = Number(formData.sessionsPerWeek);
@@ -203,13 +238,19 @@ export class TrainingPlansPage implements OnInit {
         hoursPerDay[day] = hoursPerSession;
       }
 
+      // Convert dates to ISO string format for backend
+      const startDateISO = startDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const endDateISO = endDate.toISOString().split('T')[0];
+
+      console.log('🔍 Converted to ISO format - startDate:', startDateISO, 'endDate:', endDateISO);
+
       if (selected) {
         // Update existing plan
         const updateDto = {
           id: selected.id,
           name: formData.name,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
+          startDate: startDateISO,
+          endDate: endDateISO,
           schedule: {
             trainingDays,
             hoursPerDay,
@@ -219,14 +260,16 @@ export class TrainingPlansPage implements OnInit {
           },
           isActive: formData.isActive ?? selected.isActive
         };
+
+        console.log('🔍 Update DTO:', updateDto);
         await this.plansService.updatePlan(selected.id, updateDto);
         this.ns.success('Plan actualizado', 'Planes de Entrenamiento');
       } else {
         // Create new plan
         const createDto = {
           name: formData.name,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
+          startDate: startDateISO,
+          endDate: endDateISO,
           schedule: {
             trainingDays,
             hoursPerDay,
@@ -237,6 +280,8 @@ export class TrainingPlansPage implements OnInit {
           isActive: formData.isActive ?? true,
           objectives: []
         };
+
+        console.log('🔍 Create DTO:', createDto);
         await this.plansService.createPlan(createDto);
         this.ns.success('Plan creado', 'Planes de Entrenamiento');
       }
@@ -244,7 +289,7 @@ export class TrainingPlansPage implements OnInit {
       await this.loadPlans();
       this.closeForm();
     } catch (err: any) {
-      console.error('Failed to save training plan:', err);
+      console.error('❌ Failed to save training plan:', err);
       this.error.set(err.message || 'Failed to save plan');
       this.ns.error(err?.message ?? 'No se pudo guardar el plan', 'Error');
     }

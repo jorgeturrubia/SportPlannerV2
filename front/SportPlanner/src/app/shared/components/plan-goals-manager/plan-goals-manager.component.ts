@@ -517,4 +517,8 @@ export class PlanGoalsManagerComponent implements OnInit {
     
     return result;
   }
-}
+
+  // Método para determinar si un objetivo está seleccionado (ya asignado al plan)
+  isObjectiveSelected(objectiveId: string): boolean {
+    return this.selectedGoalIds().has(objectiveId);
+  }

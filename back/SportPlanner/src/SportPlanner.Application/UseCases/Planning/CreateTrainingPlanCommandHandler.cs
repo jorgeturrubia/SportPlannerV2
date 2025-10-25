@@ -1,4 +1,5 @@
 using MediatR;
+using SportPlanner.Application.Common;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Domain.Entities.Planning;
 using SportPlanner.Domain.ValueObjects;
@@ -29,6 +30,14 @@ public class CreateTrainingPlanCommandHandler : IRequestHandler<CreateTrainingPl
         var userId = _currentUserService.GetUserId();
         var dto = request.TrainingPlan;
 
+        // 🔍 LOGGING: Debug incoming data
+        Console.WriteLine($"🔍 CreateTrainingPlanCommandHandler - DTO received:");
+        Console.WriteLine($"🔍 Name: {dto.Name}");
+        Console.WriteLine($"🔍 StartDate: {dto.StartDate} (Type: {dto.StartDate.GetType()})");
+        Console.WriteLine($"🔍 EndDate: {dto.EndDate} (Type: {dto.EndDate.GetType()})");
+        Console.WriteLine($"🔍 StartDate.Kind: {dto.StartDate.Kind}");
+        Console.WriteLine($"🔍 EndDate.Kind: {dto.EndDate.Kind}");
+
         // Get user's subscription
         var subscription = await _subscriptionRepository.GetByOwnerIdAsync(userId, cancellationToken)
             ?? throw new InvalidOperationException("User does not have an active subscription");
@@ -48,14 +57,13 @@ public class CreateTrainingPlanCommandHandler : IRequestHandler<CreateTrainingPl
             dto.Schedule?.TotalWeeks ?? 0);
 
         // Ensure dates are UTC (Postgres timestamptz requires UTC or DateTimeOffset)
-        DateTime ToUtcKind(DateTime dt)
-        {
-            if (dt == default) return dt;
-            return dt.Kind == DateTimeKind.Utc ? dt : DateTime.SpecifyKind(dt, DateTimeKind.Utc);
-        }
 
-        var startDateUtc = ToUtcKind(dto.StartDate);
-        var endDateUtc = ToUtcKind(dto.EndDate);
+        var startDateUtc = dto.StartDate.ToUtcKind();
+        var endDateUtc = dto.EndDate.ToUtcKind();
+
+        Console.WriteLine($"🔍 After ToUtcKind conversion:");
+        Console.WriteLine($"🔍 startDateUtc: {startDateUtc} (Kind: {startDateUtc.Kind})");
+        Console.WriteLine($"🔍 endDateUtc: {endDateUtc} (Kind: {endDateUtc.Kind})");
 
         // Create training plan
         var trainingPlan = new TrainingPlan(
