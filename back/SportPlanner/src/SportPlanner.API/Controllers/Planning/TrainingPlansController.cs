@@ -126,6 +126,20 @@ public class TrainingPlansController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Delete a training plan
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeletePlan(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteTrainingPlanCommand(id);
+        await _mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
 }
 
 public class AddObjectiveToPlanRequest

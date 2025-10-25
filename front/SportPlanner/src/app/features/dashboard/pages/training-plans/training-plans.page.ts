@@ -82,9 +82,16 @@ export class TrainingPlansPage implements OnInit {
     ,
     {
       icon: 'M16 7l-8 8m0-8l8 8',
-      label: 'Agregar Objetivos',
+      label: 'Asignar Objetivos',
       color: 'yellow',
       handler: async (row) => await this.openManageObjectives(row),
+      showLabel: true
+    },
+    {
+      icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3H4v2h16V7h-3z',
+      label: 'Eliminar',
+      color: 'red',
+      handler: async (row) => await this.deletePlan(row),
       showLabel: true
     }
   ];
@@ -249,6 +256,30 @@ export class TrainingPlansPage implements OnInit {
     } catch (error) {
       console.error('❌ Error loading plan for managing objectives:', error);
       this.ns.error('Error al cargar el plan', 'Error');
+    }
+  }
+
+  async deletePlan(plan: TrainingPlanDto): Promise<void> {
+    try {
+      const confirmed = confirm(`¿Estás seguro de que quieres eliminar el plan "${plan.name}"?`);
+      if (!confirmed) {
+        return;
+      }
+
+      this.isLoading.set(true);
+      await this.plansService.deletePlan(plan.id);
+      this.ns.success(`Plan "${plan.name}" eliminado correctamente`, 'Éxito');
+      
+      // Reload plans to update the list
+      await this.loadPlans();
+    } catch (err: any) {
+      console.error('❌ Error deleting plan:', err);
+      this.ns.error(
+        err?.error?.message || 'Error al eliminar el plan',
+        'Error'
+      );
+    } finally {
+      this.isLoading.set(false);
     }
   }
 

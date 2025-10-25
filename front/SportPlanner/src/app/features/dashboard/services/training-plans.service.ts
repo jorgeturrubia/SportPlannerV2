@@ -117,4 +117,10 @@ export class TrainingPlansService {
   async removeObjectiveFromPlan(planId: string, objectiveId: string): Promise<void> {
     await this.http.delete<void>(`${this.apiUrl}/${planId}/objectives/${objectiveId}`).toPromise();
   }
+
+  async deletePlan(id: string): Promise<void> {
+    console.log('📤 TrainingPlansService.deletePlan - Deleting plan ID:', id);
+    await this.http.delete<void>(`${this.apiUrl}/${id}`).toPromise();
+    console.log('✅ TrainingPlansService.deletePlan - Plan deleted successfully');
+  }
 }
