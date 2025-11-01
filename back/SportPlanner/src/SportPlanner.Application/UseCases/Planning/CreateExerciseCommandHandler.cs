@@ -8,18 +8,15 @@ namespace SportPlanner.Application.UseCases.Planning;
 public class CreateExerciseCommandHandler : IRequestHandler<CreateExerciseCommand, Guid>
 {
     private readonly IExerciseRepository _exerciseRepository;
-    private readonly IExerciseTypeRepository _typeRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly ICurrentUserService _currentUserService;
 
     public CreateExerciseCommandHandler(
         IExerciseRepository exerciseRepository,
-        IExerciseTypeRepository typeRepository,
         ISubscriptionRepository subscriptionRepository,
         ICurrentUserService currentUserService)
     {
         _exerciseRepository = exerciseRepository;
-        _typeRepository = typeRepository;
         _subscriptionRepository = subscriptionRepository;
         _currentUserService = currentUserService;
     }
@@ -33,11 +30,6 @@ public class CreateExerciseCommandHandler : IRequestHandler<CreateExerciseComman
         var subscription = await _subscriptionRepository.GetByOwnerIdAsync(userId, cancellationToken)
             ?? throw new InvalidOperationException("User does not have an active subscription");
 
-        // Validate type exists
-        if (!await _typeRepository.ExistsAsync(dto.TypeId, cancellationToken))
-        {
-            throw new InvalidOperationException($"Type with ID {dto.TypeId} does not exist");
-        }
 
         // Create exercise
         var exercise = new Exercise(
