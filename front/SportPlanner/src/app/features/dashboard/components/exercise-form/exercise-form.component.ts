@@ -7,8 +7,6 @@ import { ObjectivesService, ObjectiveDto } from '../../services/objectives.servi
 export interface ExerciseFormData {
   name: string;
   description: string;
-  categoryId: string;
-  typeId: string;
   instructions?: string;
   defaultSets?: number;
   defaultReps?: number;
@@ -19,8 +17,7 @@ export interface ExerciseFormData {
 }
 
 export interface ExerciseFormConfig {
-  categories: { id: string; name: string }[];
-  types: { id: string; name: string }[];
+  // Previously included categories/types; removed because backend no longer exposes exercise categories/types
 }
 
 @Component({
@@ -81,8 +78,6 @@ export class ExerciseFormComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', [Validators.required]],
       description: ['', [Validators.required]],
-      categoryId: ['', [Validators.required]],
-      typeId: ['', [Validators.required]],
       instructions: [''],
       defaultSets: [''],
       defaultReps: [''],

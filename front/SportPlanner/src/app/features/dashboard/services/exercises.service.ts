@@ -9,10 +9,6 @@ export interface ExerciseDto {
   ownership: ContentOwnership;
   name: string;
   description: string;
-  categoryId: string;
-  categoryName: string;
-  typeId: string;
-  typeName: string;
   videoUrl?: string;
   imageUrl?: string;
   instructions?: string;
@@ -29,8 +25,6 @@ export interface ExerciseDto {
 export interface CreateExerciseDto {
   name: string;
   description: string;
-  categoryId: string;
-  typeId: string;
   videoUrl?: string;
   imageUrl?: string;
   instructions?: string;
@@ -45,8 +39,6 @@ export interface UpdateExerciseDto {
   id: string;
   name: string;
   description: string;
-  categoryId: string;
-  typeId: string;
   videoUrl?: string;
   imageUrl?: string;
   instructions?: string;
