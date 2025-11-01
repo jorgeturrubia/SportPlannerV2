@@ -9,6 +9,8 @@
 **⛔ REGLA OBLIGATORIA**: 
 - ❌ **NO crear archivos `.md` automáticamente** al finalizar tareas
 - ❌ **NO escribir documentos de resumen** a menos que sea explícitamente solicitado
+- ❌ **NO terminar con "Resumen de lo implementado"** o similares
+- ❌ **NO crear documentación de cambios** al finalizar
 - ✅ **SOLO crear `.md`** si el usuario dice: "documenta esto", "escribe un resumen", "crea documentación", etc.
 
 **Excepciones permitidas** (crear .md sin pedirlo):
@@ -17,8 +19,9 @@
 - Cambios críticos a este mismo archivo (AGENTS.md)
 
 **Conducta esperada**:
-- Ejecuta la tarea → Informa qué hizo → Espera siguiente instrucción
-- Si el usuario quiere documentación, lo dirá explícitamente
+- Ejecuta la tarea → Informa brevemente qué hizo → Espera siguiente instrucción
+- NO añadas resúmenes extensos, bullet points de cambios, o documentación detallada
+- Si el usuario quiere documentación o un resumen detallado, lo dirá explícitamente
 
 ---
 

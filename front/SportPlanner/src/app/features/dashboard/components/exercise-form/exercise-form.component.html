@@ -1,0 +1,279 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+       (click)="onCancel()">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+         (click)="$event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ title() }}</h2>
+        <button type="button"
+                (click)="onCancel()"
+                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="flex-1 overflow-y-auto p-6">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          
+          <!-- Basic Information Section -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Información Básica</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Name -->
+              <div class="md:col-span-2">
+                <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Nombre del Ejercicio <span class="text-red-500">*</span>
+                </label>
+                <input type="text"
+                       id="name"
+                       formControlName="name"
+                       class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                              bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                              focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                              disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+                       placeholder="Ej: 1v1 con cambio de mano">
+                @if (getFieldError('name')) {
+                  <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ getFieldError('name') }}</p>
+                }
+              </div>
+
+              <!-- Category -->
+              <div>
+                <label for="categoryId" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Categoría <span class="text-red-500">*</span>
+                </label>
+                <select id="categoryId"
+                        formControlName="categoryId"
+                        class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                               bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Seleccionar categoría</option>
+                  @for (category of config().categories; track category.id) {
+                    <option [value]="category.id">{{ category.name }}</option>
+                  }
+                </select>
+                @if (getFieldError('categoryId')) {
+                  <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ getFieldError('categoryId') }}</p>
+                }
+              </div>
+
+              <!-- Type -->
+              <div>
+                <label for="typeId" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Tipo <span class="text-red-500">*</span>
+                </label>
+                <select id="typeId"
+                        formControlName="typeId"
+                        class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                               bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Seleccionar tipo</option>
+                  @for (type of config().types; track type.id) {
+                    <option [value]="type.id">{{ type.name }}</option>
+                  }
+                </select>
+                @if (getFieldError('typeId')) {
+                  <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ getFieldError('typeId') }}</p>
+                }
+              </div>
+
+              <!-- Description -->
+              <div class="md:col-span-2">
+                <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Descripción <span class="text-red-500">*</span>
+                </label>
+                <textarea id="description"
+                          formControlName="description"
+                          rows="3"
+                          class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                                 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                                 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                          placeholder="Describe el ejercicio en detalle"></textarea>
+                @if (getFieldError('description')) {
+                  <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ getFieldError('description') }}</p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Objectives Section -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Objetivos Trabajados</h3>
+              <button type="button"
+                      (click)="openObjectiveSelector()"
+                      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg 
+                             transition-colors flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Asignar Objetivos</span>
+              </button>
+            </div>
+            
+            @if (selectedObjectiveIds().length === 0) {
+              <div class="text-center py-8 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg">
+                <svg class="w-12 h-12 mx-auto text-slate-400 dark:text-slate-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <p class="text-slate-600 dark:text-slate-400">No hay objetivos asignados</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500 mt-1">Haz clic en "Asignar Objetivos" para seleccionar</p>
+              </div>
+            } @else {
+              <div class="space-y-2">
+                @for (objective of selectedObjectivesWithNames(); track objective.id) {
+                  <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-3">
+                      <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span class="text-slate-900 dark:text-slate-100">{{ objective.name }}</span>
+                    </div>
+                    <button type="button"
+                            (click)="removeObjective(objective.id)"
+                            class="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors">
+                      <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Additional Details Section -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Detalles Adicionales</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <!-- Default Sets -->
+              <div>
+                <label for="defaultSets" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Series por Defecto
+                </label>
+                <input type="number"
+                       id="defaultSets"
+                       formControlName="defaultSets"
+                       min="1"
+                       class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                              bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                              focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       placeholder="3">
+              </div>
+
+              <!-- Default Reps -->
+              <div>
+                <label for="defaultReps" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Repeticiones por Defecto
+                </label>
+                <input type="number"
+                       id="defaultReps"
+                       formControlName="defaultReps"
+                       min="1"
+                       class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                              bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                              focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       placeholder="10">
+              </div>
+
+              <!-- Default Duration -->
+              <div>
+                <label for="defaultDurationSeconds" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Duración (segundos)
+                </label>
+                <input type="number"
+                       id="defaultDurationSeconds"
+                       formControlName="defaultDurationSeconds"
+                       min="1"
+                       class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                              bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                              focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       placeholder="60">
+              </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="mb-4">
+              <label for="instructions" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Instrucciones
+              </label>
+              <textarea id="instructions"
+                        formControlName="instructions"
+                        rows="4"
+                        class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                               bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        placeholder="Pasos detallados para ejecutar el ejercicio"></textarea>
+            </div>
+
+            <!-- Media URLs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Video URL -->
+              <div>
+                <label for="videoUrl" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  URL del Video
+                </label>
+                <input type="url"
+                       id="videoUrl"
+                       formControlName="videoUrl"
+                       class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                              bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                              focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       placeholder="https://youtube.com/...">
+              </div>
+
+              <!-- Image URL -->
+              <div>
+                <label for="imageUrl" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  URL de la Imagen
+                </label>
+                <input type="url"
+                       id="imageUrl"
+                       formControlName="imageUrl"
+                       class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                              bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100
+                              focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       placeholder="https://...">
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-end gap-3 p-6 border-t border-slate-200 dark:border-slate-700">
+        <button type="button"
+                (click)="onCancel()"
+                class="px-6 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 
+                       hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          Cancelar
+        </button>
+        <button type="submit"
+                (click)="onSubmit()"
+                [disabled]="form.invalid"
+                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed 
+                       text-white rounded-lg transition-colors">
+          {{ initialData() ? 'Actualizar' : 'Crear' }} Ejercicio
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Objective Selector Modal -->
+  <app-objective-selector
+    [isOpen]="showObjectiveSelector()"
+    [contextId]="initialData()?.id ?? null"
+    contextType="exercise"
+    [initialObjectives]="initialObjectivesForSelector()"
+    (close)="closeObjectiveSelector()"
+    (objectivesChanged)="onObjectivesChanged($event)">
+  </app-objective-selector>
+}

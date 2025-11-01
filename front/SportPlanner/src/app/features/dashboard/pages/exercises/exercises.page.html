@@ -26,24 +26,14 @@
   </app-data-table>
 </div>
 
-<app-dynamic-form
+<app-exercise-form
   [isOpen]="isFormOpen()"
   [title]="formTitle"
   [config]="formConfig()"
   [initialData]="selectedExercise()"
   (formSubmit)="handleFormSubmit($event)"
   (cancel)="closeForm()">
-</app-dynamic-form>
-
-<!-- Generic Objective Selector Modal - works for both plans and exercises -->
-<app-objective-selector
-  [isOpen]="isFormOpen()"
-  [contextId]="selectedExercise()?.id ?? null"
-  contextType="exercise"
-  [initialObjectives]="initialObjectivesForSelector()"
-  (close)="closeForm()"
-  (objectivesChanged)="selectedObjectiveIds.set($event)">
-</app-objective-selector>
+</app-exercise-form>
 
 <app-confirmation-dialog
   [isOpen]="isConfirmDialogOpen()"

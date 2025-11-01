@@ -1,0 +1,90 @@
+/* Exercise Form Component Styles */
+
+/* Modal animation */
+:host ::ng-deep .fixed {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Form sections spacing */
+.mb-6:not(:last-child) {
+  position: relative;
+}
+
+.mb-6:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgb(226 232 240 / 0.5), transparent);
+}
+
+:host-context(.dark) .mb-6:not(:last-child)::after {
+  background: linear-gradient(to right, transparent, rgb(51 65 85 / 0.5), transparent);
+}
+
+/* Input focus states */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+/* Number input styling */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* Scrollbar styling */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225) transparent;
+}
+
+:host-context(.dark) .overflow-y-auto {
+  scrollbar-color: rgb(71 85 105) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgb(203 213 225);
+  border-radius: 4px;
+}
+
+:host-context(.dark) .overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgb(71 85 105);
+}
+
+/* Objective list animations */
+.space-y-2 > div {
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

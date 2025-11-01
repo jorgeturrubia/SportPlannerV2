@@ -2,8 +2,7 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
-import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
-import { ObjectiveSelectorComponent } from '../../components/objective-selector/objective-selector';
+import { ExerciseFormComponent, ExerciseFormConfig, ExerciseFormData } from '../../components/exercise-form/exercise-form.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ExercisesService, ExerciseDto } from '../../services/exercises.service';
 import { ExerciseCategoriesService } from '../../services/exercise-categories.service';
@@ -14,7 +13,7 @@ import { ContentOwnership } from '../../services/objectives.service';
 @Component({
   selector: 'app-exercises-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent, ObjectiveSelectorComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, ExerciseFormComponent, ConfirmationDialogComponent],
   templateUrl: './exercises.page.html'
 })
 export class ExercisesPage implements OnInit {
@@ -32,13 +31,6 @@ export class ExercisesPage implements OnInit {
   selectedExercise = signal<ExerciseDto | null>(null);
   formTitle = 'Add Exercise';
   isConfirmDialogOpen = signal(false);
-  // objectives selection for the create/edit form
-  selectedObjectiveIds = signal<string[]>([]);
-
-  // Computed: map objective IDs to objects for the selector
-  initialObjectivesForSelector = computed(() => 
-    this.selectedObjectiveIds().map(id => ({ objectiveId: id }))
-  );
 
   columns = computed<TableColumn[]>(() => [
     { key: 'name', label: 'Nombre', sortable: true },
@@ -80,28 +72,10 @@ export class ExercisesPage implements OnInit {
     }
   ];
 
-  formConfig = computed<FormField[]>(() => [
-    { key: 'name', label: 'Nombre', type: 'text', required: true },
-    { key: 'description', label: 'Descripción', type: 'textarea', required: true },
-    {
-      key: 'categoryId',
-      label: 'Categoría',
-      type: 'select',
-      required: true,
-      options: this.categories().map(c => ({ value: c.id, label: c.name }))
-    },
-    {
-      key: 'typeId',
-      label: 'Tipo',
-      type: 'select',
-      required: true,
-      options: this.types().map(t => ({ value: t.id, label: t.name }))
-    },
-    { key: 'instructions', label: 'Instrucciones', type: 'textarea', required: false },
-    { key: 'defaultSets', label: 'Series por Defecto', type: 'number', required: false },
-    { key: 'defaultReps', label: 'Repeticiones por Defecto', type: 'number', required: false },
-    { key: 'defaultDurationSeconds', label: 'Duración por Defecto (seg)', type: 'number', required: false }
-  ]);
+  formConfig = computed<ExerciseFormConfig>(() => ({
+    categories: this.categories().map(c => ({ id: c.id, name: c.name })),
+    types: this.types().map(t => ({ id: t.id, name: t.name }))
+  }));
 
   async ngOnInit(): Promise<void> {
     await Promise.all([
@@ -151,28 +125,25 @@ export class ExercisesPage implements OnInit {
 
   openAddForm(): void {
     this.selectedExercise.set(null);
-    this.selectedObjectiveIds.set([]);
-    this.formTitle = 'Add Exercise';
+    this.formTitle = 'Nuevo Ejercicio';
     this.isFormOpen.set(true);
   }
 
   openEditForm(exercise: ExerciseDto): void {
     this.selectedExercise.set(exercise);
-    this.formTitle = `Edit ${exercise.name}`;
+    this.formTitle = `Editar ${exercise.name}`;
     this.isFormOpen.set(true);
   }
 
-  async handleFormSubmit(formData: any): Promise<void> {
+  async handleFormSubmit(formData: ExerciseFormData): Promise<void> {
     const selected = this.selectedExercise();
     try {
       if (selected) {
-        // include selected objectives ids in the payload if any
-        const payload = { ...formData, id: selected.id, objectiveIds: this.selectedObjectiveIds() };
+        const payload = { ...formData, id: selected.id };
         await this.exercisesService.updateExercise(selected.id, payload as any);
         this.ns.success('Ejercicio actualizado', 'Ejercicios');
       } else {
-        const payload = { ...formData, objectiveIds: this.selectedObjectiveIds() };
-        await this.exercisesService.createExercise(payload as any);
+        await this.exercisesService.createExercise(formData as any);
         this.ns.success('Ejercicio creado', 'Ejercicios');
       }
       await this.loadExercises();
@@ -186,7 +157,6 @@ export class ExercisesPage implements OnInit {
   closeForm(): void {
     this.isFormOpen.set(false);
     this.selectedExercise.set(null);
-    this.selectedObjectiveIds.set([]);
   }
 
   openDeleteConfirm(exercise: ExerciseDto): void {
