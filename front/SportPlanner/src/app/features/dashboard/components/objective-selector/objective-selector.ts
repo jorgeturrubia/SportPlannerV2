@@ -40,7 +40,17 @@ export class ObjectiveSelectorComponent implements OnInit {
   }
   private isOpenSignal = signal(false);
 
-  @Input() planId: string | null = null;
+  // Genérico: puede ser planId, exerciseId, o cualquier contextId
+  @Input() contextId: string | null = null;
+  @Input() contextType: 'plan' | 'exercise' | 'custom' = 'plan'; // Tipo de contexto
+  
+  // Deprecated: mantener planId por compatibilidad
+  @Input() set planId(value: string | null) {
+    if (value) {
+      this.contextId = value;
+      this.contextType = 'plan';
+    }
+  }
 
   @Input() set initialObjectives(value: any[]) {
     console.log('🔄 initialObjectives setter called with:', value?.length ?? 0, 'items');

@@ -33,9 +33,17 @@
   [initialData]="selectedExercise()"
   (formSubmit)="handleFormSubmit($event)"
   (cancel)="closeForm()">
-  <!-- Project objective suggester into the form -->
-  <app-objective-suggester [initialSelected]="selectedObjectiveIds()" (selectionChange)="selectedObjectiveIds.set($event)"></app-objective-suggester>
 </app-dynamic-form>
+
+<!-- Generic Objective Selector Modal - works for both plans and exercises -->
+<app-objective-selector
+  [isOpen]="isFormOpen()"
+  [contextId]="selectedExercise()?.id ?? null"
+  contextType="exercise"
+  [initialObjectives]="initialObjectivesForSelector()"
+  (close)="closeForm()"
+  (objectivesChanged)="selectedObjectiveIds.set($event)">
+</app-objective-selector>
 
 <app-confirmation-dialog
   [isOpen]="isConfirmDialogOpen()"
