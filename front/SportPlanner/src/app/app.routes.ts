@@ -55,6 +55,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/pages/workouts/workouts.page').then(m => m.WorkoutsPage)
       },
       {
+        path: 'exercise-demo',
+        loadChildren: () => import('./features/exercise-demo/exercise-demo.routes').then(m => m.EXERCISE_DEMO_ROUTES)
+      },
+      {
         path: 'calendar',
         loadComponent: () => import('./features/dashboard/pages/calendar/calendar.page').then(m => m.CalendarPage)
       },

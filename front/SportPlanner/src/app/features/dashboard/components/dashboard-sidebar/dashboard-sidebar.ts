@@ -119,4 +119,8 @@ export class DashboardSidebar {
   goToWorkouts() {
     this.router.navigate(['/dashboard/workouts']);
   }
+
+  goToExerciseDemo() {
+    this.router.navigate(['/dashboard/exercise-demo']);
+  }
 }

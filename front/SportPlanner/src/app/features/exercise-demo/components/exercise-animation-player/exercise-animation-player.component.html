@@ -1,0 +1,265 @@
+<div class="exercise-player-container">
+  <!-- Header con información del ejercicio -->
+  <div class="exercise-header">
+    <div class="exercise-info">
+      <h2 class="exercise-title">{{ exercise().name }}</h2>
+      <p class="exercise-description">{{ exercise().description }}</p>
+      <div class="exercise-meta">
+        <span class="meta-tag" [class]="'difficulty-' + exercise().metadata?.difficulty">
+          {{ exercise().metadata?.difficulty || 'intermediate' }}
+        </span>
+        <span class="meta-tag players">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+          </svg>
+          <span>{{ exercise().metadata?.playerCount || 1 }} jugadores</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas de animación SVG -->
+  <div class="animation-canvas-wrapper">
+    <svg 
+      class="animation-canvas" 
+      [attr.viewBox]="courtViewBox()"
+      preserveAspectRatio="xMidYMid meet"
+      [style.background-color]="courtBackgroundColor()">
+      
+      <!-- Defs para efectos reutilizables -->
+      <defs>
+        <!-- Gradiente para balón -->
+        <radialGradient id="ballGradient" cx="30%" cy="30%">
+          <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#ff6b00;stop-opacity:1" />
+        </radialGradient>
+
+        <!-- Sombra para elementos -->
+        <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="0.3"/>
+          <feOffset dx="0.2" dy="0.3" result="offsetblur"/>
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.3"/>
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <!-- Glow effect para elementos activos -->
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <!-- Trail para balón -->
+        <linearGradient id="trailGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#ff6b00;stop-opacity:0" />
+          <stop offset="100%" style="stop-color:#ff6b00;stop-opacity:0.6" />
+        </linearGradient>
+      </defs>
+
+      <!-- Cancha deportiva (renderizada desde plantilla) -->
+      <g [innerHTML]="courtTemplate()"></g>
+
+      <!-- Elementos animados -->
+      <g class="animated-elements">
+        @for (element of interpolatedElements(); track element.id) {
+          <g [attr.transform]="'translate(' + getCourtX(element.position.x) + ',' + getCourtY(element.position.y) + ') rotate(' + (element.rotation || 0) + ') scale(' + (element.scale || 1) + ')'"
+             [style.opacity]="element.opacity"
+             class="animated-element"
+             [attr.data-type]="element.type">
+            
+            <!-- Jugador -->
+            @if (element.type === 'player') {
+              <g class="player" filter="url(#dropShadow)">
+                <!-- Cuerpo del jugador -->
+                <circle cx="0" cy="0" r="2.5" 
+                        [attr.fill]="element.color || '#3B82F6'"
+                        stroke="white" stroke-width="0.3"/>
+                
+                <!-- Label del jugador -->
+                @if (element.label) {
+                  <text x="0" y="1" 
+                        text-anchor="middle" 
+                        dominant-baseline="middle"
+                        class="player-label"
+                        fill="white" 
+                        font-size="2" 
+                        font-weight="bold">
+                    {{ element.label }}
+                  </text>
+                }
+
+                <!-- Indicador de dirección -->
+                <circle cx="0" cy="-1.5" r="0.4" 
+                        [attr.fill]="element.color || '#3B82F6'"
+                        opacity="0.7"/>
+              </g>
+            }
+
+            <!-- Balón -->
+            @if (element.type === 'ball') {
+              <g class="ball" filter="url(#dropShadow)">
+                <!-- Trail effect (múltiples círculos con opacidad decreciente) -->
+                <circle cx="-0.5" cy="0" r="1.2" fill="url(#trailGradient)" opacity="0.3"/>
+                <circle cx="-0.3" cy="0" r="1.2" fill="url(#trailGradient)" opacity="0.5"/>
+                
+                <!-- Balón principal -->
+                <circle cx="0" cy="0" r="1.3" fill="url(#ballGradient)"/>
+                
+                <!-- Líneas del balón -->
+                <line x1="-1.3" y1="0" x2="1.3" y2="0" 
+                      stroke="#cc5500" stroke-width="0.15" opacity="0.6"/>
+                <ellipse cx="0" cy="0" rx="1.3" ry="0.8" 
+                         fill="none" stroke="#cc5500" stroke-width="0.15" opacity="0.6"/>
+              </g>
+            }
+
+            <!-- Cono -->
+            @if (element.type === 'cone') {
+              <g class="cone" filter="url(#dropShadow)">
+                <!-- Cono como triángulo con gradiente -->
+                <defs>
+                  <linearGradient [attr.id]="'coneGradient-' + element.id" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" [attr.style]="'stop-color:' + (element.color || '#F59E0B') + ';stop-opacity:1'" />
+                    <stop offset="100%" [attr.style]="'stop-color:' + (element.color || '#F59E0B') + ';stop-opacity:0.6'" />
+                  </linearGradient>
+                </defs>
+                
+                <polygon points="0,-2 -1.2,2 1.2,2" 
+                         [attr.fill]="'url(#coneGradient-' + element.id + ')'"
+                         stroke="#D97706" stroke-width="0.2"/>
+                
+                <!-- Base del cono -->
+                <ellipse cx="0" cy="2" rx="1.3" ry="0.4" 
+                         [attr.fill]="element.color || '#F59E0B'"
+                         opacity="0.8"/>
+              </g>
+            }
+
+            <!-- Marcador / Target -->
+            @if (element.type === 'marker' || element.type === 'target') {
+              <g class="marker" filter="url(#glow)">
+                <circle cx="0" cy="0" r="1.5" 
+                        fill="none" 
+                        [attr.stroke]="element.color || '#10B981'"
+                        stroke-width="0.4"
+                        opacity="0.8">
+                  <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.8;0.4;0.8" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="0" cy="0" r="0.5" 
+                        [attr.fill]="element.color || '#10B981'"
+                        opacity="0.9"/>
+              </g>
+            }
+          </g>
+        }
+      </g>
+
+      <!-- Anotaciones flotantes -->
+      <g class="annotations">
+        @for (annotation of activeAnnotations(); track $index) {
+          <g [attr.transform]="'translate(' + getCourtX(annotation.position.x) + ',' + getCourtY(annotation.position.y) + ')'"
+             [style.opacity]="annotation.opacity">
+            <!-- Fondo de la anotación -->
+            <rect x="-10" y="-3" width="20" height="4" 
+                  rx="0.5" ry="0.5"
+                  fill="rgba(0, 0, 0, 0.75)"/>
+            
+            <!-- Texto de la anotación -->
+            <text x="0" y="0" 
+                  text-anchor="middle" 
+                  dominant-baseline="middle"
+                  class="annotation-text"
+                  fill="white" 
+                  font-size="2" 
+                  font-weight="600">
+              {{ annotation.text }}
+            </text>
+          </g>
+        }
+      </g>
+    </svg>
+
+    <!-- Overlay de información del frame actual -->
+    <div class="frame-info-overlay">
+      <span class="frame-number">Frame {{ currentFrame() + 1 }}/{{ exercise().frames.length }}</span>
+    </div>
+  </div>
+
+  <!-- Controles de reproducción -->
+  <div class="playback-controls">
+    <!-- Timeline -->
+    <div class="timeline-wrapper">
+      <div class="timeline-track" (click)="onTimelineClick($event)">
+        <div class="timeline-progress" [style.width.%]="progress()"></div>
+        <div class="timeline-thumb" [style.left.%]="progress()"></div>
+      </div>
+      <div class="time-display">
+        <span class="current-time">{{ formattedTime() }}</span>
+        <span class="total-time">{{ totalDuration() }}</span>
+      </div>
+    </div>
+
+    <!-- Botones de control -->
+    <div class="control-buttons">
+      <!-- Play/Pause -->
+      <button class="control-btn primary" (click)="togglePlayPause()" [attr.aria-label]="playbackState().isPlaying ? 'Pause' : 'Play'">
+        @if (playbackState().isPlaying) {
+          <!-- Pause Icon -->
+          <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+        } @else {
+          <!-- Play Icon -->
+          <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+          </svg>
+        }
+      </button>
+
+      <!-- Stop -->
+      <button class="control-btn" (click)="stop()" aria-label="Stop">
+        <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+
+      <!-- Restart -->
+      <button class="control-btn" (click)="restart()" aria-label="Restart">
+        <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+
+      <!-- Velocidad -->
+      <div class="speed-selector">
+        <button class="control-btn" [class.active]="playbackState().speed === 0.5" (click)="setSpeed(0.5)">
+          0.5x
+        </button>
+        <button class="control-btn" [class.active]="playbackState().speed === 1" (click)="setSpeed(1)">
+          1x
+        </button>
+        <button class="control-btn" [class.active]="playbackState().speed === 2" (click)="setSpeed(2)">
+          2x
+        </button>
+      </div>
+
+      <!-- Loop -->
+      <button class="control-btn" [class.active]="playbackState().loop" (click)="toggleLoop()" aria-label="Toggle Loop">
+        <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+        </svg>
+        @if (playbackState().loop) {
+          <span class="loop-indicator"></span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

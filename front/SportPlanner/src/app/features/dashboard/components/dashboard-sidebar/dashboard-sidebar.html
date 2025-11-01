@@ -66,6 +66,27 @@
         }
       </button>
 
+      <!-- Exercise Demo - NEW! -->
+      <button
+        (click)="goToExerciseDemo()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-500/20 dark:to-pink-500/20 hover:from-purple-500/20 hover:to-pink-500/20 dark:hover:from-purple-500/30 dark:hover:to-pink-500/30 transition-all duration-300 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 group w-full relative overflow-hidden">
+        <!-- Animated background effect -->
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 dark:from-purple-500/0 dark:via-purple-500/20 dark:to-purple-500/0 animate-pulse"></div>
+        
+        <svg class="w-5 h-5 flex-shrink-0 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        @if (!isCollapsed()) {
+          <span class="text-sm font-bold relative z-10 flex items-center gap-1.5">
+            Exercise Demo
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-600 text-white">
+              NEW
+            </span>
+          </span>
+        }
+      </button>
+
       <!-- Calendar - DISABLED -->
       <button
         disabled

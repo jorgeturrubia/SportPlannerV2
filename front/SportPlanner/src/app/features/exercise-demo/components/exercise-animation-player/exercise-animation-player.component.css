@@ -1,0 +1,332 @@
+/* Exercise Animation Player - Professional Styling */
+@import "tailwindcss" reference;
+
+.exercise-player-container {
+  @apply flex flex-col gap-6 h-full;
+}
+
+/* Header */
+.exercise-header {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 
+         rounded-xl p-6 shadow-lg;
+}
+
+.exercise-info {
+  @apply space-y-3;
+}
+
+.exercise-title {
+  @apply text-2xl md:text-3xl font-bold text-white;
+}
+
+.exercise-description {
+  @apply text-blue-100 text-sm md:text-base;
+}
+
+.exercise-meta {
+  @apply flex flex-wrap gap-2;
+}
+
+.meta-tag {
+  @apply px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5
+         bg-white/20 text-white backdrop-blur-sm;
+}
+
+.meta-tag.difficulty-beginner {
+  @apply bg-green-500/30 text-green-50 ring-1 ring-green-400/50;
+}
+
+.meta-tag.difficulty-intermediate {
+  @apply bg-yellow-500/30 text-yellow-50 ring-1 ring-yellow-400/50;
+}
+
+.meta-tag.difficulty-advanced {
+  @apply bg-red-500/30 text-red-50 ring-1 ring-red-400/50;
+}
+
+.meta-tag.players {
+  @apply bg-blue-500/30 text-blue-50 ring-1 ring-blue-400/50;
+}
+
+.meta-tag .icon {
+  @apply w-4 h-4;
+}
+
+/* Animation Canvas */
+.animation-canvas-wrapper {
+  @apply relative bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden
+         border-2 border-slate-200 dark:border-slate-700;
+  /* Aspect ratio se ajusta dinámicamente según el deporte */
+  /* Basketball: 28:15 (1.867:1) */
+  /* Football: 105:68 (1.544:1) */
+  width: 100%;
+  max-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animation-canvas {
+  @apply w-full h-full;
+}
+
+/* Basketball Court Styles */
+.basketball-court {
+  pointer-events: none;
+}
+
+/* Animated Elements */
+.animated-element {
+  transition: opacity 0.3s ease-out;
+}
+
+/* Player Styles */
+.player {
+  animation: playerPulse 2s ease-in-out infinite;
+}
+
+@keyframes playerPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(59, 130, 246, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.4));
+  }
+}
+
+.player-label {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  user-select: none;
+}
+
+/* Ball Styles */
+.ball {
+  animation: ballSpin 1s linear infinite;
+}
+
+@keyframes ballSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Cone Styles */
+.cone {
+  animation: coneFloat 3s ease-in-out infinite;
+}
+
+@keyframes coneFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.5px);
+  }
+}
+
+/* Marker Styles */
+.marker {
+  animation: markerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Annotations */
+.annotation-text {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.02em;
+  user-select: none;
+  animation: annotationFloat 2s ease-in-out infinite;
+}
+
+@keyframes annotationFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+/* Frame Info Overlay */
+.frame-info-overlay {
+  @apply absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-2 rounded-lg
+         text-white text-xs font-mono;
+}
+
+.frame-number {
+  @apply font-semibold;
+}
+
+/* Playback Controls */
+.playback-controls {
+  @apply bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg space-y-4
+         border border-slate-200 dark:border-slate-700;
+}
+
+/* Timeline */
+.timeline-wrapper {
+  @apply space-y-2;
+}
+
+.timeline-track {
+  @apply relative h-2 bg-slate-200 dark:bg-slate-700 rounded-full cursor-pointer
+         hover:h-3 transition-all duration-200;
+}
+
+.timeline-progress {
+  @apply absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 
+         rounded-full transition-all duration-100 ease-linear;
+}
+
+.timeline-thumb {
+  @apply absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 
+         bg-white rounded-full shadow-lg border-2 border-blue-500
+         hover:scale-125 transition-transform duration-200;
+}
+
+.time-display {
+  @apply flex justify-between text-sm font-mono text-slate-600 dark:text-slate-400;
+}
+
+.current-time {
+  @apply font-semibold text-blue-600 dark:text-blue-400;
+}
+
+/* Control Buttons */
+.control-buttons {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.control-btn {
+  @apply relative flex items-center justify-center w-10 h-10 rounded-full
+         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+         hover:bg-slate-200 dark:hover:bg-slate-600
+         active:scale-95 transition-all duration-200
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+         dark:focus:ring-offset-slate-800;
+}
+
+.control-btn.primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700
+         shadow-md hover:shadow-lg;
+}
+
+.control-btn.active {
+  @apply bg-blue-500 text-white ring-2 ring-blue-600 ring-offset-2
+         dark:ring-offset-slate-800;
+}
+
+.control-btn .icon {
+  @apply w-5 h-5;
+}
+
+/* Speed Selector */
+.speed-selector {
+  @apply flex gap-1 px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded-full
+         border border-slate-200 dark:border-slate-700;
+}
+
+.speed-selector .control-btn {
+  @apply w-auto h-8 px-3 text-xs font-semibold rounded-full;
+}
+
+/* Loop Indicator */
+.loop-indicator {
+  @apply absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full
+         animate-pulse;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .exercise-header {
+    @apply p-4;
+  }
+
+  .exercise-title {
+    @apply text-xl;
+  }
+
+  .playback-controls {
+    @apply p-4;
+  }
+
+  .control-buttons {
+    @apply justify-center;
+  }
+
+  .control-btn {
+    @apply w-12 h-12;
+  }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+  .animation-canvas {
+    filter: brightness(0.95);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .player,
+  .ball,
+  .cone,
+  .marker,
+  .annotation-text {
+    animation: none !important;
+  }
+
+  .timeline-thumb,
+  .control-btn {
+    transition: none !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .playback-controls {
+    display: none;
+  }
+
+  .animation-canvas-wrapper {
+    max-height: none;
+    page-break-inside: avoid;
+  }
+}
+
+/* Performance Optimizations */
+.animated-element {
+  will-change: transform, opacity;
+}
+
+.timeline-progress {
+  will-change: width;
+}
+
+.timeline-thumb {
+  will-change: left;
+}
+
+/* Custom Scrollbar for containers */
+.exercise-player-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.exercise-player-container::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-800 rounded-full;
+}
+
+.exercise-player-container::-webkit-scrollbar-thumb {
+  @apply bg-slate-400 dark:bg-slate-600 rounded-full hover:bg-slate-500 dark:hover:bg-slate-500;
+}
