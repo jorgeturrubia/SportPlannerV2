@@ -38,8 +38,6 @@ public static class DependencyInjection
 
         // Planning Repositories - Exercises
         services.AddScoped<IExerciseRepository, ExerciseRepository>();
-        services.AddScoped<IExerciseCategoryRepository, ExerciseCategoryRepository>();
-        services.AddScoped<IExerciseTypeRepository, ExerciseTypeRepository>();
 
         // Planning Repositories - Workouts
         services.AddScoped<IWorkoutRepository, WorkoutRepository>();

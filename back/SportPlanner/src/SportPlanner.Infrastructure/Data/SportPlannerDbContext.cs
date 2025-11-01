@@ -33,8 +33,6 @@ public class SportPlannerDbContext : DbContext
 
     // Planning entities - Exercises
     public DbSet<Exercise> Exercises { get; set; }
-    public DbSet<ExerciseCategory> ExerciseCategories { get; set; }
-    public DbSet<ExerciseType> ExerciseTypes { get; set; }
     public DbSet<ExerciseObjective> ExerciseObjectives { get; set; }
 
     // Planning entities - Workouts

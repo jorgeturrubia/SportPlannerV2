@@ -68,15 +68,6 @@ public class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired(false);
 
-        builder.HasOne(e => e.Category)
-            .WithMany()
-            .HasForeignKey(e => e.CategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(e => e.Type)
-            .WithMany()
-            .HasForeignKey(e => e.TypeId)
-            .OnDelete(DeleteBehavior.Restrict);
 
         // Indices for performance
         builder.HasIndex(e => new { e.SubscriptionId, e.IsActive })

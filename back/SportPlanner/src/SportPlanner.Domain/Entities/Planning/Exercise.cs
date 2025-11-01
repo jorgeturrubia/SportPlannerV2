@@ -25,9 +25,6 @@ public class Exercise
 
     public bool IsActive { get; private set; }
 
-    // Navigation properties
-    public ExerciseCategory Category { get; private set; } = null!;
-    public ExerciseType Type { get; private set; } = null!;
 
     // Audit
     public DateTime CreatedAt { get; private set; }
