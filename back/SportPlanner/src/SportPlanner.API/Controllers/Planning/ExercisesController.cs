@@ -64,4 +64,19 @@ public class ExercisesController : ControllerBase
 
         return CreatedAtAction(nameof(GetExercise), new { id = clonedId }, new { id = clonedId });
     }
+
+    /// <summary>
+    /// Update an existing exercise
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateExercise(
+        [FromRoute] Guid id,
+        [FromBody] UpdateExerciseDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateExerciseCommand(id, request);
+        await _mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
 }

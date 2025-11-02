@@ -2,22 +2,21 @@ import { Component, input, output, effect, inject, signal, computed, OnInit } fr
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ObjectiveSelectorComponent } from '../objective-selector/objective-selector';
-import { ObjectivesService, ObjectiveDto } from '../../services/objectives.service';
+import { ObjectivesService, ObjectiveDto, ContentOwnership } from '../../services/objectives.service';
 
 export interface ExerciseFormData {
+  id?: string;
   name: string;
   description: string;
   instructions?: string;
-  defaultSets?: number;
-  defaultReps?: number;
-  defaultDurationSeconds?: number;
-  videoUrl?: string;
-  imageUrl?: string;
-  objectiveIds: string[];
+  animationJson?: string | null;
+  isActive?: boolean;
+  ownership?: ContentOwnership;
+  objectiveIds?: string[];
 }
 
 export interface ExerciseFormConfig {
-  // Previously included categories/types; removed because backend no longer exposes exercise categories/types
+  // Reserved for future config (kept empty intentionally)
 }
 
 @Component({
@@ -33,7 +32,7 @@ export class ExerciseFormComponent implements OnInit {
 
   // Input signals
   isOpen = input<boolean>(false);
-  config = input<ExerciseFormConfig>({ categories: [], types: [] });
+  config = input<ExerciseFormConfig | null>(null);
   initialData = input<any>(null);
   title = input<string>('Nuevo Ejercicio');
 
@@ -79,18 +78,27 @@ export class ExerciseFormComponent implements OnInit {
       name: ['', [Validators.required]],
       description: ['', [Validators.required]],
       instructions: [''],
-      defaultSets: [''],
-      defaultReps: [''],
-      defaultDurationSeconds: [''],
-      videoUrl: [''],
-      imageUrl: ['']
+      animationJson: [''],
+      isActive: [true],
+      ownership: [ContentOwnership.User]
     });
 
     // React to initialData changes
     effect(() => {
       const currentData = this.initialData();
       if (currentData) {
-        this.form.patchValue(currentData);
+        // Only patch known form fields
+        const patch: any = {
+          name: currentData.name ?? '',
+          description: currentData.description ?? '',
+          instructions: currentData.instructions ?? '',
+          animationJson: currentData.animationJson ?? '',
+          isActive: typeof currentData.isActive === 'boolean' ? currentData.isActive : true,
+          ownership: typeof currentData.ownership !== 'undefined' ? currentData.ownership : ContentOwnership.User
+        };
+
+        this.form.patchValue(patch);
+
         // Load existing objectives if editing
         if (currentData.objectiveIds && Array.isArray(currentData.objectiveIds)) {
           this.selectedObjectiveIds.set(currentData.objectiveIds);
@@ -101,16 +109,10 @@ export class ExerciseFormComponent implements OnInit {
       }
     });
 
-    // Reset when dialog opens with null data
+    // Debug: Log when isOpen changes
     effect(() => {
-      const isDialogOpen = this.isOpen();
-      const currentData = this.initialData();
-
-      if (isDialogOpen && !currentData) {
-        this.form.reset();
-        this.selectedObjectiveIds.set([]);
-        this.showObjectiveSelector.set(false);
-      }
+      const isOpenValue = this.isOpen();
+      console.log('ExerciseFormComponent: isOpen changed to:', isOpenValue);
     });
   }
 

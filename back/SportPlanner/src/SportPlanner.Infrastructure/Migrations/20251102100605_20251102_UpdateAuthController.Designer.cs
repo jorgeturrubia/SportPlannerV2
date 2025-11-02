@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SportPlanner.Infrastructure.Data;
@@ -11,9 +12,11 @@ using SportPlanner.Infrastructure.Data;
 namespace SportPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(SportPlannerDbContext))]
-    partial class SportPlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102100605_20251102_UpdateAuthController")]
+    partial class _20251102_UpdateAuthController
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

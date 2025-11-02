@@ -45,7 +45,7 @@ export class ExercisesPage implements OnInit {
       key: 'ownership',
       label: 'Tipo',
       sortable: true,
-      formatter: (value: ContentOwnership) => this.getOwnershipLabel(value)
+      formatter: (value: string) => this.getOwnershipLabel(value)
     },
     { key: 'isActive', label: 'Estado', sortable: true, type: 'badge' }
   ]);
@@ -64,7 +64,10 @@ export class ExercisesPage implements OnInit {
       label: 'Editar',
       color: 'blue',
       handler: (row) => {
-        if (row.ownership === ContentOwnership.User) this.openEditForm(row);
+        // Backend returns ownership as string, so compare with string
+        if (row.ownership === 'User') {
+          this.openEditForm(row);
+        }
       }
     },
     {
@@ -72,7 +75,8 @@ export class ExercisesPage implements OnInit {
       label: 'Clonar',
       color: 'green',
       handler: (row) => {
-        if (row.ownership !== ContentOwnership.User) this.handleClone(row);
+        // Backend returns ownership as string, so compare with string
+        if (row.ownership !== 'User') this.handleClone(row);
       }
     },
     {
@@ -80,15 +84,14 @@ export class ExercisesPage implements OnInit {
       label: 'Eliminar',
       color: 'red',
       handler: (row) => {
-        if (row.ownership === ContentOwnership.User) this.openDeleteConfirm(row);
+        // Backend returns ownership as string, so compare with string
+        if (row.ownership === 'User') this.openDeleteConfirm(row);
       }
     }
   ];
 
-  formConfig = computed<ExerciseFormConfig>(() => ({
-    categories: this.categories().map(c => ({ id: c.id, name: c.name })),
-    types: this.types().map(t => ({ id: t.id, name: t.name }))
-  }));
+  // Current form does not require categories/types; keep config as empty object for future extensibility
+  formConfig = computed<ExerciseFormConfig>(() => ({} as ExerciseFormConfig));
 
   async ngOnInit(): Promise<void> {
     await Promise.all([
@@ -127,11 +130,11 @@ export class ExercisesPage implements OnInit {
     }
   }
 
-  getOwnershipLabel(ownership: ContentOwnership): string {
+  getOwnershipLabel(ownership: string): string {
     switch (ownership) {
-      case ContentOwnership.System: return 'Sistema';
-      case ContentOwnership.User: return 'Usuario';
-      case ContentOwnership.MarketplaceUser: return 'Marketplace';
+      case 'System': return 'Sistema';
+      case 'User': return 'Usuario';
+      case 'MarketplaceUser': return 'Marketplace';
       default: return 'Unknown';
     }
   }
@@ -143,6 +146,8 @@ export class ExercisesPage implements OnInit {
   }
 
   openEditForm(exercise: ExerciseDto): void {
+    console.log('openEditForm called with exercise:', exercise);
+    console.log('Exercise ownership:', exercise.ownership, 'ContentOwnership.User:', ContentOwnership.User);
     this.selectedExercise.set(exercise);
     this.formTitle = `Editar ${exercise.name}`;
     this.isFormOpen.set(true);
