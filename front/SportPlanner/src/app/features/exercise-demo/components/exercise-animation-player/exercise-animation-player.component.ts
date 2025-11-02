@@ -141,11 +141,18 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
   }
 
   pause(): void {
-    this.playbackState.update(state => ({ ...state, isPlaying: false }));
-    if (this.animationFrameId) {
+    console.log('⏸️ pause() llamado - animationFrameId:', this.animationFrameId);
+    
+    // Primero cancelar el frame de animación
+    if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
+      console.log('✅ cancelAnimationFrame ejecutado');
       this.animationFrameId = null;
     }
+    
+    // Luego actualizar el estado
+    this.playbackState.update(state => ({ ...state, isPlaying: false }));
+    console.log('✅ Estado actualizado a isPlaying: false');
   }
 
   stop(): void {
@@ -161,11 +168,18 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
   }
 
   togglePlayPause(): void {
-    if (this.playbackState().isPlaying) {
+    const currentState = this.playbackState().isPlaying;
+    console.log('🎮 togglePlayPause - Estado actual:', currentState);
+    
+    if (currentState) {
+      console.log('⏸️ Pausando...');
       this.pause();
     } else {
+      console.log('▶️ Reproduciendo...');
       this.play();
     }
+    
+    console.log('🎮 togglePlayPause - Nuevo estado:', this.playbackState().isPlaying);
   }
 
   setSpeed(speed: number): void {
@@ -182,7 +196,13 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
   }
 
   private animate = (): void => {
-    if (!this.playbackState().isPlaying) return;
+    const isPlaying = this.playbackState().isPlaying;
+    console.log('🎬 animate() - isPlaying:', isPlaying);
+    
+    if (!isPlaying) {
+      console.log('⏹️ Animación detenida (isPlaying = false)');
+      return;
+    }
 
     const now = performance.now();
     const deltaTime = (now - this.lastTimestamp) * this.playbackState().speed;
@@ -204,7 +224,16 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
       this.updateInterpolatedElements(newTime);
     }
 
-    this.animationFrameId = requestAnimationFrame(this.animate);
+    // Solo programar el siguiente frame si todavía estamos reproduciendo
+    const stillPlaying = this.playbackState().isPlaying;
+    console.log('🔄 Verificando antes de programar siguiente frame - stillPlaying:', stillPlaying);
+    
+    if (stillPlaying) {
+      this.animationFrameId = requestAnimationFrame(this.animate);
+      console.log('➡️ Siguiente frame programado - ID:', this.animationFrameId);
+    } else {
+      console.log('⏹️ NO se programa siguiente frame (ya no está playing)');
+    }
   };
 
   private updateInterpolatedElements(time: number): void {
