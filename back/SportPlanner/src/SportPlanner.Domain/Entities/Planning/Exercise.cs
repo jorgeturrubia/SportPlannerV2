@@ -64,9 +64,7 @@ public class Exercise
 
     public void Update(
         string name,
-        string description,
-        Guid categoryId,
-        Guid typeId,
+        string description,       
         string updatedBy,
         string? animationJson = null)
     {
