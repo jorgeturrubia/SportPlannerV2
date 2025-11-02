@@ -29,24 +29,12 @@ public class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
             .HasMaxLength(2000)
             .IsRequired();
 
-        builder.Property(e => e.CategoryId)
-            .IsRequired();
-
-        builder.Property(e => e.TypeId)
-            .IsRequired();
-
-        builder.Property(e => e.VideoUrl)
-            .HasMaxLength(500);
-
-        builder.Property(e => e.ImageUrl)
-            .HasMaxLength(500);
+     
 
         builder.Property(e => e.Instructions)
             .HasMaxLength(2000);
 
-        builder.Property(e => e.DefaultIntensity)
-            .HasMaxLength(50);
-
+       
         builder.Property(e => e.AnimationJson)
             .HasColumnType("jsonb")
             .IsRequired(false);
@@ -81,11 +69,6 @@ public class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
             .HasDatabaseName("IX_Exercises_Ownership_IsActive")
             .HasFilter("subscription_id IS NULL");
 
-        builder.HasIndex(e => e.CategoryId)
-            .HasDatabaseName("IX_Exercises_CategoryId");
-
-        builder.HasIndex(e => e.TypeId)
-            .HasDatabaseName("IX_Exercises_TypeId");
 
         builder.ToTable("exercises");
     }

@@ -11,17 +11,11 @@ public class Exercise
 
     public string Name { get; private set; }
     public string Description { get; private set; }
-    public Guid CategoryId { get; private set; }
-    public Guid TypeId { get; private set; }
 
-    public string? VideoUrl { get; private set; }
-    public string? ImageUrl { get; private set; }
+
     public string? Instructions { get; private set; }
 
-    public int? DefaultSets { get; private set; }
-    public int? DefaultReps { get; private set; }
-    public int? DefaultDurationSeconds { get; private set; }
-    public string? DefaultIntensity { get; private set; }
+    
 
     public string? AnimationJson { get; private set; }
 
@@ -61,8 +55,7 @@ public class Exercise
         MarketplaceUserId = marketplaceUserId;
         Name = name;
         Description = description;
-        CategoryId = categoryId;
-        TypeId = typeId;
+       
         AnimationJson = animationJson;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
@@ -82,8 +75,7 @@ public class Exercise
 
         Name = name;
         Description = description;
-        CategoryId = categoryId;
-        TypeId = typeId;
+      
         AnimationJson = animationJson;
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
@@ -94,8 +86,7 @@ public class Exercise
         if (Ownership == ContentOwnership.System)
             throw new InvalidOperationException("Cannot modify system content directly. Clone it first.");
 
-        VideoUrl = videoUrl;
-        ImageUrl = imageUrl;
+       
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
     }
@@ -127,10 +118,7 @@ public class Exercise
         if (durationSeconds.HasValue && durationSeconds.Value <= 0)
             throw new ArgumentException("Duration must be greater than 0");
 
-        DefaultSets = sets;
-        DefaultReps = reps;
-        DefaultDurationSeconds = durationSeconds;
-        DefaultIntensity = intensity;
+       
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
     }
@@ -151,27 +139,19 @@ public class Exercise
 
     public Exercise Clone(Guid targetSubscriptionId, string createdBy)
     {
-        if (Ownership == ContentOwnership.User)
-            throw new InvalidOperationException("Cannot clone user content directly.");
+       return new Exercise(
+            subscriptionId: targetSubscriptionId,
+            ownership: ContentOwnership.User,
+            name: this.Name,
+            description: this.Description,
+            categoryId: Guid.Empty, // Placeholder, should be set appropriately
+            typeId: Guid.Empty, // Placeholder, should be set appropriately
+            createdBy: createdBy,
+            animationJson: this.AnimationJson,
+            marketplaceUserId: null);
+        
 
-        var cloned = new Exercise(
-            targetSubscriptionId,
-            ContentOwnership.User,
-            Name,
-            Description,
-            CategoryId,
-            TypeId,
-            createdBy);
-
-        cloned.VideoUrl = VideoUrl;
-        cloned.ImageUrl = ImageUrl;
-        cloned.Instructions = Instructions;
-        cloned.DefaultSets = DefaultSets;
-        cloned.DefaultReps = DefaultReps;
-        cloned.DefaultDurationSeconds = DefaultDurationSeconds;
-        cloned.DefaultIntensity = DefaultIntensity;
-
-        return cloned;
+        
     }
 
     private static void ValidateOwnership(Guid? subscriptionId, ContentOwnership ownership, Guid? marketplaceUserId)

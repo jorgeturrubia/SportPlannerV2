@@ -41,13 +41,7 @@ public class ExerciseRepository : IExerciseRepository
                 Ownership = e.Ownership,
                 Name = e.Name,
                 Description = e.Description,
-                VideoUrl = e.VideoUrl,
-                ImageUrl = e.ImageUrl,
                 Instructions = e.Instructions,
-                DefaultSets = e.DefaultSets,
-                DefaultReps = e.DefaultReps,
-                DefaultDurationSeconds = e.DefaultDurationSeconds,
-                DefaultIntensity = e.DefaultIntensity,
                 AnimationJson = e.AnimationJson,
                 IsActive = e.IsActive,
                 CreatedAt = e.CreatedAt

@@ -9,11 +9,12 @@ import { ExerciseCategoriesService } from '../../services/exercise-categories.se
 import { ExerciseTypesService } from '../../services/exercise-types.service';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
 import { ContentOwnership } from '../../services/objectives.service';
+import { ExerciseAnimationPlayerComponent } from '../../../exercise-demo/components/exercise-animation-player/exercise-animation-player.component';
 
 @Component({
   selector: 'app-exercises-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, ExerciseFormComponent, ConfirmationDialogComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, ExerciseFormComponent, ConfirmationDialogComponent, ExerciseAnimationPlayerComponent],
   templateUrl: './exercises.page.html'
 })
 export class ExercisesPage implements OnInit {
@@ -31,6 +32,10 @@ export class ExercisesPage implements OnInit {
   selectedExercise = signal<ExerciseDto | null>(null);
   formTitle = 'Add Exercise';
   isConfirmDialogOpen = signal(false);
+  
+  // Animation viewer
+  isAnimationViewerOpen = signal(false);
+  selectedAnimation = signal<any>(null);
 
   columns = computed<TableColumn[]>(() => [
     { key: 'name', label: 'Nombre', sortable: true },
@@ -46,6 +51,14 @@ export class ExercisesPage implements OnInit {
   ]);
 
   actions: TableAction[] = [
+    {
+      icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+      label: 'Ver Animación',
+      color: 'blue',
+      handler: (row) => {
+        if (row.animationJson) this.openAnimationViewer(row);
+      }
+    },
     {
       icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
       label: 'Editar',
@@ -193,5 +206,26 @@ export class ExercisesPage implements OnInit {
       console.error('Failed to clone exercise:', err);
       this.ns.error(err?.message ?? 'No se pudo clonar el ejercicio', 'Error');
     }
+  }
+
+  openAnimationViewer(exercise: ExerciseDto): void {
+    if (!exercise.animationJson) {
+      this.ns.error('Este ejercicio no tiene animación disponible', 'Error');
+      return;
+    }
+
+    try {
+      const animation = JSON.parse(exercise.animationJson);
+      this.selectedAnimation.set(animation);
+      this.isAnimationViewerOpen.set(true);
+    } catch (err: any) {
+      console.error('Error parsing animation JSON:', err);
+      this.ns.error('Error al cargar la animación', 'Error');
+    }
+  }
+
+  closeAnimationViewer(): void {
+    this.isAnimationViewerOpen.set(false);
+    this.selectedAnimation.set(null);
   }
 }

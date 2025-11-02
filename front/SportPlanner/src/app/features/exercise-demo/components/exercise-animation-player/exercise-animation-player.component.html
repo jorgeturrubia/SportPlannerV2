@@ -210,7 +210,10 @@
     <!-- Botones de control -->
     <div class="control-buttons">
       <!-- Play/Pause -->
-      <button class="control-btn primary" (click)="togglePlayPause()" [attr.aria-label]="playbackState().isPlaying ? 'Pause' : 'Play'">
+      <button type="button" 
+              class="control-btn primary" 
+              (click)="togglePlayPause()" 
+              [attr.aria-label]="playbackState().isPlaying ? 'Pause' : 'Play'">
         @if (playbackState().isPlaying) {
           <!-- Pause Icon -->
           <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
