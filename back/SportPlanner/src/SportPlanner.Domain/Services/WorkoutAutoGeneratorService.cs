@@ -11,12 +11,12 @@ public class WorkoutAutoGeneratorService
     /// <summary>
     /// Generates all workouts for a training plan based on schedule and objectives.
     /// </summary>
-    public List<Workout> GenerateAllWorkouts(TrainingPlan plan, List<Exercise> availableExercises)
+    public List<Workout> GenerateAllWorkouts(TrainingPlan plan, List<Exercise> availableExercises, string createdBy)
     {
-        if (plan == null)
+        if (plan is null)
             throw new ArgumentNullException(nameof(plan));
 
-        if (availableExercises == null)
+        if (availableExercises is null)
             throw new ArgumentNullException(nameof(availableExercises));
 
         if (!plan.Objectives.Any())
@@ -46,17 +46,16 @@ public class WorkoutAutoGeneratorService
             // Generate workout name
             var workoutName = GenerateWorkoutName(objectivesForSession, i + 1, totalSessions);
 
-            // Create workout (using domain entity constructor - needs adjustment for auto-generation)
-            // Note: This would need to be adjusted based on actual Workout entity constructor
-            // For now, this is a conceptual implementation
-
+            // Create workout with the calculated date
             workouts.Add(new Workout(
                 plan.SubscriptionId,
                 Domain.Enum.ContentOwnership.User,
-                workoutName,
-                $"Auto-generated workout for session {i + 1}/{totalSessions}",
-                "System" // CreatedBy for auto-generated content
+                createdBy,
+                date
             ));
+
+            // Set metadata for the workout
+            workouts.Last().SetMetadata(durationMinutes, $"Auto-generated workout for session {i + 1}/{totalSessions}", createdBy);
         }
 
         return workouts;
@@ -185,7 +184,7 @@ public class WorkoutAutoGeneratorService
     /// </summary>
     public void ValidatePlanForGeneration(TrainingPlan plan)
     {
-        if (plan == null)
+        if (plan is null)
             throw new ArgumentNullException(nameof(plan));
 
         if (!plan.Objectives.Any())

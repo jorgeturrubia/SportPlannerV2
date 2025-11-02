@@ -2,11 +2,9 @@ namespace SportPlanner.Application.DTOs.Planning;
 
 public class CreateWorkoutDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; }
     public Guid? ObjectiveId { get; set; }
     public int? EstimatedDurationMinutes { get; set; }
-    public string? Difficulty { get; set; }
     public string? Notes { get; set; }
     public List<WorkoutExerciseDto> Exercises { get; set; } = new();
 }

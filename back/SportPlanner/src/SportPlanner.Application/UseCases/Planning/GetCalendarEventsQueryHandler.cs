@@ -36,7 +36,6 @@ public class GetCalendarEventsQueryHandler : IRequestHandler<GetCalendarEventsQu
             TeamId = e.TeamId,
             TeamName = "Team Name", // TODO: Get from repository
             WorkoutId = e.WorkoutId,
-            WorkoutName = e.Workout?.Name ?? "Unknown Workout",
             TrainingPlanId = e.TrainingPlanId,
             TrainingPlanName = e.TrainingPlan?.Name,
             ScheduledDate = e.ScheduledDate,

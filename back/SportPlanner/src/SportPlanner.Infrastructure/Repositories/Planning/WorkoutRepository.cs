@@ -18,7 +18,6 @@ public class WorkoutRepository : IWorkoutRepository
     public async Task<Workout?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Workouts
-            .Include(w => w.Objective)
             .Include(w => w.Exercises)
                 .ThenInclude(we => we.Exercise)
             .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
@@ -27,9 +26,7 @@ public class WorkoutRepository : IWorkoutRepository
     public async Task<List<Workout>> GetBySubscriptionIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
     {
         return await _context.Workouts
-            .Include(w => w.Objective)
             .Include(w => w.Exercises)
-                .ThenInclude(we => we.Exercise)
             .Where(w => w.SubscriptionId == subscriptionId && w.IsActive)
             .OrderByDescending(w => w.CreatedAt)
             .ToListAsync(cancellationToken);
@@ -39,7 +36,6 @@ public class WorkoutRepository : IWorkoutRepository
     {
         return await _context.Workouts
             .Where(w => w.SubscriptionId == subscriptionId && w.IsActive)
-            .Include(w => w.Objective)
             .Include(w => w.Exercises)
                 .ThenInclude(we => we.Exercise)
             .OrderByDescending(w => w.CreatedAt)
@@ -48,26 +44,23 @@ public class WorkoutRepository : IWorkoutRepository
                 Id = w.Id,
                 SubscriptionId = w.SubscriptionId,
                 Ownership = w.Ownership,
-                Name = w.Name,
-                Description = w.Description,
-                ObjectiveId = w.ObjectiveId,
-                ObjectiveName = w.Objective != null ? w.Objective.Name : null,
+                Fecha = w.Fecha,
+                ObjectiveId = null, // Workouts don't have direct objective relationship
+                ObjectiveName = null, // Workouts don't have direct objective relationship
                 EstimatedDurationMinutes = w.EstimatedDurationMinutes,
-                Difficulty = w.Difficulty,
                 Notes = w.Notes,
                 IsActive = w.IsActive,
                 CreatedAt = w.CreatedAt,
+                IsEditable = w.Ownership == Domain.Enum.ContentOwnership.User,
                 Exercises = w.Exercises.Select(we => new WorkoutExerciseDetailDto
                 {
                     ExerciseId = we.ExerciseId,
-                    ExerciseName = we.Exercise.Name,
                     Order = we.Order,
                     Sets = we.Sets,
                     Reps = we.Reps,
                     DurationSeconds = we.DurationSeconds,
                     Intensity = we.Intensity,
-                    RestSeconds = we.RestSeconds,
-                    Notes = we.Notes
+                    RestSeconds = we.RestSeconds
                 }).OrderBy(we => we.Order).ToList()
             })
             .ToListAsync(cancellationToken);
@@ -78,9 +71,7 @@ public class WorkoutRepository : IWorkoutRepository
         // Note: This assumes Workout has a TrainingPlanId property
         // If not, this method may need adjustment based on actual domain model
         return await _context.Workouts
-            .Include(w => w.Objective)
             .Include(w => w.Exercises)
-                .ThenInclude(we => we.Exercise)
             .Where(w => w.IsActive)
             .OrderByDescending(w => w.CreatedAt)
             .ToListAsync(cancellationToken);

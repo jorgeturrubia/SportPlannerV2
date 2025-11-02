@@ -31,9 +31,7 @@ public class UpdateExerciseCommandHandler : IRequestHandler<UpdateExerciseComman
         // Update basic fields
         exercise.Update(
             dto.Name,
-            dto.Description,
-            dto.CategoryId,
-            dto.TypeId,
+            dto.Description,           
             userId.ToString(),
             dto.AnimationJson);
 

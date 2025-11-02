@@ -37,17 +37,15 @@ public class CreateWorkoutCommandHandler : IRequestHandler<CreateWorkoutCommand,
         var workout = new Workout(
             subscription.Id,
             ContentOwnership.User,
-            dto.Name,
-            dto.Description,
             userId.ToString(),
-            dto.ObjectiveId);
+            dto.Fecha
+           );
 
         // Set metadata
-        if (dto.EstimatedDurationMinutes.HasValue || !string.IsNullOrWhiteSpace(dto.Difficulty) || !string.IsNullOrWhiteSpace(dto.Notes))
+        if (dto.EstimatedDurationMinutes.HasValue || !string.IsNullOrWhiteSpace(dto.Notes))
         {
             workout.SetMetadata(
                 dto.EstimatedDurationMinutes,
-                dto.Difficulty,
                 dto.Notes,
                 userId.ToString());
         }

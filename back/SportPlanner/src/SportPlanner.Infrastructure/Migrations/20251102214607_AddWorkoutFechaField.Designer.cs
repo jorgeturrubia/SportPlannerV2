@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SportPlanner.Infrastructure.Data;
@@ -11,9 +12,11 @@ using SportPlanner.Infrastructure.Data;
 namespace SportPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(SportPlannerDbContext))]
-    partial class SportPlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102214607_AddWorkoutFechaField")]
+    partial class AddWorkoutFechaField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1423,6 +1426,10 @@ namespace SportPlanner.Infrastructure.Migrations
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("notes");
 
+                    b.Property<Guid?>("ObjectiveId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("objective_id");
+
                     b.Property<string>("Ownership")
                         .IsRequired()
                         .HasColumnType("text")
@@ -1443,6 +1450,9 @@ namespace SportPlanner.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_workouts");
+
+                    b.HasIndex("ObjectiveId")
+                        .HasDatabaseName("ix_workouts_objective_id");
 
                     b.HasIndex("Ownership", "IsActive")
                         .HasDatabaseName("IX_Workouts_Ownership_IsActive")
@@ -2269,11 +2279,18 @@ namespace SportPlanner.Infrastructure.Migrations
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.Workout", b =>
                 {
+                    b.HasOne("SportPlanner.Domain.Entities.Planning.Objective", "Objective")
+                        .WithMany()
+                        .HasForeignKey("ObjectiveId")
+                        .HasConstraintName("fk_workouts_objectives_objective_id");
+
                     b.HasOne("SportPlanner.Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_workouts_subscriptions_subscription_id");
+
+                    b.Navigation("Objective");
                 });
 
             modelBuilder.Entity("SportPlanner.Domain.Entities.Planning.WorkoutExercise", b =>

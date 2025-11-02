@@ -9,12 +9,8 @@ public class Workout
     public ContentOwnership Ownership { get; private set; }
     public Guid? MarketplaceUserId { get; private set; }
 
-    public string Name { get; private set; } = string.Empty;
-    public string Description { get; private set; } = string.Empty;
-    public Guid? ObjectiveId { get; private set; }
-
+    public DateTime Fecha { get; private set; }
     public int? EstimatedDurationMinutes { get; private set; }
-    public string? Difficulty { get; private set; }
     public string? Notes { get; private set; }
 
     public bool IsActive { get; private set; }
@@ -22,8 +18,7 @@ public class Workout
     private readonly List<WorkoutExercise> _exercises = new();
     public IReadOnlyCollection<WorkoutExercise> Exercises => _exercises.AsReadOnly();
 
-    // Navigation properties
-    public Objective? Objective { get; private set; }
+    
 
     // Audit
     public DateTime CreatedAt { get; private set; }
@@ -36,51 +31,36 @@ public class Workout
     public Workout(
         Guid? subscriptionId,
         ContentOwnership ownership,
-        string name,
-        string description,
         string createdBy,
-        Guid? objectiveId = null,
+        DateTime fecha,
         Guid? marketplaceUserId = null)
     {
         ValidateOwnership(subscriptionId, ownership, marketplaceUserId);
 
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name is required", nameof(name));
+        if (fecha == default)
+            throw new ArgumentException("Fecha is required", nameof(fecha));
 
         Id = Guid.NewGuid();
         SubscriptionId = subscriptionId;
         Ownership = ownership;
         MarketplaceUserId = marketplaceUserId;
-        Name = name;
-        Description = description;
-        ObjectiveId = objectiveId;
+        Fecha = fecha;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         CreatedBy = createdBy;
     }
 
-    public void Update(
-        string name,
-        string description,
-        Guid? objectiveId,
-        string updatedBy)
+    public void Update(string updatedBy)
     {
         if (Ownership == ContentOwnership.System)
             throw new InvalidOperationException("Cannot modify system content directly. Clone it first.");
 
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name is required", nameof(name));
-
-        Name = name;
-        Description = description;
-        ObjectiveId = objectiveId;
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
     }
 
     public void SetMetadata(
         int? estimatedDurationMinutes,
-        string? difficulty,
         string? notes,
         string updatedBy)
     {
@@ -91,7 +71,6 @@ public class Workout
             throw new ArgumentException("Duration must be greater than 0", nameof(estimatedDurationMinutes));
 
         EstimatedDurationMinutes = estimatedDurationMinutes;
-        Difficulty = difficulty;
         Notes = notes;
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
@@ -202,13 +181,11 @@ public class Workout
         var cloned = new Workout(
             targetSubscriptionId,
             ContentOwnership.User,
-            Name,
-            Description,
             createdBy,
-            ObjectiveId);
+            Fecha
+            );
 
         cloned.EstimatedDurationMinutes = EstimatedDurationMinutes;
-        cloned.Difficulty = Difficulty;
         cloned.Notes = Notes;
 
         // Clone exercises

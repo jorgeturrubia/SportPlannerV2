@@ -21,19 +21,6 @@ public class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
         builder.Property(w => w.MarketplaceUserId)
             .IsRequired(false);
 
-        builder.Property(w => w.Name)
-            .HasMaxLength(200)
-            .IsRequired();
-
-        builder.Property(w => w.Description)
-            .HasMaxLength(2000)
-            .IsRequired();
-
-        builder.Property(w => w.ObjectiveId)
-            .IsRequired(false);
-
-        builder.Property(w => w.Difficulty)
-            .HasMaxLength(50);
 
         builder.Property(w => w.Notes)
             .HasMaxLength(2000);
@@ -59,11 +46,6 @@ public class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired(false);
 
-        builder.HasOne(w => w.Objective)
-            .WithMany()
-            .HasForeignKey(w => w.ObjectiveId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired(false);
 
         // Indices for performance
         builder.HasIndex(w => new { w.SubscriptionId, w.IsActive })
@@ -73,8 +55,6 @@ public class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
             .HasDatabaseName("IX_Workouts_Ownership_IsActive")
             .HasFilter("subscription_id IS NULL");
 
-        builder.HasIndex(w => w.ObjectiveId)
-            .HasDatabaseName("IX_Workouts_ObjectiveId");
 
         builder.ToTable("workouts");
     }

@@ -5,26 +5,22 @@ import { ContentOwnership } from './objectives.service';
 
 export interface WorkoutExerciseDetailDto {
   exerciseId: string;
-  exerciseName: string;
   order: number;
   sets?: number;
   reps?: number;
   durationSeconds?: number;
   intensity?: string;
   restSeconds?: number;
-  notes?: string;
 }
 
 export interface WorkoutDto {
   id: string;
   subscriptionId?: string;
   ownership: ContentOwnership;
-  name: string;
-  description: string;
+  fecha: string;
   objectiveId?: string;
   objectiveName?: string;
   estimatedDurationMinutes?: number;
-  difficulty?: string;
   notes?: string;
   isActive: boolean;
   exercises: WorkoutExerciseDetailDto[];
@@ -33,22 +29,18 @@ export interface WorkoutDto {
 }
 
 export interface CreateWorkoutDto {
-  name: string;
-  description: string;
+  fecha: string; // Fecha del workout
   objectiveId?: string;
   estimatedDurationMinutes?: number;
-  difficulty?: string;
   notes?: string;
   exercises: WorkoutExerciseDetailDto[];
 }
 
 export interface UpdateWorkoutDto {
   id: string;
-  name: string;
-  description: string;
+  fecha: string; // Fecha del workout
   objectiveId?: string;
   estimatedDurationMinutes?: number;
-  difficulty?: string;
   notes?: string;
   isActive: boolean;
   exercises: WorkoutExerciseDetailDto[];

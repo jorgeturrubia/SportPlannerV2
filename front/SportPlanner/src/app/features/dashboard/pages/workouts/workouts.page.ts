@@ -30,15 +30,13 @@ export class WorkoutsPage implements OnInit {
   isConfirmDialogOpen = signal(false);
 
   columns = computed<TableColumn[]>(() => [
-    { key: 'name', label: 'Nombre', sortable: true },
-    { key: 'objectiveName', label: 'Objetivo', sortable: true },
+    { key: 'fecha', label: 'Fecha', sortable: true, type: 'date' },
     {
       key: 'estimatedDurationMinutes',
       label: 'Duración (min)',
       sortable: true,
       type: 'number'
     },
-    { key: 'difficulty', label: 'Dificultad', sortable: true },
     {
       key: 'ownership',
       label: 'Tipo',
@@ -76,28 +74,9 @@ export class WorkoutsPage implements OnInit {
   ];
 
   formConfig = computed<FormField[]>(() => [
-    { key: 'name', label: 'Nombre', type: 'text', required: true },
-    { key: 'description', label: 'Descripción', type: 'textarea', required: true },
-    {
-      key: 'objectiveId',
-      label: 'Objetivo',
-      type: 'select',
-      required: false,
-      options: this.objectives().map(o => ({ value: o.id, label: o.name }))
-    },
+    { key: 'fecha', label: 'Fecha', type: 'date', required: true },
     { key: 'estimatedDurationMinutes', label: 'Duración Estimada (min)', type: 'number', required: false },
-    {
-      key: 'difficulty',
-      label: 'Dificultad',
-      type: 'select',
-      required: false,
-      options: [
-        { value: 'Baja', label: 'Baja' },
-        { value: 'Media', label: 'Media' },
-        { value: 'Alta', label: 'Alta' }
-      ]
-    },
-    { key: 'notes', label: 'Notas', type: 'textarea', required: false }
+    { key: 'notes', label: 'Notas', type: 'textarea', required: false, colspan: 2 }
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -150,7 +129,8 @@ export class WorkoutsPage implements OnInit {
 
   openEditForm(workout: WorkoutDto): void {
     this.selectedWorkout.set(workout);
-    this.formTitle = `Edit ${workout.name}`;
+    const fecha = new Date(workout.fecha).toLocaleDateString();
+    this.formTitle = `Editar Sesión del ${fecha}`;
     this.isFormOpen.set(true);
   }
 
