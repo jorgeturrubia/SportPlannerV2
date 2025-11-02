@@ -58,6 +58,9 @@ public class UpdateExerciseCommandHandler : IRequestHandler<UpdateExerciseComman
                 userId.ToString());
         }
 
+        // Update exercise-objective relationships
+        await _exerciseRepository.UpdateExerciseObjectivesAsync(exercise.Id, dto.ObjectiveIds, cancellationToken);
+
         await _exerciseRepository.UpdateAsync(exercise, cancellationToken);
 
         return Unit.Value;

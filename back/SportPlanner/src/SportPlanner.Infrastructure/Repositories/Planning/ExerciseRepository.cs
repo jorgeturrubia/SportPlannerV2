@@ -44,7 +44,12 @@ public class ExerciseRepository : IExerciseRepository
                 Instructions = e.Instructions,
                 AnimationJson = e.AnimationJson,
                 IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt
+                CreatedAt = e.CreatedAt,
+                // Include related objectives
+                ObjectiveIds = _context.ExerciseObjectives
+                    .Where(eo => eo.ExerciseId == e.Id)
+                    .Select(eo => eo.ObjectiveId)
+                    .ToList()
             })
             .ToListAsync(cancellationToken);
     }
@@ -82,5 +87,24 @@ public class ExerciseRepository : IExerciseRepository
             _context.Exercises.Remove(exercise);
             await _context.SaveChangesAsync(cancellationToken);
         }
+    }
+
+    public async Task UpdateExerciseObjectivesAsync(Guid exerciseId, List<Guid> objectiveIds, CancellationToken cancellationToken = default)
+    {
+        // Remove existing relationships
+        var existingRelationships = await _context.ExerciseObjectives
+            .Where(eo => eo.ExerciseId == exerciseId)
+            .ToListAsync(cancellationToken);
+
+        _context.ExerciseObjectives.RemoveRange(existingRelationships);
+
+        // Add new relationships
+        foreach (var objectiveId in objectiveIds)
+        {
+            var exerciseObjective = new ExerciseObjective(exerciseId, objectiveId);
+            await _context.ExerciseObjectives.AddAsync(exerciseObjective, cancellationToken);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

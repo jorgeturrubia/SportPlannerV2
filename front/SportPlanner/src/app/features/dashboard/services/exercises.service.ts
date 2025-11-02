@@ -19,6 +19,7 @@ export interface ExerciseDto {
   animationJson?: string;
   isActive: boolean;
   createdAt: string;
+  objectiveIds: string[];
 }
 
 export interface CreateExerciseDto {
@@ -47,6 +48,7 @@ export interface UpdateExerciseDto {
   defaultIntensity?: string;
   animationJson?: string;
   isActive: boolean;
+  objectiveIds: string[];
 }
 
 @Injectable({

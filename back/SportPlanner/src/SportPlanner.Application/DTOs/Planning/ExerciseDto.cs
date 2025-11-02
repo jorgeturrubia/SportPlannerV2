@@ -19,4 +19,5 @@ public class ExerciseDto
     public string? AnimationJson { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public List<Guid> ObjectiveIds { get; set; } = new();
 }

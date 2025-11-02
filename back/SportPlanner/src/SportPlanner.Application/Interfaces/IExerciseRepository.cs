@@ -13,4 +13,5 @@ public interface IExerciseRepository
     Task AddAsync(Exercise exercise, CancellationToken cancellationToken = default);
     Task UpdateAsync(Exercise exercise, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task UpdateExerciseObjectivesAsync(Guid exerciseId, List<Guid> objectiveIds, CancellationToken cancellationToken = default);
 }
