@@ -33,6 +33,13 @@
   [initialData]="selectedWorkout()"
   (formSubmit)="handleFormSubmit($event)"
   (cancel)="closeForm()">
+  
+  <!-- Custom content: Exercise Selector -->
+  <app-exercise-selector
+    [availableExercises]="exercises()"
+    [selectedExercises]="selectedExercises()"
+    (exercisesChange)="handleExercisesChange($event)">
+  </app-exercise-selector>
 </app-dynamic-form>
 
 <app-confirmation-dialog

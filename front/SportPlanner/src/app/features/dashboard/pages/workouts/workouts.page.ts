@@ -4,24 +4,29 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ExerciseSelectorComponent, SelectedExercise } from '../../components/exercise-selector/exercise-selector.component';
 import { WorkoutsService, WorkoutDto } from '../../services/workouts.service';
 import { ObjectivesService } from '../../services/objectives.service';
+import { ExercisesService, ExerciseDto } from '../../services/exercises.service';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
 import { ContentOwnership } from '../../services/objectives.service';
 
 @Component({
   selector: 'app-workouts-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ConfirmationDialogComponent, ExerciseSelectorComponent],
   templateUrl: './workouts.page.html'
 })
 export class WorkoutsPage implements OnInit {
   private workoutsService = inject(WorkoutsService);
   private objectivesService = inject(ObjectivesService);
+  private exercisesService = inject(ExercisesService);
   private ns = inject(NotificationService);
 
   workouts = signal<WorkoutDto[]>([]);
   objectives = signal<any[]>([]);
+  exercises = signal<ExerciseDto[]>([]);
+  selectedExercises = signal<SelectedExercise[]>([]);
   isLoading = signal(false);
   error = signal<string | null>(null);
   isFormOpen = signal(false);
@@ -82,7 +87,8 @@ export class WorkoutsPage implements OnInit {
   async ngOnInit(): Promise<void> {
     await Promise.all([
       this.loadWorkouts(),
-      this.loadObjectives()
+      this.loadObjectives(),
+      this.loadExercises()
     ]);
   }
 
@@ -93,6 +99,16 @@ export class WorkoutsPage implements OnInit {
     } catch (err: any) {
       console.error('Failed to load objectives:', err);
       this.ns.error(err?.message ?? 'Error al cargar objetivos', 'Error');
+    }
+  }
+
+  private async loadExercises(): Promise<void> {
+    try {
+      const data = await this.exercisesService.getExercises();
+      this.exercises.set(data || []);
+    } catch (err: any) {
+      console.error('Failed to load exercises:', err);
+      this.ns.error(err?.message ?? 'Error al cargar ejercicios', 'Error');
     }
   }
 
@@ -123,15 +139,21 @@ export class WorkoutsPage implements OnInit {
 
   openAddForm(): void {
     this.selectedWorkout.set(null);
+    this.selectedExercises.set([]);
     this.formTitle = 'Add Workout';
     this.isFormOpen.set(true);
   }
 
   openEditForm(workout: WorkoutDto): void {
     this.selectedWorkout.set(workout);
+    this.selectedExercises.set(workout.exercises || []);
     const fecha = new Date(workout.fecha).toLocaleDateString();
     this.formTitle = `Editar Sesión del ${fecha}`;
     this.isFormOpen.set(true);
+  }
+
+  handleExercisesChange(exercises: SelectedExercise[]): void {
+    this.selectedExercises.set(exercises);
   }
 
   async handleFormSubmit(formData: any): Promise<void> {
@@ -139,7 +161,7 @@ export class WorkoutsPage implements OnInit {
     try {
       const dto = {
         ...formData,
-        exercises: selected?.exercises || []
+        exercises: this.selectedExercises()
       };
 
       if (selected) {
