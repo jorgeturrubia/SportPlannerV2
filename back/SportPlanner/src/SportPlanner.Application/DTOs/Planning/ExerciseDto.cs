@@ -9,10 +9,6 @@ public class ExerciseDto
     public ContentOwnership Ownership { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public Guid CategoryId { get; set; }
-    public string CategoryName { get; set; } = string.Empty;
-    public Guid TypeId { get; set; }
-    public string TypeName { get; set; } = string.Empty;
     public string? VideoUrl { get; set; }
     public string? ImageUrl { get; set; }
     public string? Instructions { get; set; }
@@ -20,6 +16,7 @@ public class ExerciseDto
     public int? DefaultReps { get; set; }
     public int? DefaultDurationSeconds { get; set; }
     public string? DefaultIntensity { get; set; }
+    public string? AnimationJson { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
 }

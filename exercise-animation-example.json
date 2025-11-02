@@ -1,0 +1,223 @@
+{
+  "id": "basketball-dribble-drill-001",
+  "name": "Dribble entre conos + Pase + Tiro",
+  "description": "Ejercicio completo que combina control de balón, pase preciso y finalización.",
+  "sport": "basketball",
+  "court": {
+    "type": "basketball",
+    "renderOptions": {
+      "showLines": true,
+      "showThreePointLine": true,
+      "showKeyArea": true,
+      "showCenterCircle": true,
+      "lineColor": "#FFFFFF",
+      "opacity": 1
+    },
+    "backgroundColor": "#C17B3A"
+  },
+  "metadata": {
+    "difficulty": "intermediate",
+    "focus": [
+      "dribbling",
+      "passing",
+      "shooting"
+    ],
+    "playerCount": 2
+  },
+  "totalDuration": 13000,
+  "elements": [
+    {
+      "id": "P1",
+      "type": "player",
+      "label": "P1",
+      "color": "#007bff",
+      "radius": 15,
+      "initialPosition": {
+        "x": 100,
+        "y": 400
+      }
+    },
+    {
+      "id": "P2",
+      "type": "player",
+      "label": "P2",
+      "color": "#28a745",
+      "radius": 15,
+      "initialPosition": {
+        "x": 700,
+        "y": 150
+      }
+    },
+    {
+      "id": "C1",
+      "type": "cone",
+      "color": "#ffc107",
+      "radius": 10,
+      "initialPosition": {
+        "x": 250,
+        "y": 350
+      }
+    },
+    {
+      "id": "C2",
+      "type": "cone",
+      "color": "#ffc107",
+      "radius": 10,
+      "initialPosition": {
+        "x": 400,
+        "y": 300
+      }
+    },
+    {
+      "id": "C3",
+      "type": "cone",
+      "color": "#ffc107",
+      "radius": 10,
+      "initialPosition": {
+        "x": 550,
+        "y": 250
+      }
+    },
+    {
+      "id": "B",
+      "type": "ball",
+      "color": "#fd7e14",
+      "radius": 8,
+      "initialPosition": {
+        "x": 100,
+        "y": 400
+      }
+    }
+  ],
+  "frames": [
+    {
+      "time": 0,
+      "actions": []
+    },
+    {
+      "time": 1000,
+      "actions": [
+        {
+          "elementId": "P1",
+          "type": "move",
+          "targetPosition": {
+            "x": 250,
+            "y": 350
+          },
+          "duration": 2000
+        },
+        {
+          "elementId": "B",
+          "type": "follow",
+          "targetId": "P1",
+          "offset": {
+            "x": 10,
+            "y": 10
+          }
+        }
+      ]
+    },
+    {
+      "time": 3000,
+      "actions": [
+        {
+          "elementId": "P1",
+          "type": "move",
+          "targetPosition": {
+            "x": 400,
+            "y": 300
+          },
+          "duration": 2000
+        }
+      ]
+    },
+    {
+      "time": 5000,
+      "actions": [
+        {
+          "elementId": "P1",
+          "type": "move",
+          "targetPosition": {
+            "x": 550,
+            "y": 250
+          },
+          "duration": 2000
+        }
+      ]
+    },
+    {
+      "time": 7000,
+      "actions": [
+        {
+          "elementId": "B",
+          "type": "move",
+          "targetPosition": {
+            "x": 700,
+            "y": 150
+          },
+          "duration": 1000
+        },
+        {
+          "elementId": "P1",
+          "type": "move",
+          "targetPosition": {
+            "x": 600,
+            "y": 200
+          },
+          "duration": 1000
+        }
+      ]
+    },
+    {
+      "time": 8000,
+      "actions": [
+        {
+          "elementId": "B",
+          "type": "follow",
+          "targetId": "P2",
+          "offset": {
+            "x": -10,
+            "y": 10
+          }
+        }
+      ]
+    },
+    {
+      "time": 9000,
+      "actions": [
+        {
+          "elementId": "P2",
+          "type": "move",
+          "targetPosition": {
+            "x": 750,
+            "y": 250
+          },
+          "duration": 2000
+        }
+      ]
+    },
+    {
+      "time": 11000,
+      "actions": [
+        {
+          "elementId": "B",
+          "type": "move",
+          "targetPosition": {
+            "x": 850,
+            "y": 250
+          },
+          "duration": 1000
+        }
+      ]
+    },
+    {
+      "time": 12000,
+      "actions": [
+        {
+          "elementId": "B",
+          "type": "disappear"
+        }
+      ]
+    }
+  ]
+}

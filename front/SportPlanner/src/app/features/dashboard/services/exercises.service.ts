@@ -16,10 +16,9 @@ export interface ExerciseDto {
   defaultReps?: number;
   defaultDurationSeconds?: number;
   defaultIntensity?: string;
-  objectiveIds?: string[];
+  animationJson?: string;
   isActive: boolean;
   createdAt: string;
-  isEditable: boolean;
 }
 
 export interface CreateExerciseDto {
@@ -32,7 +31,7 @@ export interface CreateExerciseDto {
   defaultReps?: number;
   defaultDurationSeconds?: number;
   defaultIntensity?: string;
-  objectiveIds?: string[];
+  animationJson?: string;
 }
 
 export interface UpdateExerciseDto {
@@ -46,7 +45,7 @@ export interface UpdateExerciseDto {
   defaultReps?: number;
   defaultDurationSeconds?: number;
   defaultIntensity?: string;
-  objectiveIds?: string[];
+  animationJson?: string;
   isActive: boolean;
 }
 

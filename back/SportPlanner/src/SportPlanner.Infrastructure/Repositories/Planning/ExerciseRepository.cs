@@ -48,6 +48,7 @@ public class ExerciseRepository : IExerciseRepository
                 DefaultReps = e.DefaultReps,
                 DefaultDurationSeconds = e.DefaultDurationSeconds,
                 DefaultIntensity = e.DefaultIntensity,
+                AnimationJson = e.AnimationJson,
                 IsActive = e.IsActive,
                 CreatedAt = e.CreatedAt
             })

@@ -47,6 +47,10 @@ public class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
         builder.Property(e => e.DefaultIntensity)
             .HasMaxLength(50);
 
+        builder.Property(e => e.AnimationJson)
+            .HasColumnType("jsonb")
+            .IsRequired(false);
+
         builder.Property(e => e.IsActive)
             .IsRequired();
 

@@ -31,7 +31,17 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
   // Court rendering computed properties
   courtTemplate = computed(() => {
     const ex = this.exercise();
-    const template = getCourtTemplate(ex.court.type);
+    if (!ex || !ex.court || !ex.court.type) {
+      return this.sanitizer.bypassSecurityTrustHtml('');
+    }
+    
+    // Normalizar tipo de cancha (basketball-full -> basketball)
+    let courtType = ex.court.type;
+    if (courtType.toString().includes('basketball')) {
+      courtType = 'basketball' as any;
+    }
+    
+    const template = getCourtTemplate(courtType);
     const renderOptions = ex.court.renderOptions || {
       showLines: true,
       showThreePointLine: true,
@@ -44,17 +54,32 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
 
   courtViewBox = computed(() => {
     const ex = this.exercise();
-    const dimensions = COURT_DIMENSIONS[ex.court.type];
-    // Para baloncesto: 28m x 15m -> viewBox proporcionado en el template (186.7 x 100)
-    if (ex.court.type === 'basketball') {
+    if (!ex || !ex.court || !ex.court.type) {
+      return '0 0 186.7 100'; // Default viewBox
+    }
+    
+    // Para baloncesto (normalizar variantes como basketball-full)
+    const courtType = ex.court.type.toString();
+    if (courtType.includes('basketball')) {
       return '0 0 186.7 100';
     }
-    // Para otros deportes, usar dimensiones proporcionales
+    
+    // Para otros deportes, validar que existe en COURT_DIMENSIONS
+    const dimensions = COURT_DIMENSIONS[ex.court.type];
+    if (!dimensions) {
+      console.warn(`⚠️ Tipo de cancha no encontrado: ${ex.court.type}, usando dimensiones por defecto`);
+      return '0 0 186.7 100';
+    }
+    
+    // Usar dimensiones proporcionales
     return `0 0 ${dimensions.width * 6.67} ${dimensions.height * 6.67}`;
   });
 
   courtBackgroundColor = computed(() => {
     const ex = this.exercise();
+    if (!ex || !ex.court) {
+      return '#e6f2e6'; // Default background
+    }
     if (ex.court.backgroundColor) {
       return ex.court.backgroundColor;
     }
@@ -90,7 +115,7 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
 
   constructor(private sanitizer: DomSanitizer) {
     effect(() => {
-      if (this.autoPlay()) {
+      if (this.autoPlay() && this.exercise()) {
         this.play();
       }
     });
@@ -102,6 +127,13 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
 
   play(): void {
     if (this.playbackState().isPlaying) return;
+
+    // Validar que hay animación cargada
+    const ex = this.exercise();
+    if (!ex || !ex.frames || ex.frames.length === 0) {
+      console.error('❌ No se puede reproducir: no hay animación cargada');
+      return;
+    }
 
     this.playbackState.update(state => ({ ...state, isPlaying: true }));
     this.lastTimestamp = performance.now();
@@ -176,7 +208,13 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
   };
 
   private updateInterpolatedElements(time: number): void {
-    const frames = this.exercise().frames;
+    const ex = this.exercise();
+    if (!ex || !ex.frames || ex.frames.length === 0) {
+      console.error('❌ updateInterpolatedElements: no hay frames disponibles');
+      return;
+    }
+
+    const frames = ex.frames;
     
     // Find current and next frame
     let currentFrameIndex = 0;
@@ -301,25 +339,43 @@ export class ExerciseAnimationPlayerComponent implements OnDestroy {
   // Helper for court coordinates (convert 0-100 to actual SVG coordinates)
   getCourtX(x: number): number {
     const ex = this.exercise();
-    if (ex.court.type === 'basketball') {
+    if (!ex || !ex.court || !ex.court.type) {
+      return (x / 100) * 186.7; // Default para basketball
+    }
+    
+    const courtType = ex.court.type.toString();
+    if (courtType.includes('basketball')) {
       // Basketball: viewBox es 186.7 x 100
       // x va de 0-100 en el ejercicio, mapear a 0-186.7
       return (x / 100) * 186.7;
     }
+    
     // Para otros deportes, ajustar según dimensiones
     const dimensions = COURT_DIMENSIONS[ex.court.type];
+    if (!dimensions) {
+      return (x / 100) * 186.7; // Fallback
+    }
     return (x / 100) * dimensions.width * 6.67;
   }
 
   getCourtY(y: number): number {
     const ex = this.exercise();
-    if (ex.court.type === 'basketball') {
+    if (!ex || !ex.court || !ex.court.type) {
+      return y; // Default para basketball
+    }
+    
+    const courtType = ex.court.type.toString();
+    if (courtType.includes('basketball')) {
       // Basketball: viewBox es 186.7 x 100
       // y va de 0-100 en el ejercicio, mapear a 0-100 (coincide)
       return y;
     }
+    
     // Para otros deportes, ajustar según dimensiones
     const dimensions = COURT_DIMENSIONS[ex.court.type];
+    if (!dimensions) {
+      return y; // Fallback
+    }
     return (y / 100) * dimensions.height * 6.67;
   }
 

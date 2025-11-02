@@ -23,6 +23,8 @@ public class Exercise
     public int? DefaultDurationSeconds { get; private set; }
     public string? DefaultIntensity { get; private set; }
 
+    public string? AnimationJson { get; private set; }
+
     public bool IsActive { get; private set; }
 
 
@@ -32,7 +34,13 @@ public class Exercise
     public DateTime? UpdatedAt { get; private set; }
     public string? UpdatedBy { get; private set; }
 
-    private Exercise() { }
+    // EF Core constructor
+    private Exercise() 
+    {
+        Name = string.Empty;
+        Description = string.Empty;
+        CreatedBy = string.Empty;
+    }
 
     public Exercise(
         Guid? subscriptionId,
@@ -42,6 +50,7 @@ public class Exercise
         Guid categoryId,
         Guid typeId,
         string createdBy,
+        string? animationJson = null,
         Guid? marketplaceUserId = null)
     {
         ValidateOwnership(subscriptionId, ownership, marketplaceUserId);
@@ -54,6 +63,7 @@ public class Exercise
         Description = description;
         CategoryId = categoryId;
         TypeId = typeId;
+        AnimationJson = animationJson;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         CreatedBy = createdBy;
@@ -64,7 +74,8 @@ public class Exercise
         string description,
         Guid categoryId,
         Guid typeId,
-        string updatedBy)
+        string updatedBy,
+        string? animationJson = null)
     {
         if (Ownership == ContentOwnership.System)
             throw new InvalidOperationException("Cannot modify system content directly. Clone it first.");
@@ -73,6 +84,7 @@ public class Exercise
         Description = description;
         CategoryId = categoryId;
         TypeId = typeId;
+        AnimationJson = animationJson;
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = updatedBy;
     }

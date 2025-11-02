@@ -1,0 +1,98 @@
+{
+  "id": "basketball-full-court-drill-001",
+  "name": "Contraataque con cambio de mano y finalización",
+  "description": "Ejercicio de contraataque a toda pista que incluye cambios de mano, pases y finalizaciones en carrera.",
+  "sport": "basketball",
+  "court": {
+    "type": "basketball-full",
+    "renderOptions": {
+      "showLines": true,
+      "showThreePointLine": true,
+      "showKeyArea": true,
+      "showCenterCircle": true,
+      "lineColor": "#FFFFFF",
+      "opacity": 1
+    },
+    "backgroundColor": "#C17B3A"
+  },
+  "metadata": {
+    "difficulty": "advanced",
+    "focus": [
+      "dribbling",
+      "layup",
+      "passing",
+      "rebounding",
+      "conditioning"
+    ],
+    "playerCount": 2
+  },
+  "totalDuration": 22000,
+  "elements": [
+    {
+      "id": "P1",
+      "type": "player",
+      "label": "P1",
+      "color": "#007bff",
+      "radius": 15,
+      "initialPosition": { "x": 880, "y": 450 }
+    },
+    {
+      "id": "P2",
+      "type": "player",
+      "label": "P2",
+      "color": "#28a745",
+      "radius": 15,
+      "initialPosition": { "x": 850, "y": 250 }
+    },
+    { "id": "C1", "type": "cone", "color": "#ffc107", "radius": 10, "initialPosition": { "x": 750, "y": 400 } },
+    { "id": "C2", "type": "cone", "color": "#ffc107", "radius": 10, "initialPosition": { "x": 650, "y": 350 } },
+    { "id": "C3", "type": "cone", "color": "#ffc107", "radius": 10, "initialPosition": { "x": 550, "y": 300 } },
+    { "id": "C4", "type": "cone", "color": "#ffc107", "radius": 10, "initialPosition": { "x": 470, "y": 250 } },
+    {
+      "id": "B",
+      "type": "ball",
+      "color": "#fd7e14",
+      "radius": 8,
+      "initialPosition": { "x": 880, "y": 450 }
+    }
+  ],
+  "frames": [
+    { "time": 0, "actions": [] },
+    {
+      "time": 1000,
+      "actions": [
+        { "elementId": "B", "type": "follow", "targetId": "P1", "offset": { "x": 10, "y": 10 } },
+        { "elementId": "P1", "type": "move", "targetPosition": { "x": 750, "y": 400 }, "duration": 2000 }
+      ]
+    },
+    { "time": 3000, "actions": [{ "elementId": "P1", "type": "move", "targetPosition": { "x": 650, "y": 350 }, "duration": 2000 }] },
+    { "time": 5000, "actions": [{ "elementId": "P1", "type": "move", "targetPosition": { "x": 550, "y": 300 }, "duration": 2000 }] },
+    { "time": 7000, "actions": [{ "elementId": "P1", "type": "move", "targetPosition": { "x": 470, "y": 250 }, "duration": 2000, "dribbles": 3 }] },
+    { "time": 9000, "actions": [{ "elementId": "P1", "type": "move", "targetPosition": { "x": 80, "y": 250 }, "duration": 2000 }] },
+    { "time": 11000, "actions": [{ "elementId": "B", "type": "move", "targetPosition": { "x": 50, "y": 250 }, "duration": 500 }] },
+    { "time": 11500, "actions": [
+        { "elementId": "P1", "type": "move", "targetPosition": { "x": 70, "y": 250 }, "duration": 500 },
+        { "elementId": "B", "type": "move", "targetPosition": { "x": 70, "y": 250 }, "duration": 500 }
+    ]},
+    { "time": 12000, "actions": [
+        { "elementId": "B", "type": "move", "targetPosition": { "x": 850, "y": 250 }, "duration": 1000 }
+    ]},
+    { "time": 13000, "actions": [
+        { "elementId": "P1", "type": "move", "targetPosition": { "x": 470, "y": 50 }, "duration": 2000 },
+        { "elementId": "B", "type": "follow", "targetId": "P2", "offset": { "x": -10, "y": 10 } },
+        { "elementId": "P2", "type": "move", "targetPosition": { "x": 470, "y": 250 }, "duration": 2000 }
+    ]},
+    { "time": 15000, "actions": [
+        { "elementId": "P1", "type": "move", "targetPosition": { "x": 150, "y": 50 }, "duration": 2000 }
+    ]},
+    { "time": 17000, "actions": [
+        { "elementId": "B", "type": "move", "targetPosition": { "x": 150, "y": 50 }, "duration": 1000 }
+    ]},
+    { "time": 18000, "actions": [
+        { "elementId": "B", "type": "follow", "targetId": "P1", "offset": { "x": 10, "y": 10 } },
+        { "elementId": "P1", "type": "move", "targetPosition": { "x": 80, "y": 250 }, "duration": 2000 }
+    ]},
+    { "time": 20000, "actions": [{ "elementId": "B", "type": "move", "targetPosition": { "x": 50, "y": 250 }, "duration": 500 }] },
+    { "time": 21000, "actions": [{ "elementId": "B", "type": "disappear" }] }
+  ]
+}

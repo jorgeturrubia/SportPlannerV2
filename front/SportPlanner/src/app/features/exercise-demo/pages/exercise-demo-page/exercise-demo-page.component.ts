@@ -1,13 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExerciseAnimationPlayerComponent } from '../../components/exercise-animation-player/exercise-animation-player.component';
+import { ExerciseSelectorComponent } from '../../components/exercise-selector/exercise-selector.component';
 import { ExerciseAnimation } from '../../models/exercise-animation.model';
 import { createBasketballDribbleDrill } from '../../data/basketball-exercises';
 
 @Component({
   selector: 'app-exercise-demo-page',
   standalone: true,
-  imports: [CommonModule, ExerciseAnimationPlayerComponent],
+  imports: [CommonModule, ExerciseAnimationPlayerComponent, ExerciseSelectorComponent],
   template: `
     <div class="exercise-demo-page">
       <!-- Page Header -->
@@ -26,30 +27,49 @@ import { createBasketballDribbleDrill } from '../../data/basketball-exercises';
             </div>
           </div>
 
-          <!-- Exercise Selector (for future) -->
-          <div class="exercise-selector">
+          <!-- Toggle View Buttons -->
+          <div class="view-toggle-buttons">
             <button 
-              class="selector-btn active"
+              class="toggle-btn"
+              [class.active]="showSelector()"
+              (click)="showSelector.set(!showSelector())">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+              </svg>
+              {{ showSelector() ? 'Ocultar' : 'Mostrar' }} Selector
+            </button>
+            <button 
+              class="toggle-btn"
+              [class.active]="!showSelector()"
               (click)="loadExercise('basketball-dribble')">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
               </svg>
-              Dribble + Pase + Tiro
+              Ejemplo Demo
             </button>
           </div>
         </div>
       </div>
+
+      <!-- Exercise Selector -->
+      @if (showSelector()) {
+        <div class="selector-wrapper">
+          <app-exercise-selector 
+            (exerciseSelected)="onExerciseSelected($event)" />
+        </div>
+      }
 
       <!-- Animation Player -->
       <div class="player-wrapper">
         @if (currentExercise()) {
           <app-exercise-animation-player 
             [exercise]="currentExercise()!"
-            [autoPlay]="true" />
+            [autoPlay]="autoPlayEnabled()" />
         } @else {
           <div class="loading-state">
             <div class="loading-spinner"></div>
-            <p class="loading-text">Cargando ejercicio...</p>
+            <p class="loading-text">Selecciona un ejercicio para visualizarlo</p>
           </div>
         }
       </div>
@@ -163,11 +183,11 @@ import { createBasketballDribbleDrill } from '../../data/basketball-exercises';
       @apply text-slate-700 dark:text-slate-300 mt-1;
     }
 
-    .exercise-selector {
+    .view-toggle-buttons {
       @apply flex flex-wrap gap-3;
     }
 
-    .selector-btn {
+    .toggle-btn {
       @apply flex items-center gap-2 px-4 py-2 rounded-lg font-medium
              bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300
              border border-slate-300 dark:border-slate-700
@@ -176,10 +196,15 @@ import { createBasketballDribbleDrill } from '../../data/basketball-exercises';
              transition-all duration-200;
     }
 
-    .selector-btn.active {
+    .toggle-btn.active {
       @apply bg-blue-600 text-white border-blue-600
              hover:bg-blue-700 hover:border-blue-700
              shadow-md;
+    }
+
+    .selector-wrapper {
+      @apply bg-white dark:bg-slate-800 rounded-xl p-6 shadow-md
+             border border-slate-200 dark:border-slate-700;
     }
 
     .player-wrapper {
@@ -246,16 +271,24 @@ import { createBasketballDribbleDrill } from '../../data/basketball-exercises';
 })
 export class ExerciseDemoPageComponent {
   currentExercise = signal<ExerciseAnimation | null>(null);
+  showSelector = signal(true); // Mostrar el selector por defecto
+  autoPlayEnabled = signal(false); // No autoplay hasta que se cargue un ejercicio
 
   constructor() {
-    // Load default exercise
-    this.loadExercise('basketball-dribble');
+    // No cargar ejercicio por defecto, esperar a que el usuario seleccione uno
   }
 
   loadExercise(exerciseId: string): void {
-    // For now, only one exercise available
+    // Cargar ejercicio de ejemplo
     if (exerciseId === 'basketball-dribble') {
       this.currentExercise.set(createBasketballDribbleDrill());
+      this.showSelector.set(false); // Ocultar selector cuando se carga el demo
+      this.autoPlayEnabled.set(true);
     }
+  }
+
+  onExerciseSelected(animation: ExerciseAnimation): void {
+    this.currentExercise.set(animation);
+    this.autoPlayEnabled.set(true);
   }
 }
