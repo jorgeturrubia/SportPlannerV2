@@ -1,6 +1,7 @@
 import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LottieComponent, AnimationOptions } from 'ngx-lottie';
 import { ExerciseDto } from '../../services/exercises.service';
 
 export interface SelectedExercise {
@@ -16,7 +17,7 @@ export interface SelectedExercise {
 @Component({
   selector: 'app-exercise-selector',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LottieComponent],
   templateUrl: './exercise-selector.component.html',
   styleUrls: ['./exercise-selector.component.css']
 })
@@ -56,10 +57,39 @@ export class ExerciseSelectorComponent {
           ...selected,
           name: exercise?.name ?? 'Unknown',
           description: exercise?.description ?? '',
-          videoUrl: exercise?.videoUrl
+          videoUrl: exercise?.videoUrl,
+          animationJson: exercise?.animationJson
         };
       });
   });
+
+  getLottieOptions(animationJson: string | undefined): AnimationOptions | null {
+    if (!animationJson || animationJson.trim() === '') return null;
+
+    try {
+      const animationData = JSON.parse(animationJson);
+
+      // Validate that it's a valid Lottie animation structure
+      if (!animationData || typeof animationData !== 'object') {
+        return null;
+      }
+
+      // Check for essential Lottie properties
+      if (!animationData.v || !animationData.layers) {
+        console.warn('Invalid Lottie animation: missing required properties (v, layers)');
+        return null;
+      }
+
+      return {
+        animationData: animationData,
+        loop: true,
+        autoplay: true
+      };
+    } catch (error) {
+      console.error('Error parsing animation JSON:', error);
+      return null;
+    }
+  }
   
   addExercise(exercise: ExerciseDto): void {
     const current = [...this.selectedExercises()];

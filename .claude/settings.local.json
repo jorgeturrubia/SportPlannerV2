@@ -25,7 +25,10 @@
       "Bash(dotnet ef database update:*)",
       "Bash(dir:*)",
       "Bash(cat:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm install:*)",
+      "Bash(npm start)",
+      "Bash(dotnet run)"
     ],
     "deny": [],
     "ask": []

@@ -3,6 +3,8 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, HttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { importProvidersFrom } from '@angular/core';
+import { provideLottieOptions } from 'ngx-lottie';
+import player from 'lottie-web';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -22,12 +24,15 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes), 
+    provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(
       withFetch(),
       withInterceptors([authInterceptor]) // Auth interceptor for JWT
     ),
+    provideLottieOptions({
+      player: () => player
+    }),
     importProvidersFrom(
       TranslateModule.forRoot({
         loader: {

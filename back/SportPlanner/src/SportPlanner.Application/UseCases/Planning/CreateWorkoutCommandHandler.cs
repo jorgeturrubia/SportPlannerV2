@@ -33,12 +33,17 @@ public class CreateWorkoutCommandHandler : IRequestHandler<CreateWorkoutCommand,
         var subscription = await _subscriptionRepository.GetByOwnerIdAsync(userId, cancellationToken)
             ?? throw new InvalidOperationException("User does not have an active subscription");
 
+        // Ensure fecha is in UTC
+        var fechaUtc = dto.Fecha.Kind == DateTimeKind.Utc
+            ? dto.Fecha
+            : DateTime.SpecifyKind(dto.Fecha, DateTimeKind.Utc);
+
         // Create workout
         var workout = new Workout(
             subscription.Id,
             ContentOwnership.User,
             userId.ToString(),
-            dto.Fecha
+            fechaUtc
            );
 
         // Set metadata

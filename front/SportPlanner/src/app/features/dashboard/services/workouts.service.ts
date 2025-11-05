@@ -11,6 +11,7 @@ export interface WorkoutExerciseDetailDto {
   durationSeconds?: number;
   intensity?: string;
   restSeconds?: number;
+  notes?: string;
 }
 
 export interface WorkoutDto {

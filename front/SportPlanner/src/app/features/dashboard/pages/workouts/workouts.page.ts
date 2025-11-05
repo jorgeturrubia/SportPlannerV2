@@ -42,12 +42,6 @@ export class WorkoutsPage implements OnInit {
       sortable: true,
       type: 'number'
     },
-    {
-      key: 'ownership',
-      label: 'Tipo',
-      sortable: true,
-      formatter: (value: ContentOwnership) => this.getOwnershipLabel(value)
-    },
     { key: 'isActive', label: 'Estado', sortable: true, type: 'badge' }
   ]);
 
@@ -57,7 +51,7 @@ export class WorkoutsPage implements OnInit {
       label: 'Editar',
       color: 'blue',
       handler: (row) => {
-        if (row.ownership === ContentOwnership.User) this.openEditForm(row);
+        this.openEditForm(row);
       }
     },
     {
@@ -73,7 +67,7 @@ export class WorkoutsPage implements OnInit {
       label: 'Eliminar',
       color: 'red',
       handler: (row) => {
-        if (row.ownership === ContentOwnership.User) this.openDeleteConfirm(row);
+        this.openDeleteConfirm(row);
       }
     }
   ];
@@ -146,7 +140,19 @@ export class WorkoutsPage implements OnInit {
 
   openEditForm(workout: WorkoutDto): void {
     this.selectedWorkout.set(workout);
-    this.selectedExercises.set(workout.exercises || []);
+
+    // Map WorkoutExerciseDetailDto to SelectedExercise
+    const mappedExercises: SelectedExercise[] = (workout.exercises || []).map(ex => ({
+      exerciseId: ex.exerciseId,
+      order: ex.order,
+      sets: ex.sets,
+      reps: ex.reps,
+      durationSeconds: ex.durationSeconds,
+      restSeconds: ex.restSeconds,
+      notes: ex.notes
+    }));
+
+    this.selectedExercises.set(mappedExercises);
     const fecha = new Date(workout.fecha).toLocaleDateString();
     this.formTitle = `Editar Sesión del ${fecha}`;
     this.isFormOpen.set(true);
