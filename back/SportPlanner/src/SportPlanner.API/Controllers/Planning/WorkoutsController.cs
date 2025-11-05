@@ -52,4 +52,16 @@ public class WorkoutsController : ControllerBase
     {
         return Ok(new { message = "Get workout by ID - to be implemented" });
     }
+
+    /// <summary>
+    /// Delete a workout
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeleteWorkout([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteWorkoutCommand(id);
+        await _mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
 }

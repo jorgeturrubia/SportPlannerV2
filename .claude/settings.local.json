@@ -28,7 +28,9 @@
       "Bash(find:*)",
       "Bash(npm install:*)",
       "Bash(npm start)",
-      "Bash(dotnet run)"
+      "Bash(dotnet run)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []
