@@ -38,11 +38,19 @@
   (cancel)="closeForm()">
 </app-dynamic-form>
 
+<!-- View Plan Modal (Read-only) -->
+<app-training-plan-view
+  [isOpen]="isViewModalOpen()"
+  [plan]="planForView()"
+  (close)="closeViewModal()">
+</app-training-plan-view>
+
+<!-- Manage Objectives Modal (Editable) -->
 <app-objective-selector
   [isOpen]="isAddObjectivesOpen()"
   [planId]="planForAddObjectives()?.id || null"
   [initialObjectives]="planForAddObjectives()?.objectives || []"
-  [viewOnly]="isViewingPlan()"
+  [viewOnly]="false"
   (close)="closeObjectivesModal()"
   (objectivesChanged)="onObjectivesAdded($event)">
 </app-objective-selector>

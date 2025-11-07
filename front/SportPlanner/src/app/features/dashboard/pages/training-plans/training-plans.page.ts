@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataTableComponent, TableColumn, TableAction } from '../../../../shared/components/data-table/data-table.component';
 import { ObjectiveSelectorComponent } from '../../components/objective-selector/objective-selector';
+import { TrainingPlanViewComponent } from '../../components/training-plan-view/training-plan-view.component';
 import { DynamicFormComponent, FormField } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { TrainingPlansService, TrainingPlanDto } from '../../services/training-plans.service';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
@@ -10,7 +11,7 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 @Component({
   selector: 'app-training-plans-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ObjectiveSelectorComponent],
+  imports: [CommonModule, TranslateModule, DataTableComponent, DynamicFormComponent, ObjectiveSelectorComponent, TrainingPlanViewComponent],
   templateUrl: './training-plans.page.html'
 })
 export class TrainingPlansPage implements OnInit {
@@ -29,7 +30,10 @@ export class TrainingPlansPage implements OnInit {
   // Add objectives modal state
   isAddObjectivesOpen = signal(false);
   planForAddObjectives = signal<TrainingPlanDto | null>(null);
-  isViewingPlan = signal(false);
+
+  // View plan modal state
+  isViewModalOpen = signal(false);
+  planForView = signal<TrainingPlanDto | null>(null);
 
   // Confirmation dialog state
   isConfirmDialogOpen = signal(false);
@@ -183,8 +187,12 @@ export class TrainingPlansPage implements OnInit {
 
   closeObjectivesModal(): void {
     this.isAddObjectivesOpen.set(false);
-    this.isViewingPlan.set(false);
     this.planForAddObjectives.set(null);
+  }
+
+  closeViewModal(): void {
+    this.isViewModalOpen.set(false);
+    this.planForView.set(null);
   }
 
   openAddForm(): void {
@@ -232,26 +240,35 @@ export class TrainingPlansPage implements OnInit {
     }
   }
 
-  viewPlan(plan: TrainingPlanDto): void {
-    // Open modal in view-only mode showing the plan's objectives
-    this.planForAddObjectives.set(plan);
-    this.isViewingPlan.set(true);
-    this.isAddObjectivesOpen.set(true);
-    // set view mode by passing viewOnly to modal via template binding (handled there)
+  async viewPlan(plan: TrainingPlanDto): Promise<void> {
+    try {
+      console.log('👁️ viewPlan - Loading plan ID:', plan.id);
+
+      // Load fresh plan data with ALL objectives and category info
+      const freshPlan = await this.plansService.getPlan(plan.id);
+      console.log('👁️ viewPlan - Fresh plan loaded:', freshPlan);
+      console.log('👁️ viewPlan - Objectives in plan:', freshPlan?.objectives?.length ?? 0);
+
+      // Set the plan with complete data and open view modal
+      this.planForView.set(freshPlan);
+      this.isViewModalOpen.set(true);
+    } catch (error) {
+      console.error('❌ Error loading plan for viewing:', error);
+      this.ns.error('Error al cargar el plan', 'Error');
+    }
   }
 
   async openManageObjectives(plan: TrainingPlanDto): Promise<void> {
     try {
       console.log('📋 openManageObjectives - Loading plan ID:', plan.id);
-      
+
       // Load fresh plan data with ALL objectives and category info
       const freshPlan = await this.plansService.getPlan(plan.id);
       console.log('📋 openManageObjectives - Fresh plan loaded:', freshPlan);
       console.log('📋 openManageObjectives - Objectives in plan:', freshPlan?.objectives?.length ?? 0);
-      
-      // Set the plan with complete data (including objectives)
+
+      // Set the plan with complete data (including objectives) - editable mode
       this.planForAddObjectives.set(freshPlan);
-      this.isViewingPlan.set(false); // Not view-only, user can add/edit
       this.isAddObjectivesOpen.set(true);
     } catch (error) {
       console.error('❌ Error loading plan for managing objectives:', error);
