@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Domain.Entities;
-using SportPlanner.Domain.Enum;
 using SportPlanner.Infrastructure.Data;
 
 namespace SportPlanner.Infrastructure.Repositories;
@@ -18,19 +17,22 @@ public class TeamCategoryRepository : ITeamCategoryRepository
     public async Task<TeamCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.TeamCategories
+            .Include(tc => tc.Sport)
             .FirstOrDefaultAsync(tc => tc.Id == id, cancellationToken);
     }
 
     public async Task<TeamCategory?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
         return await _context.TeamCategories
+            .Include(tc => tc.Sport)
             .FirstOrDefaultAsync(tc => tc.Code == code.ToUpperInvariant(), cancellationToken);
     }
 
-    public async Task<List<TeamCategory>> GetActiveBySportAsync(Sport sport, CancellationToken cancellationToken = default)
+    public async Task<List<TeamCategory>> GetActiveBySportAsync(Guid sportId, CancellationToken cancellationToken = default)
     {
         return await _context.TeamCategories
-            .Where(tc => tc.Sport == sport && tc.IsActive)
+            .Include(tc => tc.Sport)
+            .Where(tc => tc.SportId == sportId && tc.IsActive)
             .OrderBy(tc => tc.SortOrder)
             .ThenBy(tc => tc.Name)
             .ToListAsync(cancellationToken);
@@ -39,8 +41,9 @@ public class TeamCategoryRepository : ITeamCategoryRepository
     public async Task<List<TeamCategory>> GetAllActiveAsync(CancellationToken cancellationToken = default)
     {
         return await _context.TeamCategories
+            .Include(tc => tc.Sport)
             .Where(tc => tc.IsActive)
-            .OrderBy(tc => tc.Sport)
+            .OrderBy(tc => tc.SportId)
             .ThenBy(tc => tc.SortOrder)
             .ThenBy(tc => tc.Name)
             .ToListAsync(cancellationToken);

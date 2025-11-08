@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Application.Interfaces;
 using SportPlanner.Domain.Entities;
-using SportPlanner.Domain.Enum;
 using SportPlanner.Infrastructure.Data;
 
 namespace SportPlanner.Infrastructure.Repositories;
@@ -18,19 +17,22 @@ public class AgeGroupRepository : IAgeGroupRepository
     public async Task<AgeGroup?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.AgeGroups
+            .Include(ag => ag.Sport)
             .FirstOrDefaultAsync(ag => ag.Id == id, cancellationToken);
     }
 
     public async Task<AgeGroup?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
         return await _context.AgeGroups
+            .Include(ag => ag.Sport)
             .FirstOrDefaultAsync(ag => ag.Code == code.ToUpperInvariant(), cancellationToken);
     }
 
-    public async Task<List<AgeGroup>> GetActiveBySportAsync(Sport sport, CancellationToken cancellationToken = default)
+    public async Task<List<AgeGroup>> GetActiveBySportAsync(Guid sportId, CancellationToken cancellationToken = default)
     {
         return await _context.AgeGroups
-            .Where(ag => ag.Sport == sport && ag.IsActive)
+            .Include(ag => ag.Sport)
+            .Where(ag => ag.SportId == sportId && ag.IsActive)
             .OrderBy(ag => ag.SortOrder)
             .ThenBy(ag => ag.MinAge)
             .ToListAsync(cancellationToken);
@@ -39,17 +41,19 @@ public class AgeGroupRepository : IAgeGroupRepository
     public async Task<List<AgeGroup>> GetAllActiveAsync(CancellationToken cancellationToken = default)
     {
         return await _context.AgeGroups
+            .Include(ag => ag.Sport)
             .Where(ag => ag.IsActive)
-            .OrderBy(ag => ag.Sport)
+            .OrderBy(ag => ag.SportId)
             .ThenBy(ag => ag.SortOrder)
             .ThenBy(ag => ag.MinAge)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<AgeGroup?> GetByAgeAndSportAsync(int age, Sport sport, CancellationToken cancellationToken = default)
+    public async Task<AgeGroup?> GetByAgeAndSportAsync(int age, Guid sportId, CancellationToken cancellationToken = default)
     {
         return await _context.AgeGroups
-            .Where(ag => ag.Sport == sport && ag.IsActive)
+            .Include(ag => ag.Sport)
+            .Where(ag => ag.SportId == sportId && ag.IsActive)
             .FirstOrDefaultAsync(ag => age >= ag.MinAge && age <= ag.MaxAge, cancellationToken);
     }
 
