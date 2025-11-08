@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportPlanner.Application.Dtos.Planning;
 using SportPlanner.Application.UseCases.Planning;
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Enum;
 using System;
 using System.Threading.Tasks;

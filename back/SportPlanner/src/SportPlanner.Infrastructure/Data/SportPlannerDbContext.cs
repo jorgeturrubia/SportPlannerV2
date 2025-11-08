@@ -59,8 +59,7 @@ public class SportPlannerDbContext : DbContext
         // Apply all configurations from assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SportPlannerDbContext).Assembly);
 
-        // Seed master data
-        MasterDataSeeder.SeedMasterData(modelBuilder);
+      
 
         // Configure User entity
         modelBuilder.Entity<User>(entity =>

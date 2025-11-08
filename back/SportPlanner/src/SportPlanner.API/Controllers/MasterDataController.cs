@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportPlanner.Application.DTOs;
 using SportPlanner.Application.UseCases;
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Enum;
 
 namespace SportPlanner.API.Controllers;
@@ -27,7 +28,7 @@ public class MasterDataController : ControllerBase
         [FromQuery] Sport? sport = null,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetTeamCategoriesQuery(sport);
+        var query = new GetTeamCategoriesQuery(sport.Id);
         var result = await _mediator.Send(query, cancellationToken);
         return Ok(result);
     }
@@ -109,7 +110,7 @@ public class MasterDataController : ControllerBase
         [FromQuery] Sport? sport = null,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetAgeGroupsQuery(sport);
+        var query = new GetAgeGroupsQuery(sport.Id);
         var result = await _mediator.Send(query, cancellationToken);
         return Ok(result);
     }
@@ -127,7 +128,7 @@ public class MasterDataController : ControllerBase
             request.Code,
             request.MinAge,
             request.MaxAge,
-            request.Sport,
+            request.Sport.Id,
             request.SortOrder,
             request.IsActive ?? true
         );
@@ -189,7 +190,7 @@ public class MasterDataController : ControllerBase
             request.Name,
             request.Code,
             request.Description,
-            request.Sport,
+            request.Sport.Id,
             request.SortOrder,
             request.IsActive ?? true
         );

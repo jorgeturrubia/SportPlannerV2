@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\src\SportPlanner.Infrastructure\SportPlanner.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>
