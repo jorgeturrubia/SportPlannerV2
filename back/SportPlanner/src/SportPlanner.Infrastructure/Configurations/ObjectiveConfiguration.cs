@@ -18,9 +18,11 @@ public class ObjectiveConfiguration : IEntityTypeConfiguration<Objective>
             .IsRequired()
             .HasConversion<string>();
 
-        builder.Property(o => o.Sport)
-            .IsRequired()
-            .HasConversion<string>();
+        builder.Property(o => o.SportId)
+            .IsRequired();
+
+        // EF Core will automatically configure the relationship based on naming convention
+        // SportId -> Sport navigation property
 
         builder.Property(o => o.Name)
             .HasMaxLength(200)

@@ -1,5 +1,6 @@
 using SportPlanner.Domain.Enum;
 using SportPlanner.Domain.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SportPlanner.Domain.Entities.Planning;
 
@@ -12,6 +13,7 @@ public class MarketplaceItem : Entity, IAuditable
 {
     public MarketplaceItemType Type { get; private set; }
     public Guid SportId { get; private set; }
+    [NotMapped]
     public Sport Sport { get; private set; } = null!;
 
     public Guid? SourceEntityId { get; private set; }

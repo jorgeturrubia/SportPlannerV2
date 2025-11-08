@@ -136,7 +136,6 @@ public class SportPlannerDbContext : DbContext
             entity.HasKey(i => i.Id);
             entity.Property(i => i.Name).HasMaxLength(200).IsRequired();
             entity.Property(i => i.Description).HasMaxLength(2000).IsRequired();
-            entity.Property(i => i.Sport).IsRequired().HasConversion<string>();
             entity.Property(i => i.Level).IsRequired().HasConversion<string>();
             entity.Property(i => i.IsActive).IsRequired();
             entity.Property(i => i.CreatedAt).IsRequired();

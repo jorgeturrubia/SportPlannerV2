@@ -24,9 +24,11 @@ public class AgeGroupConfiguration : IEntityTypeConfiguration<AgeGroup>
         builder.Property(ag => ag.MaxAge)
             .IsRequired();
 
-        builder.Property(ag => ag.Sport)
-            .IsRequired()
-            .HasConversion<string>();
+        builder.Property(ag => ag.SportId)
+            .IsRequired();
+
+        // EF Core will automatically configure the relationship based on naming convention
+        // SportId -> Sport navigation property
 
         builder.Property(ag => ag.SortOrder)
             .IsRequired();
@@ -48,9 +50,9 @@ public class AgeGroupConfiguration : IEntityTypeConfiguration<AgeGroup>
         builder.HasIndex(ag => ag.Code)
             .IsUnique();
 
-        builder.HasIndex(ag => new { ag.Sport, ag.SortOrder });
+        builder.HasIndex(ag => new { ag.SportId, ag.SortOrder });
 
-        builder.HasIndex(ag => new { ag.Sport, ag.MinAge, ag.MaxAge });
+        builder.HasIndex(ag => new { ag.SportId, ag.MinAge, ag.MaxAge });
 
         builder.HasIndex(ag => ag.IsActive);
 

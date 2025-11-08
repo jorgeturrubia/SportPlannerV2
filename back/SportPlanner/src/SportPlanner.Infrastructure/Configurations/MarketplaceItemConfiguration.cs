@@ -15,9 +15,8 @@ public class MarketplaceItemConfiguration : IEntityTypeConfiguration<Marketplace
             .IsRequired()
             .HasConversion<string>();
 
-        builder.Property(mi => mi.Sport)
-            .IsRequired()
-            .HasConversion<string>();
+        builder.Property(mi => mi.SportId)
+            .IsRequired();
 
         builder.Property(mi => mi.SourceEntityId)
             .IsRequired(false);
@@ -76,18 +75,18 @@ public class MarketplaceItemConfiguration : IEntityTypeConfiguration<Marketplace
 
         // Indices for performance (critical for ADR-003 search requirements)
         // Main index: search by sport and type with rating sort
-        builder.HasIndex(mi => new { mi.Sport, mi.Type, mi.AverageRating })
+        builder.HasIndex(mi => new { mi.SportId, mi.Type, mi.AverageRating })
             .HasDatabaseName("IX_MarketplaceItems_Sport_Type_Rating")
             .IsDescending(false, false, true);
 
         // Index for filtering official content
-        builder.HasIndex(mi => new { mi.Sport, mi.IsSystemOfficial, mi.AverageRating })
+        builder.HasIndex(mi => new { mi.SportId, mi.IsSystemOfficial, mi.AverageRating })
             .HasDatabaseName("IX_MarketplaceItems_Sport_Official_Rating")
             .HasFilter("is_system_official = true")
             .IsDescending(false, false, true);
 
         // Index for popular content
-        builder.HasIndex(mi => new { mi.Sport, mi.TotalDownloads })
+        builder.HasIndex(mi => new { mi.SportId, mi.TotalDownloads })
             .HasDatabaseName("IX_MarketplaceItems_Sport_Downloads")
             .IsDescending(false, true);
 

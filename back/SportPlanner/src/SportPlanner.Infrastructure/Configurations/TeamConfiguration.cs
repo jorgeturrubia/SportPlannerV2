@@ -33,9 +33,11 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             .IsRequired()
             .HasConversion<string>();
 
-        builder.Property(t => t.Sport)
-            .IsRequired()
-            .HasConversion<string>();
+        builder.Property(t => t.SportId)
+            .IsRequired();
+
+        // EF Core will automatically configure the relationship based on naming convention
+        // SportId -> Sport navigation property
 
         builder.Property(t => t.IsActive)
             .IsRequired();
