@@ -15,7 +15,8 @@ public class Team : Entity, IAuditable
     // Propiedades directas
     public string Name { get; private set; }
     public TeamColor Color { get; private set; }
-    public Sport Sport { get; private set; }
+    public Guid SportId { get; private set; }
+    public Sport Sport { get; private set; } = null!;
     public bool IsActive { get; private set; }
 
     // Propiedades adicionales
@@ -48,11 +49,12 @@ public class Team : Entity, IAuditable
         Guid teamCategoryId,
         Guid genderId,
         Guid ageGroupId,
-        Sport sport,
+        Guid sportId,
         string? description = null,
         Guid? coachSubscriptionUserId = null,
         DateTime? season = null,
-        bool allowMixedGender = false)
+        bool allowMixedGender = false,
+        int? maxPlayers = null)
     {
         if (subscriptionId == Guid.Empty)
             throw new ArgumentException("SubscriptionId cannot be empty", nameof(subscriptionId));
@@ -69,22 +71,25 @@ public class Team : Entity, IAuditable
         if (ageGroupId == Guid.Empty)
             throw new ArgumentException("AgeGroupId cannot be empty", nameof(ageGroupId));
 
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
         SubscriptionId = subscriptionId;
         Name = name;
         Color = color;
         TeamCategoryId = teamCategoryId;
         GenderId = genderId;
         AgeGroupId = ageGroupId;
+        SportId = sportId;
         CoachSubscriptionUserId = coachSubscriptionUserId;
-        Sport = sport;
         Description = description;
         Season = season;
         AllowMixedGender = allowMixedGender;
         IsActive = true;
         CurrentPlayersCount = 0;
 
-        // Set max players based on sport
-        MaxPlayers = GetMaxPlayersForSport(sport);
+        // Set max players (default 20 if not specified)
+        MaxPlayers = maxPlayers ?? 20;
     }
 
     public void UpdateBasicInfo(string name, TeamColor color, string? description = null)
@@ -154,16 +159,5 @@ public class Team : Entity, IAuditable
     public int AvailableSpots()
     {
         return MaxPlayers - CurrentPlayersCount;
-    }
-
-    private static int GetMaxPlayersForSport(Sport sport)
-    {
-        return sport switch
-        {
-            Sport.Football => 22,     // 11 titulares + 11 suplentes
-            Sport.Basketball => 15,   // 5 titulares + 10 suplentes
-            Sport.Handball => 18,     // 7 titulares + 11 suplentes
-            _ => 20                   // Default
-        };
     }
 }

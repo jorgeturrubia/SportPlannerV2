@@ -123,6 +123,12 @@ export class TrainingPlansPage implements OnInit {
     await this.loadPlans();
   }
 
+  openAutoPlanning(): void {
+    // TODO: Implement auto-planning functionality
+    console.log('🚀 AutoPlaning button clicked');
+    this.ns.info('Funcionalidad AutoPlaning próximamente disponible', 'AutoPlaning');
+  }
+
   async loadPlans(): Promise<void> {
     try {
       this.isLoading.set(true);

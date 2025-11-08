@@ -1,3 +1,4 @@
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Entities.Planning;
 using SportPlanner.Domain.Enum;
 

@@ -1,3 +1,4 @@
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Enum;
 
 namespace SportPlanner.Application.DTOs;

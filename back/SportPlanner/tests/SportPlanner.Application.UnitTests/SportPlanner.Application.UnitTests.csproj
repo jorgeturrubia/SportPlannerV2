@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\src\SportPlanner.Application\SportPlanner.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\Planning\" />
+  </ItemGroup>
+
 </Project>

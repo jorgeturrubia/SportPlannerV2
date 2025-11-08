@@ -36,9 +36,9 @@ public class CreateObjectiveCommandHandler : IRequestHandler<CreateObjectiveComm
             ?? throw new InvalidOperationException("User does not have an active subscription");
 
         // Validate sport matches subscription
-        if (subscription.Sport != dto.Sport)
+        if (subscription.SportId != dto.SportId)
         {
-            throw new InvalidOperationException($"Objective sport ({dto.Sport}) must match subscription sport ({subscription.Sport})");
+            throw new InvalidOperationException($"Objective sport must match subscription sport");
         }
 
         // Validate category exists
@@ -57,7 +57,7 @@ public class CreateObjectiveCommandHandler : IRequestHandler<CreateObjectiveComm
         // Create objective (include Level)
         var objective = new Objective(
             subscription.Id,
-            dto.Sport,
+            dto.SportId,
             dto.Name,
             dto.Description,
             dto.ObjectiveCategoryId,

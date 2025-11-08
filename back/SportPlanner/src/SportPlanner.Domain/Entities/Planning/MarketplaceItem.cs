@@ -11,7 +11,8 @@ namespace SportPlanner.Domain.Entities.Planning;
 public class MarketplaceItem : Entity, IAuditable
 {
     public MarketplaceItemType Type { get; private set; }
-    public Sport Sport { get; private set; }
+    public Guid SportId { get; private set; }
+    public Sport Sport { get; private set; } = null!;
 
     public Guid? SourceEntityId { get; private set; }
     public ContentOwnership SourceOwnership { get; private set; }
@@ -48,12 +49,15 @@ public class MarketplaceItem : Entity, IAuditable
     /// </summary>
     public static MarketplaceItem CreateSystemItem(
         MarketplaceItemType type,
-        Sport sport,
+        Guid sportId,
         Guid sourceEntityId,
         string name,
         string description,
         string createdBy)
     {
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
         if (sourceEntityId == Guid.Empty)
             throw new ArgumentException("Source entity ID cannot be empty", nameof(sourceEntityId));
 
@@ -62,7 +66,7 @@ public class MarketplaceItem : Entity, IAuditable
         return new MarketplaceItem
         {
             Type = type,
-            Sport = sport,
+            SportId = sportId,
             SourceEntityId = sourceEntityId,
             SourceOwnership = ContentOwnership.System,
             PublishedBySubscriptionId = null,
@@ -84,13 +88,16 @@ public class MarketplaceItem : Entity, IAuditable
     /// </summary>
     public static MarketplaceItem CreateUserItem(
         MarketplaceItemType type,
-        Sport sport,
+        Guid sportId,
         Guid sourceEntityId,
         Guid publishedBySubscriptionId,
         string name,
         string description,
         string createdBy)
     {
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
         if (sourceEntityId == Guid.Empty)
             throw new ArgumentException("Source entity ID cannot be empty", nameof(sourceEntityId));
 
@@ -102,7 +109,7 @@ public class MarketplaceItem : Entity, IAuditable
         return new MarketplaceItem
         {
             Type = type,
-            Sport = sport,
+            SportId = sportId,
             SourceEntityId = sourceEntityId,
             SourceOwnership = ContentOwnership.User,
             PublishedBySubscriptionId = publishedBySubscriptionId,

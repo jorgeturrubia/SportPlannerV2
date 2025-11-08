@@ -55,7 +55,7 @@ public class GetTeamsQueryHandler : IRequestHandler<GetTeamsQuery, List<TeamResp
                 t.SubscriptionId,
                 t.Name,
                 t.Color,
-                t.Sport,
+                t.SportId,
                 t.Description,
                 t.CoachSubscriptionUserId,
                 coachFirstName,
@@ -73,7 +73,7 @@ public class GetTeamsQueryHandler : IRequestHandler<GetTeamsQuery, List<TeamResp
                     t.Category.Code,
                     t.Category.Description,
                     t.Category.SortOrder,
-                    t.Category.Sport,
+                    t.Category.SportId,
                     t.Category.IsActive
                 ),
                 new GenderResponse(
@@ -89,7 +89,7 @@ public class GetTeamsQueryHandler : IRequestHandler<GetTeamsQuery, List<TeamResp
                     t.AgeGroup.Code,
                     t.AgeGroup.MinAge,
                     t.AgeGroup.MaxAge,
-                    t.AgeGroup.Sport,
+                    t.AgeGroup.SportId,
                     t.AgeGroup.SortOrder,
                     t.AgeGroup.IsActive
                 ),

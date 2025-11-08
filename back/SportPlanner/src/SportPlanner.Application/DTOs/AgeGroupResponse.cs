@@ -1,5 +1,3 @@
-using SportPlanner.Domain.Enum;
-
 namespace SportPlanner.Application.DTOs;
 
 public record AgeGroupResponse(
@@ -8,7 +6,7 @@ public record AgeGroupResponse(
     string Code,
     int MinAge,
     int MaxAge,
-    Sport Sport,
+    Guid SportId,
     int SortOrder,
     bool IsActive
 );

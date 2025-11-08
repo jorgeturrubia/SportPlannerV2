@@ -2,24 +2,25 @@ using SportPlanner.Domain.Interfaces;
 
 namespace SportPlanner.Domain.Entities;
 
-public class TeamCategory : Entity, IAuditable
+/// <summary>
+/// Master data entity representing sports (Football, Basketball, Handball, etc.)
+/// </summary>
+public class Sport : Entity, IAuditable
 {
     public string Name { get; private set; }
     public string Code { get; private set; }
     public string? Description { get; private set; }
     public int SortOrder { get; private set; }
     public bool IsActive { get; private set; }
-    public Guid SportId { get; private set; }
-    public Sport Sport { get; private set; } = null!;
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public string? UpdatedBy { get; set; }
 
     // For EF Core
-    private TeamCategory() { }
+    private Sport() { }
 
-    public TeamCategory(string name, string code, Guid sportId, string? description = null, int sortOrder = 0)
+    public Sport(string name, string code, string? description = null, int sortOrder = 0)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be empty", nameof(name));
@@ -27,12 +28,8 @@ public class TeamCategory : Entity, IAuditable
         if (string.IsNullOrWhiteSpace(code))
             throw new ArgumentException("Code cannot be empty", nameof(code));
 
-        if (sportId == Guid.Empty)
-            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
-
         Name = name;
         Code = code.ToUpperInvariant();
-        SportId = sportId;
         Description = description;
         SortOrder = sortOrder;
         IsActive = true;

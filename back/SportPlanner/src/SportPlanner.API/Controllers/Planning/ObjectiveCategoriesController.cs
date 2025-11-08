@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportPlanner.Application.DTOs.Planning;
 using SportPlanner.Application.UseCases.Planning;
-using SportPlanner.Domain.Enum;
 
 namespace SportPlanner.API.Controllers.Planning;
 
@@ -24,12 +23,48 @@ public class ObjectiveCategoriesController : ControllerBase
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<ObjectiveCategoryDto>>> GetCategories(
-        [FromQuery] Sport? sport = null,
+        [FromQuery] Guid? sportId = null,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetObjectiveCategoriesQuery(sport);
+        var query = new GetObjectiveCategoriesQuery(sportId);
         var categories = await _mediator.Send(query, cancellationToken);
 
         return Ok(categories);
+    }
+
+    /// <summary>
+    /// Create a new objective category (System/Admin only)
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<Guid>> CreateCategory(
+        [FromBody] CreateObjectiveCategoryDto request,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new CreateObjectiveCategoryCommand(request);
+        var categoryId = await _mediator.Send(command, cancellationToken);
+
+        return CreatedAtAction(nameof(GetCategories), new { id = categoryId }, categoryId);
+    }
+
+    /// <summary>
+    /// Update an objective category (System/Admin only - to be implemented with proper authorization)
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> UpdateCategory(
+        [FromRoute] Guid id,
+        [FromBody] UpdateObjectiveCategoryDto request)
+    {
+        // TODO: Implement update command
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Delete an objective category (System/Admin only - to be implemented with proper authorization)
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeleteCategory([FromRoute] Guid id)
+    {
+        // TODO: Implement delete command
+        return NoContent();
     }
 }

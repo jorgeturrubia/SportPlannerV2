@@ -1,5 +1,4 @@
 using FluentValidation;
-using SportPlanner.Domain.Enum;
 
 namespace SportPlanner.Application.UseCases.Planning;
 
@@ -15,8 +14,8 @@ public class CreateObjectiveCommandValidator : AbstractValidator<CreateObjective
             .NotEmpty().WithMessage("Description is required")
             .MaximumLength(2000).WithMessage("Description must not exceed 2000 characters");
 
-        RuleFor(x => x.Objective.Sport)
-            .IsInEnum().WithMessage("Invalid sport");
+        RuleFor(x => x.Objective.SportId)
+            .NotEmpty().WithMessage("Sport is required");
 
         RuleFor(x => x.Objective.ObjectiveCategoryId)
             .NotEmpty().WithMessage("Category is required");

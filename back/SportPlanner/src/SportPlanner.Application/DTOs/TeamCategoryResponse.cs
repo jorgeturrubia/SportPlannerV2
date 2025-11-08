@@ -1,5 +1,3 @@
-using SportPlanner.Domain.Enum;
-
 namespace SportPlanner.Application.DTOs;
 
 public record TeamCategoryResponse(
@@ -8,6 +6,6 @@ public record TeamCategoryResponse(
     string Code,
     string? Description,
     int SortOrder,
-    Sport Sport,
+    Guid SportId,
     bool IsActive
 );

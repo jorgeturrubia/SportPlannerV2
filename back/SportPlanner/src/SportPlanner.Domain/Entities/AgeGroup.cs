@@ -1,4 +1,3 @@
-using SportPlanner.Domain.Enum;
 using SportPlanner.Domain.Interfaces;
 
 namespace SportPlanner.Domain.Entities;
@@ -9,7 +8,8 @@ public class AgeGroup : Entity, IAuditable
     public string Code { get; private set; }
     public int MinAge { get; private set; }
     public int MaxAge { get; private set; }
-    public Sport Sport { get; private set; }
+    public Guid SportId { get; private set; }
+    public Sport Sport { get; private set; } = null!;
     public int SortOrder { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; set; }
@@ -20,7 +20,7 @@ public class AgeGroup : Entity, IAuditable
     // For EF Core
     private AgeGroup() { }
 
-    public AgeGroup(string name, string code, int minAge, int maxAge, Sport sport, int sortOrder = 0)
+    public AgeGroup(string name, string code, int minAge, int maxAge, Guid sportId, int sortOrder = 0)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be empty", nameof(name));
@@ -34,11 +34,14 @@ public class AgeGroup : Entity, IAuditable
         if (maxAge < minAge)
             throw new ArgumentException("MaxAge cannot be less than MinAge", nameof(maxAge));
 
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
         Name = name;
         Code = code.ToUpperInvariant();
         MinAge = minAge;
         MaxAge = maxAge;
-        Sport = sport;
+        SportId = sportId;
         SortOrder = sortOrder;
         IsActive = true;
     }

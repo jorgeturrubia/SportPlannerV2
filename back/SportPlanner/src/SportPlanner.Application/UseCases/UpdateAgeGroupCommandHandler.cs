@@ -36,7 +36,7 @@ public class UpdateAgeGroupCommandHandler : IRequestHandler<UpdateAgeGroupComman
             ageGroup.Code,
             ageGroup.MinAge,
             ageGroup.MaxAge,
-            ageGroup.Sport,
+            ageGroup.SportId,
             ageGroup.SortOrder,
             ageGroup.IsActive
         );

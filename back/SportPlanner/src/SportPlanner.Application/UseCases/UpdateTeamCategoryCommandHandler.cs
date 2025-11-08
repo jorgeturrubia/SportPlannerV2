@@ -36,7 +36,7 @@ public class UpdateTeamCategoryCommandHandler : IRequestHandler<UpdateTeamCatego
             teamCategory.Code,
             teamCategory.Description,
             teamCategory.SortOrder,
-            teamCategory.Sport,
+            teamCategory.SportId,
             teamCategory.IsActive
         );
     }

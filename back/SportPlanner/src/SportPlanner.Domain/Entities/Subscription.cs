@@ -8,7 +8,8 @@ public class Subscription : Entity, IAuditable
 {
     public Guid OwnerId { get; private set; }
     public SubscriptionType Type { get; private set; }
-    public Sport Sport { get; private set; }
+    public Guid SportId { get; private set; }
+    public Sport Sport { get; private set; } = null!;
     public int MaxUsers { get; private set; }
     public int MaxTeams { get; private set; }
     public bool IsActive { get; private set; }
@@ -20,14 +21,17 @@ public class Subscription : Entity, IAuditable
     // For EF Core
     private Subscription() { }
 
-    public Subscription(Guid ownerId, SubscriptionType type, Sport sport)
+    public Subscription(Guid ownerId, SubscriptionType type, Guid sportId)
     {
         if (ownerId == Guid.Empty)
             throw new ArgumentException("OwnerId cannot be empty", nameof(ownerId));
 
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
         OwnerId = ownerId;
         Type = type;
-        Sport = sport;
+        SportId = sportId;
         IsActive = true;
 
         // Set limits based on type
@@ -56,9 +60,12 @@ public class Subscription : Entity, IAuditable
         }
     }
 
-    public void UpdateSport(Sport newSport)
+    public void UpdateSport(Guid newSportId)
     {
-        Sport = newSport;
+        if (newSportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(newSportId));
+
+        SportId = newSportId;
         UpdatedAt = DateTime.UtcNow;
     }
 

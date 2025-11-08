@@ -7,7 +7,7 @@ public record TeamResponse(
     Guid SubscriptionId,
     string Name,
     TeamColor Color,
-    Sport Sport,
+    Guid SportId,
     string? Description,
     Guid? CoachSubscriptionUserId,
     string? CoachFirstName,

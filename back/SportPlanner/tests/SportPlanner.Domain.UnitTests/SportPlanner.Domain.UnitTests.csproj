@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\src\SportPlanner.Domain\SportPlanner.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
+
 </Project>

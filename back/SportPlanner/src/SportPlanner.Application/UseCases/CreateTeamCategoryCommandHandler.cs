@@ -19,7 +19,7 @@ public class CreateTeamCategoryCommandHandler : IRequestHandler<CreateTeamCatego
         var teamCategory = new TeamCategory(
             request.Name,
             request.Code,
-            request.Sport,
+            request.SportId,
             request.Description,
             request.SortOrder
         );
@@ -35,7 +35,7 @@ public class CreateTeamCategoryCommandHandler : IRequestHandler<CreateTeamCatego
             teamCategory.Code,
             teamCategory.Description,
             teamCategory.SortOrder,
-            teamCategory.Sport,
+            teamCategory.SportId,
             teamCategory.IsActive
         );
     }

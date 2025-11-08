@@ -67,10 +67,10 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
             throw new InvalidOperationException("Age group not found or inactive");
 
         // 6. Validar coherencia entre maestros y subscription
-        if (category.Sport != subscription.Sport)
+        if (category.SportId != subscription.SportId)
             throw new InvalidOperationException("Team category sport does not match subscription sport");
 
-        if (ageGroup.Sport != subscription.Sport)
+        if (ageGroup.SportId != subscription.SportId)
             throw new InvalidOperationException("Age group sport does not match subscription sport");
 
         // 7. Validar género mixto
@@ -101,7 +101,7 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Guid>
             request.TeamCategoryId,
             request.GenderId,
             request.AgeGroupId,
-            subscription.Sport,
+            subscription.SportId,
             request.Description,
             request.CoachSubscriptionUserId,
             request.Season,

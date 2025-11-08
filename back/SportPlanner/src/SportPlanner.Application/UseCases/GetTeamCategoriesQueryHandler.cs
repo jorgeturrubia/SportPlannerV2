@@ -15,8 +15,8 @@ public class GetTeamCategoriesQueryHandler : IRequestHandler<GetTeamCategoriesQu
 
     public async Task<List<TeamCategoryResponse>> Handle(GetTeamCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var categories = request.Sport.HasValue
-            ? await _teamCategoryRepository.GetActiveBySportAsync(request.Sport.Value, cancellationToken)
+        var categories = request.SportId.HasValue
+            ? await _teamCategoryRepository.GetActiveBySportAsync(request.SportId.Value, cancellationToken)
             : await _teamCategoryRepository.GetAllActiveAsync(cancellationToken);
 
         return categories.Select(c => new TeamCategoryResponse(
@@ -25,7 +25,7 @@ public class GetTeamCategoriesQueryHandler : IRequestHandler<GetTeamCategoriesQu
             c.Code,
             c.Description,
             c.SortOrder,
-            c.Sport,
+            c.SportId,
             c.IsActive
         )).ToList();
     }

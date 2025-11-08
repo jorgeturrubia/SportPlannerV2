@@ -30,7 +30,8 @@
       "Bash(npm start)",
       "Bash(dotnet run)",
       "Bash(timeout /t 10 /nobreak)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "Bash(dotnet run:*)"
     ],
     "deny": [],
     "ask": []

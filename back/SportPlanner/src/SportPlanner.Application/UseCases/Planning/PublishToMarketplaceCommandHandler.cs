@@ -53,17 +53,9 @@ public class PublishToMarketplaceCommandHandler : IRequestHandler<PublishToMarke
                     throw new ForbiddenException("You can only publish resources from your own subscription.");
                 }
 
-                // TrainingPlan does not carry a Sport directly; use a neutral/default sport or derive from context.
-                marketplaceItem = MarketplaceItem.CreateUserItem(
-                    request.Type,
-                    Sport.Football,
-                    request.SourceEntityId,
-                    subscriptionId,
-                    plan.Name,
-                    "A comprehensive training plan.", // Placeholder description
-                    userId);
-
-                break;
+                // TODO: TrainingPlan needs to have SportId property when refactored
+                // For now, throw an exception until TrainingPlan is refactored
+                throw new InvalidOperationException("TrainingPlan publishing is temporarily disabled during Sport refactoring.");
 
             case MarketplaceItemType.Exercise:
                 var exercise = await _exerciseRepository.GetByIdAsync(request.SourceEntityId, cancellationToken)
@@ -74,17 +66,9 @@ public class PublishToMarketplaceCommandHandler : IRequestHandler<PublishToMarke
                     throw new ForbiddenException("You can only publish resources from your own subscription.");
                 }
 
-                // Exercise entity does not expose Sport directly in this model; use a neutral/default sport.
-                marketplaceItem = MarketplaceItem.CreateUserItem(
-                    request.Type,
-                    Sport.Football,
-                    request.SourceEntityId,
-                    subscriptionId,
-                    exercise.Name,
-                    exercise.Description,
-                    userId);
-
-                break;
+                // TODO: Exercise needs to have SportId property when refactored
+                // For now, throw an exception until Exercise is refactored
+                throw new InvalidOperationException("Exercise publishing is temporarily disabled during Sport refactoring.");
 
             case MarketplaceItemType.Objective:
                 var objective = await _objectiveRepository.GetByIdAsync(request.SourceEntityId, cancellationToken)
@@ -97,7 +81,7 @@ public class PublishToMarketplaceCommandHandler : IRequestHandler<PublishToMarke
 
                 marketplaceItem = MarketplaceItem.CreateUserItem(
                     request.Type,
-                    objective.Sport,
+                    objective.SportId,
                     request.SourceEntityId,
                     subscriptionId,
                     objective.Name,

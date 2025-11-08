@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\src\SportPlanner.API\SportPlanner.API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Planning\" />
+  </ItemGroup>
+
 </Project>

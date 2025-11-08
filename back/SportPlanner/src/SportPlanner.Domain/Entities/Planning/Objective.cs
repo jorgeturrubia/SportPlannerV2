@@ -11,7 +11,8 @@ public class Objective : Entity, IAuditable
 {
     public Guid? SubscriptionId { get; private set; }
     public ContentOwnership Ownership { get; private set; }
-    public Sport Sport { get; private set; }
+    public Guid SportId { get; private set; }
+    public Sport Sport { get; private set; } = null!;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public Guid ObjectiveCategoryId { get; private set; }
@@ -39,7 +40,7 @@ public class Objective : Entity, IAuditable
     /// </summary>
     public Objective(
         Guid subscriptionId,
-        Sport sport,
+        Guid sportId,
         string name,
         string description,
         Guid categoryId,
@@ -49,12 +50,15 @@ public class Objective : Entity, IAuditable
         if (subscriptionId == Guid.Empty)
             throw new ArgumentException("SubscriptionId cannot be empty for user content", nameof(subscriptionId));
 
-        ValidateCommonFields(name, description, categoryId, sport);
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
+        ValidateCommonFields(name, description, categoryId);
         ValidateLevel(level);
 
         SubscriptionId = subscriptionId;
         Ownership = ContentOwnership.User;
-        Sport = sport;
+        SportId = sportId;
         Name = name;
         Description = description;
         ObjectiveCategoryId = categoryId;
@@ -67,21 +71,24 @@ public class Objective : Entity, IAuditable
     /// Creates system-owned objective (for seed data).
     /// </summary>
     public static Objective CreateSystemObjective(
-        Sport sport,
+        Guid sportId,
         string name,
         string description,
         Guid categoryId,
         Guid? subcategoryId = null,
         int level = 1)
     {
-        ValidateCommonFields(name, description, categoryId, sport);
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
+        ValidateCommonFields(name, description, categoryId);
         ValidateLevel(level);
 
         return new Objective
         {
             SubscriptionId = null,
             Ownership = ContentOwnership.System,
-            Sport = sport,
+            SportId = sportId,
             Name = name,
             Description = description,
             ObjectiveCategoryId = categoryId,
@@ -97,7 +104,7 @@ public class Objective : Entity, IAuditable
     public static Objective CreateFromMarketplace(
         Guid subscriptionId,
         Guid sourceMarketplaceItemId,
-        Sport sport,
+        Guid sportId,
         string name,
         string description,
         Guid categoryId,
@@ -110,14 +117,17 @@ public class Objective : Entity, IAuditable
         if (sourceMarketplaceItemId == Guid.Empty)
             throw new ArgumentException("SourceMarketplaceItemId cannot be empty", nameof(sourceMarketplaceItemId));
 
-        ValidateCommonFields(name, description, categoryId, sport);
+        if (sportId == Guid.Empty)
+            throw new ArgumentException("SportId cannot be empty", nameof(sportId));
+
+        ValidateCommonFields(name, description, categoryId);
         ValidateLevel(level);
 
         return new Objective
         {
             SubscriptionId = subscriptionId,
             Ownership = ContentOwnership.MarketplaceUser,
-            Sport = sport,
+            SportId = sportId,
             Name = name,
             Description = description,
             ObjectiveCategoryId = categoryId,
@@ -141,7 +151,7 @@ public class Objective : Entity, IAuditable
 
         var cloned = new Objective(
             targetSubscriptionId,
-            Sport,
+            SportId,
             Name,
             Description,
             ObjectiveCategoryId,
@@ -160,8 +170,8 @@ public class Objective : Entity, IAuditable
     public void Update(string name, string description, Guid categoryId, Guid? subcategoryId = null, int? level = null)
     {
         EnsureIsEditable();
-        ValidateCommonFields(name, description, categoryId, Sport);
-        
+        ValidateCommonFields(name, description, categoryId);
+
         if (level.HasValue)
         {
             ValidateLevel(level.Value);
@@ -221,7 +231,7 @@ public class Objective : Entity, IAuditable
             throw new InvalidOperationException($"Cannot modify {Ownership} content. Clone it first to make changes.");
     }
 
-    private static void ValidateCommonFields(string name, string description, Guid categoryId, Sport sport)
+    private static void ValidateCommonFields(string name, string description, Guid categoryId)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be empty", nameof(name));

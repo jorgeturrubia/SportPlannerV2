@@ -14,9 +14,14 @@ public class ObjectiveCategoryConfiguration : IEntityTypeConfiguration<Objective
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(oc => oc.Sport)
-            .IsRequired()
-            .HasConversion<string>();
+        // Sport relationship
+        builder.Property(oc => oc.SportId)
+            .IsRequired();
+
+        builder.HasOne(oc => oc.Sport)
+            .WithMany()
+            .HasForeignKey(oc => oc.SportId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Audit properties
         builder.Property(oc => oc.CreatedAt)
@@ -30,12 +35,12 @@ public class ObjectiveCategoryConfiguration : IEntityTypeConfiguration<Objective
             .HasMaxLength(255);
 
         // Indices
-        builder.HasIndex(oc => oc.Sport)
-            .HasDatabaseName("IX_ObjectiveCategories_Sport");
+        builder.HasIndex(oc => oc.SportId)
+            .HasDatabaseName("IX_ObjectiveCategories_SportId");
 
-        builder.HasIndex(oc => new { oc.Sport, oc.Name })
+        builder.HasIndex(oc => new { oc.SportId, oc.Name })
             .IsUnique()
-            .HasDatabaseName("IX_ObjectiveCategories_Sport_Name");
+            .HasDatabaseName("IX_ObjectiveCategories_SportId_Name");
 
         // Table name
         builder.ToTable("objective_categories");

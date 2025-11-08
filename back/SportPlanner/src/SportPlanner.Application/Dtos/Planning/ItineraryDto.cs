@@ -1,3 +1,4 @@
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Enum;
 using System;
 using System.Collections.Generic;

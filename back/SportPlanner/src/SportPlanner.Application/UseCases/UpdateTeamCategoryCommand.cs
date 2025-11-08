@@ -1,5 +1,6 @@
 using MediatR;
 using SportPlanner.Application.DTOs;
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Enum;
 
 namespace SportPlanner.Application.UseCases;

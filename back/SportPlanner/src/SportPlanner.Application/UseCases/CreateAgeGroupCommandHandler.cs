@@ -21,7 +21,7 @@ public class CreateAgeGroupCommandHandler : IRequestHandler<CreateAgeGroupComman
             request.Code,
             request.MinAge,
             request.MaxAge,
-            request.Sport,
+            request.SportId,
             request.SortOrder
         );
 
@@ -36,7 +36,7 @@ public class CreateAgeGroupCommandHandler : IRequestHandler<CreateAgeGroupComman
             ageGroup.Code,
             ageGroup.MinAge,
             ageGroup.MaxAge,
-            ageGroup.Sport,
+            ageGroup.SportId,
             ageGroup.SortOrder,
             ageGroup.IsActive
         );

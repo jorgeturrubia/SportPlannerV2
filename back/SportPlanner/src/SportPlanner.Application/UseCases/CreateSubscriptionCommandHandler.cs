@@ -32,7 +32,7 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         }
 
         // Create new subscription - domain entity handles limits automatically
-        var subscription = new Subscription(ownerId, request.Type, request.Sport);
+        var subscription = new Subscription(ownerId, request.Type, request.SportId);
 
         await _subscriptionRepository.AddAsync(subscription, cancellationToken);
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.Application.Interfaces;
+using SportPlanner.Domain.Entities;
 using SportPlanner.Domain.Entities.Planning;
 using SportPlanner.Domain.Enum;
 using SportPlanner.Infrastructure.Data;

@@ -15,8 +15,8 @@ public class GetAgeGroupsQueryHandler : IRequestHandler<GetAgeGroupsQuery, List<
 
     public async Task<List<AgeGroupResponse>> Handle(GetAgeGroupsQuery request, CancellationToken cancellationToken)
     {
-        var ageGroups = request.Sport.HasValue
-            ? await _ageGroupRepository.GetActiveBySportAsync(request.Sport.Value, cancellationToken)
+        var ageGroups = request.SportId.HasValue
+            ? await _ageGroupRepository.GetActiveBySportAsync(request.SportId.Value, cancellationToken)
             : await _ageGroupRepository.GetAllActiveAsync(cancellationToken);
 
         return ageGroups.Select(a => new AgeGroupResponse(
@@ -25,7 +25,7 @@ public class GetAgeGroupsQueryHandler : IRequestHandler<GetAgeGroupsQuery, List<
             a.Code,
             a.MinAge,
             a.MaxAge,
-            a.Sport,
+            a.SportId,
             a.SortOrder,
             a.IsActive
         )).ToList();

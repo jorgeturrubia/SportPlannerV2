@@ -1,4 +1,5 @@
 using MediatR;
+using SportPlanner.Application.DTOs;
 using SportPlanner.Application.DTOs.Planning;
 using SportPlanner.Application.Interfaces;
 
@@ -15,15 +16,23 @@ public class GetObjectiveCategoriesQueryHandler : IRequestHandler<GetObjectiveCa
 
     public async Task<List<ObjectiveCategoryDto>> Handle(GetObjectiveCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var categories = request.Sport.HasValue
-            ? await _repository.GetBySportAsync(request.Sport.Value, cancellationToken)
+        var categories = request.SportId.HasValue
+            ? await _repository.GetBySportAsync(request.SportId.Value, cancellationToken)
             : await _repository.GetAllAsync(cancellationToken);
 
         return categories.Select(c => new ObjectiveCategoryDto
         {
             Id = c.Id,
             Name = c.Name,
-            Sport = c.Sport
+            Sport = new SportDto
+            {
+                Id = c.Sport.Id,
+                Name = c.Sport.Name,
+                Code = c.Sport.Code,
+                Description = c.Sport.Description,
+                SortOrder = c.Sport.SortOrder,
+                IsActive = c.Sport.IsActive
+            }
         }).ToList();
     }
 }
